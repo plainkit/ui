@@ -56,12 +56,15 @@ func InputOTP(props Props, args ...html.DivArg) html.Node {
 	if containerID != "" {
 		divArgs = append(divArgs, html.AId(containerID))
 	}
+
 	if props.Value != "" {
 		divArgs = append(divArgs, html.AData("pui-inputotp-value", props.Value))
 	}
+
 	if props.Autofocus {
 		divArgs = append(divArgs, html.AAutofocus())
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
@@ -73,15 +76,19 @@ func InputOTP(props Props, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		hiddenArgs = append(hiddenArgs, html.AId(props.ID))
 	}
+
 	if props.Name != "" {
 		hiddenArgs = append(hiddenArgs, html.AName(props.Name))
 	}
+
 	if props.Form != "" {
 		hiddenArgs = append(hiddenArgs, html.AForm(props.Form))
 	}
+
 	if props.HasError {
 		hiddenArgs = append(hiddenArgs, html.AAria("invalid", "true"))
 	}
+
 	if props.Required {
 		hiddenArgs = append(hiddenArgs, html.ARequired())
 	}
@@ -91,6 +98,7 @@ func InputOTP(props Props, args ...html.DivArg) html.Node {
 	divArgs = append(divArgs, args...)
 
 	node := html.Div(divArgs...)
+
 	return node.WithAssets("", inputOTPJS, "ui-inputotp")
 }
 
@@ -99,10 +107,13 @@ func Group(props GroupProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		groupArgs = append(groupArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		groupArgs = append(groupArgs, attr)
 	}
+
 	groupArgs = append(groupArgs, args...)
+
 	return html.Div(groupArgs...)
 }
 
@@ -116,6 +127,7 @@ func Slot(props SlotProps) html.Node {
 	if props.ID != "" {
 		wrapperArgs = append(wrapperArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		wrapperArgs = append(wrapperArgs, attr)
 	}
@@ -132,6 +144,7 @@ func Slot(props SlotProps) html.Node {
 	if props.HasError {
 		classes = append(classes, "border-destructive ring-destructive/20 dark:ring-destructive/40")
 	}
+
 	classes = append(classes, props.Class)
 
 	inputArgs := []html.InputArg{
@@ -145,9 +158,11 @@ func Slot(props SlotProps) html.Node {
 	if props.Placeholder != "" {
 		inputArgs = append(inputArgs, html.APlaceholder(props.Placeholder))
 	}
+
 	if props.Disabled {
 		inputArgs = append(inputArgs, html.ADisabled())
 	}
+
 	if props.HasError {
 		inputArgs = append(inputArgs, html.AAria("invalid", "true"))
 	}
@@ -160,14 +175,17 @@ func Separator(props SeparatorProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	if len(args) == 0 {
 		divArgs = append(divArgs, html.Span(html.Text("-")))
 	} else {
 		divArgs = append(divArgs, args...)
 	}
+
 	return html.Div(divArgs...)
 }
 

@@ -46,6 +46,7 @@ func TagsInput(props Props, args ...html.DivArg) html.Node {
 				if props.Disabled {
 					return "opacity-50 cursor-not-allowed"
 				}
+
 				return ""
 			}(),
 			// Width
@@ -55,6 +56,7 @@ func TagsInput(props Props, args ...html.DivArg) html.Node {
 				if props.HasError {
 					return "border-destructive ring-destructive/20 dark:ring-destructive/40"
 				}
+
 				return ""
 			}(),
 			props.Class,
@@ -85,6 +87,7 @@ func TagsInput(props Props, args ...html.DivArg) html.Node {
 					if props.Disabled {
 						return html.ADisabled()
 					}
+
 					return html.AAria("", "")
 				}(),
 				lucide.X(html.AClass("h-3 w-3 pointer-events-none")),
@@ -147,6 +150,7 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }
 

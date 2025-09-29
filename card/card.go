@@ -26,10 +26,13 @@ func Card(props Props, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
+
 	return html.Div(divArgs...)
 }
 
@@ -38,10 +41,13 @@ func Header(props HeaderProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
+
 	return html.Div(divArgs...)
 }
 
@@ -50,10 +56,13 @@ func Title(props TitleProps, args ...html.H3Arg) html.Node {
 	if props.ID != "" {
 		hargs = append(hargs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		hargs = append(hargs, attr)
 	}
+
 	hargs = append(hargs, args...)
+
 	return html.H3(hargs...)
 }
 
@@ -62,10 +71,13 @@ func Description(props DescriptionProps, args ...html.PArg) html.Node {
 	if props.ID != "" {
 		pargs = append(pargs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		pargs = append(pargs, attr)
 	}
+
 	pargs = append(pargs, args...)
+
 	return html.P(pargs...)
 }
 
@@ -74,10 +86,13 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
+
 	return html.Div(divArgs...)
 }
 
@@ -86,10 +101,13 @@ func Footer(props FooterProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
+
 	return html.Div(divArgs...)
 }
 

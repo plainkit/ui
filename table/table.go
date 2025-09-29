@@ -59,9 +59,11 @@ func Table(props Props, args ...html.TableArg) html.Node {
 	if props.ID != "" {
 		tableArgs = append(tableArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		tableArgs = append(tableArgs, attr)
 	}
+
 	tableArgs = append(tableArgs, args...)
 
 	return html.Div(
@@ -75,10 +77,13 @@ func Header(props HeaderProps, args ...html.TheadArg) html.Node {
 	if props.ID != "" {
 		theadArgs = append(theadArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		theadArgs = append(theadArgs, attr)
 	}
+
 	theadArgs = append(theadArgs, args...)
+
 	return html.Thead(theadArgs...)
 }
 
@@ -87,10 +92,13 @@ func Body(props BodyProps, args ...html.TbodyArg) html.Node {
 	if props.ID != "" {
 		tbodyArgs = append(tbodyArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		tbodyArgs = append(tbodyArgs, attr)
 	}
+
 	tbodyArgs = append(tbodyArgs, args...)
+
 	return html.Tbody(tbodyArgs...)
 }
 
@@ -99,10 +107,13 @@ func Footer(props FooterProps, args ...html.TfootArg) html.Node {
 	if props.ID != "" {
 		tfootArgs = append(tfootArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		tfootArgs = append(tfootArgs, attr)
 	}
+
 	tfootArgs = append(tfootArgs, args...)
+
 	return html.Tfoot(tfootArgs...)
 }
 
@@ -111,19 +122,24 @@ func Row(props RowProps, args ...html.TrArg) html.Node {
 	if props.Selected {
 		baseClass = classnames.Merge(baseClass, "data-[pui-table-state-selected]:bg-muted")
 	}
+
 	className := classnames.Merge(baseClass, props.Class)
 
 	trArgs := []html.TrArg{html.AClass(className)}
 	if props.ID != "" {
 		trArgs = append(trArgs, html.AId(props.ID))
 	}
+
 	if props.Selected {
 		trArgs = append(trArgs, html.AData("pui-table-state-selected", ""))
 	}
+
 	for _, attr := range props.Attrs {
 		trArgs = append(trArgs, attr)
 	}
+
 	trArgs = append(trArgs, args...)
+
 	return html.Tr(trArgs...)
 }
 
@@ -136,10 +152,13 @@ func Head(props HeadProps, args ...html.ThArg) html.Node {
 	if props.ID != "" {
 		thArgs = append(thArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		thArgs = append(thArgs, attr)
 	}
+
 	thArgs = append(thArgs, args...)
+
 	return html.Th(thArgs...)
 }
 
@@ -152,10 +171,13 @@ func Cell(props CellProps, args ...html.TdArg) html.Node {
 	if props.ID != "" {
 		tdArgs = append(tdArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		tdArgs = append(tdArgs, attr)
 	}
+
 	tdArgs = append(tdArgs, args...)
+
 	return html.Td(tdArgs...)
 }
 
@@ -164,9 +186,12 @@ func Caption(props CaptionProps, args ...html.CaptionArg) html.Node {
 	if props.ID != "" {
 		captionArgs = append(captionArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		captionArgs = append(captionArgs, attr)
 	}
+
 	captionArgs = append(captionArgs, args...)
+
 	return html.Caption(captionArgs...)
 }

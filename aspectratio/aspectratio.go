@@ -29,6 +29,7 @@ func AspectRatio(props Props, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		containerArgs = append(containerArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		containerArgs = append(containerArgs, attr)
 	}

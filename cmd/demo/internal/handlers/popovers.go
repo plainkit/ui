@@ -7,8 +7,10 @@ import (
 )
 
 func RenderPopoversContent() html.Node {
-	const infoPopoverID = "profile-popover"
-	const hoverPopoverID = "shortcut-popover"
+	const (
+		infoPopoverID  = "profile-popover"
+		hoverPopoverID = "shortcut-popover"
+	)
 
 	return html.Div(
 		html.AClass("space-y-10"),

@@ -35,6 +35,7 @@ func Separator(props Props, labelArgs ...html.SpanArg) html.Node {
 	if props.Orientation == OrientationVertical {
 		return verticalSeparator(props, labelArgs)
 	}
+
 	return horizontalSeparator(props, labelArgs)
 }
 
@@ -47,6 +48,7 @@ func horizontalSeparator(props Props, labelArgs []html.SpanArg) html.Node {
 	if props.ID != "" {
 		outerArgs = append(outerArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		outerArgs = append(outerArgs, attr)
 	}
@@ -61,6 +63,7 @@ func horizontalSeparator(props Props, labelArgs []html.SpanArg) html.Node {
 	)
 
 	outerArgs = append(outerArgs, inner)
+
 	return html.Div(outerArgs...)
 }
 
@@ -73,6 +76,7 @@ func verticalSeparator(props Props, labelArgs []html.SpanArg) html.Node {
 	if props.ID != "" {
 		outerArgs = append(outerArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		outerArgs = append(outerArgs, attr)
 	}
@@ -87,6 +91,7 @@ func verticalSeparator(props Props, labelArgs []html.SpanArg) html.Node {
 	)
 
 	outerArgs = append(outerArgs, inner)
+
 	return html.Div(outerArgs...)
 }
 

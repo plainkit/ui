@@ -47,9 +47,11 @@ func Collapsible(props Props, args ...html.DivArg) html.Node {
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	node := html.Div(divArgs...)
+
 	return node.WithAssets("", collapsibleJS, "ui-collapsible")
 }
 
@@ -61,9 +63,11 @@ func Trigger(props TriggerProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -80,6 +84,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		wrapperArgs = append(wrapperArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		wrapperArgs = append(wrapperArgs, attr)
 	}
@@ -88,6 +93,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	innerArgs = append(innerArgs, args...)
 
 	wrapperArgs = append(wrapperArgs, html.Div(innerArgs...))
+
 	return html.Div(wrapperArgs...)
 }
 
@@ -96,6 +102,7 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }
 

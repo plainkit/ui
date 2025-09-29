@@ -99,12 +99,14 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 			if props.Form != "" {
 				return html.AForm(props.Form)
 			}
+
 			return html.AAria("", "")
 		}(),
 		func() html.InputArg {
 			if props.Required {
 				return html.ARequired()
 			}
+
 			return html.AAria("", "")
 		}(),
 	)
@@ -190,6 +192,7 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 						if valueString != "" {
 							return html.AData("pui-timepicker-value", valueString)
 						}
+
 						return html.AAria("", "")
 					}(),
 
@@ -249,6 +252,7 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 									),
 								)
 							}
+
 							return html.Div()
 						}()),
 
@@ -345,6 +349,7 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }
 

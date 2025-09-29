@@ -69,15 +69,19 @@ func Trigger(props TriggerProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	if props.For != "" {
 		spanArgs = append(spanArgs, html.AData("pui-popover-trigger", props.For))
 	}
+
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	spanArgs = append(spanArgs, args...)
 
 	node := html.Span(spanArgs...)
+
 	return node.WithAssets("", popoverJS, "ui-popover")
 }
 
@@ -87,6 +91,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	if placement == "" {
 		placement = PlacementBottom
 	}
+
 	offset := props.Offset
 	if offset == 0 {
 		if props.ShowArrow {
@@ -114,14 +119,17 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	if props.MatchWidth {
 		divArgs = append(divArgs, html.AData("pui-popover-match-width", "true"))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
 
 	innerArgs := append([]html.DivArg{html.AClass("w-full overflow-hidden")}, args...)
+
 	contentInner := []html.DivArg{html.Div(innerArgs...)}
 	if props.ShowArrow {
 		contentInner = append(contentInner, html.Div(
@@ -135,6 +143,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	}
 
 	node := html.Div(append(divArgs, contentInner...)...)
+
 	return node.WithAssets("", popoverJS, "ui-popover")
 }
 

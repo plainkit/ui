@@ -17,6 +17,7 @@ func previousHref(data struct {
 	if !data.HasPrevious {
 		return ""
 	}
+
 	return "?page=" + strconv.Itoa(data.CurrentPage-1)
 }
 
@@ -30,6 +31,7 @@ func nextHref(data struct {
 	if !data.HasNext {
 		return ""
 	}
+
 	return "?page=" + strconv.Itoa(data.CurrentPage+1)
 }
 
@@ -80,6 +82,7 @@ func RenderPaginationContent() html.Node {
 		if lastVisible < data.TotalPages-1 {
 			items = append(items, pagination.Item(pagination.ItemProps{}, pagination.Ellipsis()))
 		}
+
 		lastLabel := strconv.Itoa(data.TotalPages)
 		items = append(items,
 			pagination.Item(

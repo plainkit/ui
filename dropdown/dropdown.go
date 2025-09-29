@@ -111,9 +111,11 @@ func Dropdown(props Props, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -134,7 +136,7 @@ func Trigger(triggerProps TriggerProps, buttonProps button.Props, args ...html.B
 			Class:       triggerProps.Class,
 			Attrs:       triggerProps.Attrs,
 		},
-		button.Button(buttonProps, args...),
+		button.Button(append([]html.ButtonArg{buttonProps}, args...)...),
 	)
 }
 
@@ -186,9 +188,11 @@ func Group(props GroupProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -203,9 +207,11 @@ func Label(props LabelProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -235,6 +241,7 @@ func Item(props ItemProps, args ...html.Node) html.Node {
 	if props.PreventClose {
 		attrs = append(attrs, html.AData("pui-dropdown-prevent-close", "true"))
 	}
+
 	attrs = append(attrs, props.Attrs...)
 
 	if props.Href != "" {
@@ -247,12 +254,15 @@ func Item(props ItemProps, args ...html.Node) html.Node {
 		if props.Target != "" {
 			aArgs = append(aArgs, html.ATarget(props.Target))
 		}
+
 		for _, attr := range attrs {
 			aArgs = append(aArgs, attr)
 		}
+
 		for _, arg := range args {
 			aArgs = append(aArgs, arg)
 		}
+
 		return html.A(aArgs...)
 	}
 
@@ -265,12 +275,15 @@ func Item(props ItemProps, args ...html.Node) html.Node {
 	if props.Disabled {
 		buttonArgs = append(buttonArgs, html.ADisabled())
 	}
+
 	for _, attr := range attrs {
 		buttonArgs = append(buttonArgs, attr)
 	}
+
 	for _, arg := range args {
 		buttonArgs = append(buttonArgs, arg)
 	}
+
 	return html.Button(buttonArgs...)
 }
 
@@ -284,9 +297,11 @@ func Separator(props SeparatorProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -301,9 +316,11 @@ func Shortcut(props ShortcutProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	spanArgs = append(spanArgs, args...)
 
 	return html.Span(spanArgs...)
@@ -319,9 +336,11 @@ func Sub(props SubProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -347,6 +366,7 @@ func SubTrigger(props SubTriggerProps, subContentID string, args ...html.Node) h
 				for _, arg := range args {
 					spanArgs = append(spanArgs, arg)
 				}
+
 				return spanArgs
 			}()...,
 		),
@@ -393,5 +413,6 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }

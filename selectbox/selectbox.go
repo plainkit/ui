@@ -86,6 +86,7 @@ func SelectBox(props Props, args ...html.DivArg) html.Node {
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -106,23 +107,29 @@ func Trigger(props TriggerProps, contentID string, args ...html.Node) html.Node 
 	if props.Name != "" {
 		inputArgs = append(inputArgs, html.AName(props.Name))
 	}
+
 	if props.Form != "" {
 		inputArgs = append(inputArgs, html.AForm(props.Form))
 	}
+
 	if props.Required {
 		inputArgs = append(inputArgs, html.ARequired())
 	}
+
 	for _, attr := range props.Attrs {
 		inputArgs = append(inputArgs, attr)
 	}
+
 	hiddenInput := html.Input(inputArgs...)
 
 	// Button content with children and chevron
 	buttonContent := make([]html.ButtonArg, 0, len(args)+2)
+
 	buttonContent = append(buttonContent, hiddenInput)
 	for _, arg := range args {
 		buttonContent = append(buttonContent, arg)
 	}
+
 	buttonContent = append(buttonContent,
 		html.Span(
 			html.AClass("pointer-events-none ml-1"),
@@ -135,54 +142,56 @@ func Trigger(props TriggerProps, contentID string, args ...html.Node) html.Node 
 			For:         contentID,
 			TriggerType: popover.TriggerTypeClick,
 		},
-		button.Button(button.Props{
-			ID:      props.ID,
-			Type:    button.TypeButton,
-			Variant: button.VariantOutline,
-			Class: classnames.Merge(
-				// Required class for JavaScript
-				"select-trigger",
-				// Base styles matching input
-				"w-full h-9 px-3 py-1 text-base md:text-sm",
-				"flex items-center justify-between",
-				"rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none",
-				// Dark mode background
-				"dark:bg-input/30",
-				// Selection styles
-				"selection:bg-primary selection:text-primary-foreground",
-				// Focus styles
-				"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-				// Error/Invalid styles
-				"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
-				func() string {
-					if props.HasError {
-						return "border-destructive ring-destructive/20 dark:ring-destructive/40"
-					}
-					return ""
-				}(),
-				props.Class,
-			),
-			Disabled: props.Disabled,
-			Attrs: []html.Global{
-				html.AData("pui-selectbox-content-id", contentID),
-				html.AData("pui-selectbox-multiple", strconv.FormatBool(props.Multiple)),
-				html.AData("pui-selectbox-show-pills", strconv.FormatBool(props.ShowPills)),
-				html.AData("pui-selectbox-selected-count-text", props.SelectedCountText),
-				html.ATabindex(0),
-				func() html.Global {
-					if props.Required {
-						return html.AAria("required", "true")
-					}
-					return html.AAria("", "")
-				}(),
-				func() html.Global {
-					if props.HasError {
-						return html.AAria("invalid", "true")
-					}
-					return html.AAria("", "")
-				}(),
+		button.Button(append([]html.ButtonArg{
+			button.Props{
+				ID:      props.ID,
+				Type:    button.TypeButton,
+				Variant: button.VariantOutline,
+				Class: classnames.Merge(
+					// Required class for JavaScript
+					"select-trigger",
+					// Base styles matching input
+					"w-full h-9 px-3 py-1 text-base md:text-sm",
+					"flex items-center justify-between",
+					"rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none",
+					// Dark mode background
+					"dark:bg-input/30",
+					// Selection styles
+					"selection:bg-primary selection:text-primary-foreground",
+					// Focus styles
+					"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+					// Error/Invalid styles
+					"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
+					func() string {
+						if props.HasError {
+							return "border-destructive ring-destructive/20 dark:ring-destructive/40"
+						}
+						return ""
+					}(),
+					props.Class,
+				),
+				Disabled: props.Disabled,
+				Attrs: []html.Global{
+					html.AData("pui-selectbox-content-id", contentID),
+					html.AData("pui-selectbox-multiple", strconv.FormatBool(props.Multiple)),
+					html.AData("pui-selectbox-show-pills", strconv.FormatBool(props.ShowPills)),
+					html.AData("pui-selectbox-selected-count-text", props.SelectedCountText),
+					html.ATabindex(0),
+					func() html.Global {
+						if props.Required {
+							return html.AAria("required", "true")
+						}
+						return html.AAria("", "")
+					}(),
+					func() html.Global {
+						if props.HasError {
+							return html.AAria("invalid", "true")
+						}
+						return html.AAria("", "")
+					}(),
+				},
 			},
-		}, buttonContent...),
+		}, buttonContent...)...),
 	)
 }
 
@@ -195,12 +204,15 @@ func Value(props ValueProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	if props.Placeholder != "" {
 		spanArgs = append(spanArgs, html.AData("pui-selectbox-placeholder", props.Placeholder))
 	}
+
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	spanArgs = append(spanArgs, args...)
 
 	if props.Placeholder != "" && len(args) == 0 {
@@ -223,6 +235,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	contentArgs = append(contentArgs, args...)
 
 	var popoverContent []html.DivArg
+
 	if !props.NoSearch {
 		searchPlaceholder := "Search..."
 		if props.SearchPlaceholder != "" {
@@ -282,9 +295,11 @@ func Group(props GroupProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -299,9 +314,11 @@ func Label(props LabelProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	spanArgs = append(spanArgs, args...)
 
 	return html.Span(spanArgs...)
@@ -318,12 +335,14 @@ func Item(props ItemProps, args ...html.SpanArg) html.Node {
 				if props.Selected {
 					return "bg-accent text-accent-foreground"
 				}
+
 				return ""
 			}(),
 			func() string {
 				if props.Disabled {
 					return "pointer-events-none opacity-50"
 				}
+
 				return ""
 			}(),
 			props.Class,
@@ -338,6 +357,7 @@ func Item(props ItemProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
@@ -355,6 +375,7 @@ func Item(props ItemProps, args ...html.SpanArg) html.Node {
 					if props.Selected {
 						return "opacity-100"
 					}
+
 					return "opacity-0"
 				}(),
 			)),
@@ -370,5 +391,6 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }

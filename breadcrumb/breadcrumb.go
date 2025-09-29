@@ -48,10 +48,13 @@ func Breadcrumb(props Props, args ...html.NavArg) html.Node {
 	if props.ID != "" {
 		navArgs = append(navArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		navArgs = append(navArgs, attr)
 	}
+
 	navArgs = append(navArgs, args...)
+
 	return html.Nav(navArgs...)
 }
 
@@ -60,10 +63,13 @@ func List(props ListProps, args ...html.OlArg) html.Node {
 	if props.ID != "" {
 		olArgs = append(olArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		olArgs = append(olArgs, attr)
 	}
+
 	olArgs = append(olArgs, args...)
+
 	return html.Ol(olArgs...)
 }
 
@@ -72,10 +78,13 @@ func Item(props ItemProps, args ...html.LiArg) html.Node {
 	if props.ID != "" {
 		liArgs = append(liArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		liArgs = append(liArgs, attr)
 	}
+
 	liArgs = append(liArgs, args...)
+
 	return html.Li(liArgs...)
 }
 
@@ -86,9 +95,11 @@ func Link(props LinkProps, args ...html.AArg) html.Node {
 	if props.IsActive {
 		classes = append(classes, "text-foreground")
 	}
+
 	if props.Disabled {
 		classes = append(classes, "pointer-events-none opacity-60")
 	}
+
 	classes = append(classes, props.Class)
 	className := classnames.Merge(classes...)
 
@@ -96,15 +107,19 @@ func Link(props LinkProps, args ...html.AArg) html.Node {
 	if props.ID != "" {
 		anchorArgs = append(anchorArgs, html.AId(props.ID))
 	}
+
 	if props.Href != "" {
 		anchorArgs = append(anchorArgs, html.AHref(props.Href))
 	}
+
 	for _, attr := range props.Attrs {
 		anchorArgs = append(anchorArgs, attr)
 	}
+
 	if props.Disabled {
 		anchorArgs = append(anchorArgs, html.AAria("disabled", "true"), html.ATabindex(-1))
 	}
+
 	anchorArgs = append(anchorArgs, args...)
 
 	return html.A(anchorArgs...)
@@ -115,14 +130,17 @@ func Separator(props SeparatorProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	if props.UseCustom {
 		spanArgs = append(spanArgs, args...)
 	} else {
 		spanArgs = append(spanArgs, lucide.ChevronRight(html.AClass("size-3.5 text-muted-foreground")))
 	}
+
 	return html.Span(spanArgs...)
 }
 
@@ -131,15 +149,19 @@ func Page(props ItemProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	spanArgs = append(spanArgs, args...)
+
 	return html.Span(spanArgs...)
 }
 
 func Ellipsis(args ...html.SvgArg) html.Node {
 	svgArgs := []html.SvgArg{html.AClass("size-3.5 text-muted-foreground")}
 	svgArgs = append(svgArgs, args...)
+
 	return lucide.Ellipsis(svgArgs...)
 }

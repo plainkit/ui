@@ -60,10 +60,13 @@ func Pagination(props Props, args ...html.NavArg) html.Node {
 	if props.ID != "" {
 		navArgs = append(navArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		navArgs = append(navArgs, attr)
 	}
+
 	navArgs = append(navArgs, args...)
+
 	return html.Nav(navArgs...)
 }
 
@@ -72,10 +75,13 @@ func Content(props ContentProps, args ...html.UlArg) html.Node {
 	if props.ID != "" {
 		ulArgs = append(ulArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		ulArgs = append(ulArgs, attr)
 	}
+
 	ulArgs = append(ulArgs, args...)
+
 	return html.Ul(ulArgs...)
 }
 
@@ -84,13 +90,17 @@ func Item(props ItemProps, args ...html.LiArg) html.Node {
 	if props.Class != "" {
 		liArgs = append(liArgs, html.AClass(props.Class))
 	}
+
 	if props.ID != "" {
 		liArgs = append(liArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		liArgs = append(liArgs, attr)
 	}
+
 	liArgs = append(liArgs, args...)
+
 	return html.Li(liArgs...)
 }
 
@@ -108,7 +118,10 @@ func Link(props LinkProps, args ...html.ButtonArg) html.Node {
 	} else {
 		btnProps.Href = props.Href
 	}
-	return button.Button(btnProps, args...)
+
+	buttonArgs := append([]html.ButtonArg{btnProps}, args...)
+
+	return button.Button(buttonArgs...)
 }
 
 func Previous(props PreviousProps, args ...html.ButtonArg) html.Node {
@@ -122,12 +135,15 @@ func Previous(props PreviousProps, args ...html.ButtonArg) html.Node {
 	}
 
 	buttonArgs := []html.ButtonArg{lucide.ChevronLeft(html.AClass("size-4"))}
+
 	buttonArgs = append(buttonArgs, args...)
 	if props.Label != "" {
 		buttonArgs = append(buttonArgs, html.Span(html.Text(props.Label)))
 	}
 
-	return button.Button(btnProps, buttonArgs...)
+	allArgs := append([]html.ButtonArg{btnProps}, buttonArgs...)
+
+	return button.Button(allArgs...)
 }
 
 func Next(props NextProps, args ...html.ButtonArg) html.Node {
@@ -144,15 +160,19 @@ func Next(props NextProps, args ...html.ButtonArg) html.Node {
 	if props.Label != "" {
 		buttonArgs = append(buttonArgs, html.Span(html.Text(props.Label)))
 	}
+
 	buttonArgs = append(buttonArgs, args...)
 	buttonArgs = append(buttonArgs, lucide.ChevronRight(html.AClass("size-4")))
 
-	return button.Button(btnProps, buttonArgs...)
+	allArgs := append([]html.ButtonArg{btnProps}, buttonArgs...)
+
+	return button.Button(allArgs...)
 }
 
 func Ellipsis(args ...html.SvgArg) html.Node {
 	svgArgs := []html.SvgArg{html.AClass("size-4 text-muted-foreground")}
 	svgArgs = append(svgArgs, args...)
+
 	return lucide.Ellipsis(svgArgs...)
 }
 
@@ -166,17 +186,21 @@ func CreatePagination(currentPage, totalPages, maxVisible int) struct {
 	if currentPage < 1 {
 		currentPage = 1
 	}
+
 	if totalPages < 1 {
 		totalPages = 1
 	}
+
 	if currentPage > totalPages {
 		currentPage = totalPages
 	}
+
 	if maxVisible < 1 {
 		maxVisible = 5
 	}
 
 	start, end := calculateVisibleRange(currentPage, totalPages, maxVisible)
+
 	pages := make([]int, 0, end-start+1)
 	for i := start; i <= end; i++ {
 		pages = append(pages, i)
@@ -216,6 +240,7 @@ func calculateVisibleRange(currentPage, totalPages, maxVisible int) (int, int) {
 		if start < 1 {
 			start = 1
 		}
+
 		end = totalPages
 	}
 
@@ -226,5 +251,6 @@ func buttonVariant(isActive bool) button.Variant {
 	if isActive {
 		return button.VariantOutline
 	}
+
 	return button.VariantGhost
 }

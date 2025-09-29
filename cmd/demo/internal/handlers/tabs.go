@@ -7,6 +7,7 @@ import (
 
 func RenderTabsContent() html.Node {
 	tabsID := "plans-tabs"
+
 	return html.Div(
 		html.AClass("space-y-10"),
 		html.Section(

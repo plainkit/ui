@@ -32,9 +32,11 @@ func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Di
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
+
 		for _, a := range p.Attrs {
 			args = append(args, a)
 		}
+
 		return args
 	}
 }
@@ -45,9 +47,11 @@ func h5ArgsFromProps(baseClass string, extra ...string) func(p TitleProps) []htm
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
+
 		for _, a := range p.Attrs {
 			args = append(args, a)
 		}
+
 		return args
 	}
 }
@@ -60,6 +64,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		"rounded-lg border",
 		variantClass(p.Variant),
 	)(p)
+
 	args = append([]html.DivArg{html.ACustom("role", "alert")}, args...)
 	for _, a := range args {
 		a.ApplyDiv(attrs, children)
@@ -79,8 +84,10 @@ func (p DescriptionProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Compon
 }
 
 func Alert(args ...html.DivArg) html.Node {
-	var props Props
-	var rest []html.DivArg
+	var (
+		props Props
+		rest  []html.DivArg
+	)
 
 	for _, a := range args {
 		if v, ok := a.(Props); ok {
@@ -94,8 +101,10 @@ func Alert(args ...html.DivArg) html.Node {
 }
 
 func Title(args ...html.H5Arg) html.Node {
-	var props TitleProps
-	var rest []html.H5Arg
+	var (
+		props TitleProps
+		rest  []html.H5Arg
+	)
 
 	for _, a := range args {
 		if v, ok := a.(TitleProps); ok {
@@ -109,8 +118,10 @@ func Title(args ...html.H5Arg) html.Node {
 }
 
 func Description(args ...html.DivArg) html.Node {
-	var props DescriptionProps
-	var rest []html.DivArg
+	var (
+		props DescriptionProps
+		rest  []html.DivArg
+	)
 
 	for _, a := range args {
 		if v, ok := a.(DescriptionProps); ok {

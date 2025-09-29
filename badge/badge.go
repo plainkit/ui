@@ -37,9 +37,11 @@ func Badge(props Props, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	spanArgs = append(spanArgs, args...)
 
 	return html.Span(spanArgs...)

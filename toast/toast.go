@@ -59,10 +59,12 @@ func Toast(props Props, args ...html.DivArg) html.Node {
 	if variant == "" {
 		variant = VariantDefault
 	}
+
 	position := props.Position
 	if position == "" {
 		position = PositionBottomRight
 	}
+
 	duration := props.Duration
 	if duration == 0 {
 		duration = 3000
@@ -117,6 +119,7 @@ func Toast(props Props, args ...html.DivArg) html.Node {
 	}
 
 	contentDivArgs := []html.DivArg{html.AClass("w-full bg-popover text-popover-foreground rounded-lg shadow-xs border pt-5 pb-4 px-4 flex items-center justify-center relative overflow-hidden group gap-3")}
+
 	if props.Icon && variant != VariantDefault {
 		iconNode := variantIcon(variant)
 		contentDivArgs = append(contentDivArgs, iconNode)
@@ -129,12 +132,14 @@ func Toast(props Props, args ...html.DivArg) html.Node {
 			html.Text(props.Title),
 		))
 	}
+
 	if props.Description != "" {
 		textSpanArgs = append(textSpanArgs, html.P(
 			html.AClass("text-sm opacity-90 mt-1"),
 			html.Text(props.Description),
 		))
 	}
+
 	textContainer := html.Span(textSpanArgs...)
 	contentDivArgs = append(contentDivArgs, textContainer)
 
@@ -159,6 +164,7 @@ func Toast(props Props, args ...html.DivArg) html.Node {
 	divArgs = append(divArgs, args...)
 
 	node := html.Div(divArgs...)
+
 	return node.WithAssets("", toastJS, "ui-toast")
 }
 
@@ -183,6 +189,7 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }
 
@@ -198,6 +205,7 @@ func ToastTrigger(props TriggerProps, buttonProps button.Props, args ...html.But
 	if attrs == nil {
 		attrs = []html.Global{}
 	}
+
 	attrs = append(attrs,
 		html.AData("pui-toast-trigger", ""),
 		html.AData("toast-title", props.Toast.Title),
@@ -213,12 +221,13 @@ func ToastTrigger(props TriggerProps, buttonProps button.Props, args ...html.But
 	attrs = append(attrs, props.Attrs...)
 
 	buttonProps.Attrs = attrs
+
 	buttonProps.ID = id
 	if props.Class != "" {
 		buttonProps.Class = classnames.Merge(buttonProps.Class, props.Class)
 	}
 
-	return button.Button(buttonProps, args...).WithAssets("", toastJS, "ui-toast")
+	return button.Button(append([]html.ButtonArg{buttonProps}, args...)...).WithAssets("", toastJS, "ui-toast")
 }
 
 // ToastContainer creates a container for toasts to be spawned into

@@ -24,12 +24,15 @@ func Label(props Props, args ...html.LabelArg) html.Node {
 	if props.ID != "" {
 		labelArgs = append(labelArgs, html.AId(props.ID))
 	}
+
 	if props.For != "" {
 		labelArgs = append(labelArgs, html.AFor(props.For))
 	}
+
 	for _, attr := range props.Attrs {
 		labelArgs = append(labelArgs, attr)
 	}
+
 	labelArgs = append(labelArgs, args...)
 
 	return html.Label(labelArgs...)
@@ -39,5 +42,6 @@ func conditionalClass(cond bool, class string) string {
 	if cond {
 		return class
 	}
+
 	return ""
 }

@@ -66,9 +66,11 @@ func Rating(props Props, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	for _, data := range dataset {
 		divArgs = append(divArgs, data)
 	}
@@ -83,6 +85,7 @@ func Rating(props Props, args ...html.DivArg) html.Node {
 		if props.Form != "" {
 			hiddenArgs = append(hiddenArgs, html.AForm(props.Form))
 		}
+
 		hidden := html.Input(hiddenArgs...)
 		divArgs = append(divArgs, hidden)
 	}
@@ -90,6 +93,7 @@ func Rating(props Props, args ...html.DivArg) html.Node {
 	divArgs = append(divArgs, args...)
 
 	node := html.Div(divArgs...)
+
 	return node.WithAssets("", ratingJS, "ui-rating")
 }
 
@@ -99,10 +103,13 @@ func Group(props GroupProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		groupArgs = append(groupArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		groupArgs = append(groupArgs, attr)
 	}
+
 	groupArgs = append(groupArgs, args...)
+
 	return html.Div(groupArgs...)
 }
 
@@ -121,6 +128,7 @@ func Item(props ItemProps) html.Node {
 	if props.ID != "" {
 		itemArgs = append(itemArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		itemArgs = append(itemArgs, attr)
 	}
@@ -137,6 +145,7 @@ func Item(props ItemProps) html.Node {
 	)
 
 	itemArgs = append(itemArgs, background, foreground)
+
 	return html.Div(itemArgs...)
 }
 
@@ -167,6 +176,7 @@ func ratingIcon(style Style, filled bool, value float64) html.Node {
 				return lucide.Laugh()
 			}
 		}
+
 		return lucide.Meh()
 	}
 

@@ -53,6 +53,7 @@ func Input(props Props, extra ...html.InputArg) html.Node {
 	if props.Type == "" {
 		props.Type = TypeText
 	}
+
 	if props.ID == "" {
 		props.ID = randomID()
 	}
@@ -65,33 +66,43 @@ func Input(props Props, extra ...html.InputArg) html.Node {
 	if props.Name != "" {
 		inputArgs = append(inputArgs, html.AName(props.Name))
 	}
+
 	if props.Placeholder != "" {
 		inputArgs = append(inputArgs, html.APlaceholder(props.Placeholder))
 	}
+
 	if props.Value != "" {
 		inputArgs = append(inputArgs, html.AValue(props.Value))
 	}
+
 	if props.Type == TypeFile && props.FileAccept != "" {
 		inputArgs = append(inputArgs, html.AAccept(props.FileAccept))
 	}
+
 	if props.Form != "" {
 		inputArgs = append(inputArgs, html.AForm(props.Form))
 	}
+
 	if props.Disabled {
 		inputArgs = append(inputArgs, html.ADisabled())
 	}
+
 	if props.Readonly {
 		inputArgs = append(inputArgs, html.AReadonly())
 	}
+
 	if props.Required {
 		inputArgs = append(inputArgs, html.ARequired())
 	}
+
 	if props.HasError {
 		inputArgs = append(inputArgs, html.AAria("invalid", "true"))
 	}
+
 	for _, attr := range props.Attrs {
 		inputArgs = append(inputArgs, attr)
 	}
+
 	inputArgs = append(inputArgs, extra...)
 
 	children := []html.Component{html.Input(inputArgs...)}
@@ -104,10 +115,12 @@ func Input(props Props, extra ...html.InputArg) html.Node {
 	for _, child := range children {
 		divArgs = append(divArgs, html.Child(child))
 	}
+
 	node := html.Div(divArgs...)
 	if props.Type == TypePassword && props.ShowPasswordToggle {
 		node = node.WithAssets("", passwordToggleJS, "ui-input-toggle")
 	}
+
 	return node
 }
 
@@ -116,6 +129,7 @@ func inputClass(props Props) string {
 	if props.Type == TypePassword && props.ShowPasswordToggle {
 		extraPadding = "pr-8"
 	}
+
 	errorClass := ""
 	if props.HasError {
 		errorClass = "border-destructive ring-destructive/20 dark:ring-destructive/40"
@@ -165,6 +179,7 @@ func randomID() string {
 	if _, err := rand.Read(bytes); err != nil {
 		return "input-id"
 	}
+
 	return "input-" + hex.EncodeToString(bytes)
 }
 

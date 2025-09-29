@@ -17,7 +17,7 @@ func RenderButtonsContent() html.Node {
 			),
 			html.Div(
 				html.AClass("flex flex-wrap gap-3"),
-				button.Button(button.Props{}, html.T("Default")),
+				button.Button(html.T("Default")),
 				button.Button(button.Props{Variant: button.VariantSecondary}, html.T("Secondary")),
 				button.Button(button.Props{Variant: button.VariantOutline}, html.T("Outline")),
 				button.Button(button.Props{Variant: button.VariantDestructive}, html.T("Destructive")),

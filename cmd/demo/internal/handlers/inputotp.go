@@ -16,6 +16,7 @@ func RenderInputOTPContent() html.Node {
 				HasError:    hasError,
 			})))
 		}
+
 		return items
 	}
 

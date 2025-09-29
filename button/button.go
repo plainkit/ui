@@ -45,79 +45,148 @@ const (
 	TypeSubmit Type = "submit"
 )
 
-// Button renders a button (or link if Href is provided) using the given props and child arguments.
-// Children should be html.ButtonArg values such as html.T("Label"), html.Span(...), etc.
-func Button(props Props, args ...html.ButtonArg) html.Node {
-	if props.Type == "" {
-		props.Type = TypeButton
-	}
+func buttonArgsFromProps(baseClass string, extra ...string) func(p Props) []html.ButtonArg {
+	return func(p Props) []html.ButtonArg {
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra,
+					variantClass(p.Variant),
+					sizeClass(p.Size),
+					modifierClass(p.FullWidth),
+					p.Class,
+				)...)...)
 
-	className := classnames.Merge(
+		args := []html.ButtonArg{html.AClass(className)}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		if p.Type != "" {
+			args = append(args, html.AType(string(p.Type)))
+		} else {
+			args = append(args, html.AType(string(TypeButton)))
+		}
+
+		if p.Form != "" {
+			args = append(args, html.AForm(p.Form))
+		}
+
+		if p.Disabled {
+			args = append(args, html.ADisabled())
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func aArgsFromProps(baseClass string, extra ...string) func(p Props) []html.AArg {
+	return func(p Props) []html.AArg {
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra,
+					variantClass(p.Variant),
+					sizeClass(p.Size),
+					modifierClass(p.FullWidth),
+					p.Class,
+				)...)...)
+
+		args := []html.AArg{
+			html.AHref(p.Href),
+			html.AClass(className),
+		}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		if p.Target != "" {
+			args = append(args, html.ATarget(p.Target))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplyButton implements the html.ButtonArg interface for Props
+func (p Props) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
+	args := buttonArgsFromProps(
 		"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all",
 		"disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0",
 		"outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
 		"aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
 		"cursor-pointer",
-		variantClass(props.Variant),
-		sizeClass(props.Size),
-		modifierClass(props.FullWidth),
-		props.Class,
+	)(p)
+
+	for _, a := range args {
+		a.ApplyButton(attrs, children)
+	}
+}
+
+// ApplyA implements the html.AArg interface for Props
+func (p Props) ApplyA(attrs *html.AAttrs, children *[]html.Component) {
+	if p.Href == "" || p.Disabled {
+		// If no href or disabled, don't apply anchor attributes
+		return
+	}
+
+	args := aArgsFromProps(
+		"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all",
+		"disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0",
+		"outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+		"aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+		"cursor-pointer",
+	)(p)
+
+	for _, a := range args {
+		a.ApplyA(attrs, children)
+	}
+}
+
+// Button renders a button (or link if Href is provided) using the composable pattern.
+// Accepts variadic html.ButtonArg arguments, with Props as an optional first argument.
+func Button(args ...html.ButtonArg) html.Node {
+	var (
+		props Props
+		rest  []html.ButtonArg
 	)
 
-	if props.Href != "" && !props.Disabled {
-		return renderAnchor(props, className, args)
-	}
-	return renderButton(props, className, args)
-}
+	// Separate Props from other arguments
 
-func renderButton(props Props, className string, args []html.ButtonArg) html.Node {
-	btnArgs := []html.ButtonArg{html.AClass(className)}
-
-	if props.ID != "" {
-		btnArgs = append(btnArgs, html.AId(props.ID))
-	}
-	if props.Type != "" {
-		btnArgs = append(btnArgs, html.AType(string(props.Type)))
-	}
-	if props.Form != "" {
-		btnArgs = append(btnArgs, html.AForm(props.Form))
-	}
-	if props.Disabled {
-		btnArgs = append(btnArgs, html.ADisabled())
-	}
-
-	for _, attr := range props.Attrs {
-		btnArgs = append(btnArgs, attr)
-	}
-	btnArgs = append(btnArgs, args...)
-
-	return html.Button(btnArgs...)
-}
-
-func renderAnchor(props Props, className string, args []html.ButtonArg) html.Node {
-	anchorArgs := []html.AArg{
-		html.AHref(props.Href),
-		html.AClass(className),
-	}
-
-	if props.ID != "" {
-		anchorArgs = append(anchorArgs, html.AId(props.ID))
-	}
-	if props.Target != "" {
-		anchorArgs = append(anchorArgs, html.ATarget(props.Target))
-	}
-
-	for _, attr := range props.Attrs {
-		anchorArgs = append(anchorArgs, attr)
-	}
-
-	for _, arg := range args {
-		if aArg, ok := arg.(html.AArg); ok {
-			anchorArgs = append(anchorArgs, aArg)
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
 		}
 	}
 
-	return html.A(anchorArgs...)
+	// Render as anchor if href is provided and not disabled
+	if props.Href != "" && !props.Disabled {
+		// Convert button args to anchor args for link rendering
+		var anchorArgs []html.AArg
+
+		anchorArgs = append(anchorArgs, props) // Props implements html.AArg
+
+		for _, arg := range rest {
+			if aArg, ok := arg.(html.AArg); ok {
+				anchorArgs = append(anchorArgs, aArg)
+			}
+		}
+
+		return html.A(anchorArgs...)
+	}
+
+	// Otherwise render as button
+	return html.Button(append([]html.ButtonArg{props}, rest...)...)
 }
 
 func variantClass(v Variant) string {
@@ -154,5 +223,6 @@ func modifierClass(fullWidth bool) string {
 	if fullWidth {
 		return "w-full"
 	}
+
 	return ""
 }

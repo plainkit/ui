@@ -40,33 +40,43 @@ func Textarea(props Props, extra ...html.TextareaArg) html.Node {
 	if props.Name != "" {
 		args = append(args, html.AName(props.Name))
 	}
+
 	if props.Form != "" {
 		args = append(args, html.AForm(props.Form))
 	}
+
 	if props.Placeholder != "" {
 		args = append(args, html.APlaceholder(props.Placeholder))
 	}
+
 	if props.Rows > 0 {
 		args = append(args, html.ARows(strconv.Itoa(props.Rows)))
 	}
+
 	if props.Disabled {
 		args = append(args, html.ADisabled())
 	}
+
 	if props.Required {
 		args = append(args, html.ARequired())
 	}
+
 	if props.Readonly {
 		args = append(args, html.AReadonly())
 	}
+
 	if props.HasError {
 		args = append(args, html.AAria("invalid", "true"))
 	}
+
 	if props.AutoResize {
 		args = append(args, html.AData("pui-textarea-auto-resize", "true"))
 	}
+
 	for _, attr := range props.Attrs {
 		args = append(args, attr)
 	}
+
 	args = append(args, extra...)
 
 	if props.Value != "" {
@@ -77,6 +87,7 @@ func Textarea(props Props, extra ...html.TextareaArg) html.Node {
 	if props.AutoResize {
 		node = node.WithAssets("", textareaResizeJS, "ui-textarea-autoresize")
 	}
+
 	return node
 }
 
@@ -85,6 +96,7 @@ func textareaClass(props Props) string {
 	if props.AutoResize {
 		extra = "overflow-hidden resize-none"
 	}
+
 	error := ""
 	if props.HasError {
 		error = "border-destructive ring-destructive/20 dark:ring-destructive/40"
@@ -110,6 +122,7 @@ func randomID() string {
 	if _, err := rand.Read(buf); err != nil {
 		return "textarea-id"
 	}
+
 	return "textarea-" + hex.EncodeToString(buf)
 }
 

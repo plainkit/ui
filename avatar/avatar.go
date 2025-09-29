@@ -70,15 +70,19 @@ func Avatar(props Props, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	if props.Size != "" {
 		divArgs = append(divArgs, html.AData("pui-avatar-size", string(props.Size)))
 	}
+
 	if props.InGroup {
 		divArgs = append(divArgs, html.AData("pui-avatar-in-group", "true"))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -99,13 +103,16 @@ func Image(props ImageProps, args ...html.ImgArg) html.Node {
 	if props.ID != "" {
 		imgArgs = append(imgArgs, html.AId(props.ID))
 	}
+
 	if props.Src != "" {
 		imgArgs = append(imgArgs, html.ASrc(props.Src))
 	}
+
 	imgArgs = append(imgArgs, html.AAlt(props.Alt))
 	for _, attr := range props.Attrs {
 		imgArgs = append(imgArgs, attr)
 	}
+
 	imgArgs = append(imgArgs, args...)
 
 	return html.Img(imgArgs...)
@@ -124,9 +131,11 @@ func Fallback(props FallbackProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	spanArgs = append(spanArgs, args...)
 
 	return html.Span(spanArgs...)
@@ -152,9 +161,11 @@ func Group(props GroupProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -177,12 +188,15 @@ func GroupOverflow(count int, props Props, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		dArgs = append(dArgs, html.AId(props.ID))
 	}
+
 	if props.Size != "" {
 		dArgs = append(dArgs, html.AData("pui-avatar-size", string(props.Size)))
 	}
+
 	for _, attr := range props.Attrs {
 		dArgs = append(dArgs, attr)
 	}
+
 	dArgs = append(dArgs, args...)
 
 	return html.Div(append(dArgs, html.Span(

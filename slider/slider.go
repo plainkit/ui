@@ -44,13 +44,16 @@ func Slider(props Props, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	node := html.Div(divArgs...)
 	node = node.WithAssets("", sliderJS, "ui-slider")
+
 	return node
 }
 
@@ -80,21 +83,27 @@ func Input(props InputProps) html.Node {
 	if props.Name != "" {
 		inputArgs = append(inputArgs, html.AName(props.Name))
 	}
+
 	if props.Value != 0 {
 		inputArgs = append(inputArgs, html.AValue(strconv.Itoa(props.Value)))
 	}
+
 	if props.Min != 0 {
 		inputArgs = append(inputArgs, html.AMin(strconv.Itoa(props.Min)))
 	}
+
 	if props.Max != 0 {
 		inputArgs = append(inputArgs, html.AMax(strconv.Itoa(props.Max)))
 	}
+
 	if props.Step != 0 {
 		inputArgs = append(inputArgs, html.AStep(strconv.Itoa(props.Step)))
 	}
+
 	if props.Disabled {
 		inputArgs = append(inputArgs, html.ADisabled())
 	}
+
 	for _, attr := range props.Attrs {
 		inputArgs = append(inputArgs, attr)
 	}
@@ -116,9 +125,11 @@ func Value(props ValueProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	spanArgs = append(spanArgs, args...)
 
 	return html.Span(spanArgs...)
@@ -129,6 +140,7 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }
 

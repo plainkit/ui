@@ -50,13 +50,16 @@ func Tabs(props Props, args ...html.DivArg) html.Node {
 		html.AData("pui-tabs", ""),
 		html.AData("pui-tabs-id", props.ID),
 	}
+
 	divArgs = append(divArgs, html.AId(props.ID))
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	node := html.Div(divArgs...)
+
 	return node.WithAssets("", tabsJS, "ui-tabs")
 }
 
@@ -74,9 +77,11 @@ func List(props ListProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -86,6 +91,7 @@ func Trigger(props TriggerProps, args ...html.ButtonArg) html.Node {
 	if props.Value == "" {
 		return html.Span(html.AClass("text-xs text-destructive"), html.Text("tabs.Trigger requires Value"))
 	}
+
 	if props.TabsID == "" {
 		props.TabsID = randomID("tabs")
 	}
@@ -110,9 +116,11 @@ func Trigger(props TriggerProps, args ...html.ButtonArg) html.Node {
 	if props.ID != "" {
 		buttonArgs = append(buttonArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		buttonArgs = append(buttonArgs, attr)
 	}
+
 	buttonArgs = append(buttonArgs, args...)
 
 	return html.Button(buttonArgs...)
@@ -132,12 +140,15 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	if props.TabsID != "" {
 		divArgs = append(divArgs, html.AData("pui-tabs-id", props.TabsID))
 	}
+
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -147,6 +158,7 @@ func stateAttr(active bool) string {
 	if active {
 		return "active"
 	}
+
 	return "inactive"
 }
 
@@ -154,6 +166,7 @@ func hiddenClass(hidden bool) string {
 	if hidden {
 		return "hidden"
 	}
+
 	return ""
 }
 
@@ -162,6 +175,7 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }
 

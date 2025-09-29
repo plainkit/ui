@@ -38,24 +38,31 @@ func Radio(props Props) html.Node {
 	if props.ID != "" {
 		inputArgs = append(inputArgs, html.AId(props.ID))
 	}
+
 	if props.Name != "" {
 		inputArgs = append(inputArgs, html.AName(props.Name))
 	}
+
 	if props.Value != "" {
 		inputArgs = append(inputArgs, html.AValue(props.Value))
 	}
+
 	if props.Form != "" {
 		inputArgs = append(inputArgs, html.AForm(props.Form))
 	}
+
 	if props.Checked {
 		inputArgs = append(inputArgs, html.AChecked())
 	}
+
 	if props.Disabled {
 		inputArgs = append(inputArgs, html.ADisabled())
 	}
+
 	if props.Required {
 		inputArgs = append(inputArgs, html.ARequired())
 	}
+
 	for _, attr := range props.Attrs {
 		inputArgs = append(inputArgs, attr)
 	}

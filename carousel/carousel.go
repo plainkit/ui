@@ -77,6 +77,7 @@ func Carousel(props Props, args ...html.DivArg) html.Node {
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...).WithAssets("", carouselJS, "ui-carousel")
@@ -92,9 +93,11 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -110,9 +113,11 @@ func Item(props ItemProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -131,9 +136,11 @@ func Previous(props PreviousProps, args ...html.ButtonArg) html.Node {
 	if props.ID != "" {
 		buttonArgs = append(buttonArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		buttonArgs = append(buttonArgs, attr)
 	}
+
 	buttonArgs = append(buttonArgs, args...)
 
 	return html.Button(buttonArgs...)
@@ -152,9 +159,11 @@ func Next(props NextProps, args ...html.ButtonArg) html.Node {
 	if props.ID != "" {
 		buttonArgs = append(buttonArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		buttonArgs = append(buttonArgs, attr)
 	}
+
 	buttonArgs = append(buttonArgs, args...)
 
 	return html.Button(buttonArgs...)
@@ -169,6 +178,7 @@ func Indicators(props IndicatorsProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
@@ -188,6 +198,7 @@ func Indicators(props IndicatorsProps, args ...html.DivArg) html.Node {
 				if i == 0 {
 					return "true"
 				}
+
 				return "false"
 			}()),
 			html.AAria("label", fmt.Sprintf("Go to slide %d", i+1)),
@@ -207,6 +218,7 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }
 

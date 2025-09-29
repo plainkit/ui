@@ -63,10 +63,12 @@ func Progress(props Props) html.Node {
 		if props.Label != "" {
 			labelArgs = append(labelArgs, html.Span(html.AClass("text-sm font-medium"), html.Text(props.Label)))
 		}
+
 		if props.ShowValue {
 			pct := percentage(props.Value, propsMax)
 			labelArgs = append(labelArgs, html.Span(html.AClass("text-sm font-medium"), html.Text(strconv.Itoa(pct)+"%")))
 		}
+
 		children = append(children, html.Div(labelArgs...))
 	}
 
@@ -89,6 +91,7 @@ func Progress(props Props) html.Node {
 	for _, child := range children {
 		outerArgs = append(outerArgs, html.Child(child))
 	}
+
 	return html.Div(outerArgs...)
 }
 
@@ -120,6 +123,7 @@ func maxValue(max int) int {
 	if max <= 0 {
 		return 100
 	}
+
 	return max
 }
 
@@ -128,6 +132,7 @@ func percentage(value, max int) int {
 	if max == 0 {
 		return 0
 	}
+
 	return (clamped * 100) / max
 }
 
@@ -135,9 +140,11 @@ func clamp(value, min, max int) int {
 	if value < min {
 		return min
 	}
+
 	if value > max {
 		return max
 	}
+
 	return value
 }
 
@@ -146,5 +153,6 @@ func randomID() string {
 	if _, err := rand.Read(bytes); err != nil {
 		return "progress-id"
 	}
+
 	return "progress-" + hex.EncodeToString(bytes)
 }

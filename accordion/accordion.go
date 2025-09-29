@@ -23,10 +23,13 @@ func Accordion(props Props, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
+
 	return html.Div(divArgs...)
 }
 
@@ -38,10 +41,13 @@ func Item(props ItemProps, args ...html.DetailsArg) html.Node {
 	if props.ID != "" {
 		detailsArgs = append(detailsArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		detailsArgs = append(detailsArgs, attr)
 	}
+
 	detailsArgs = append(detailsArgs, args...)
+
 	return html.Details(detailsArgs...)
 }
 
@@ -58,6 +64,7 @@ func Trigger(props TriggerProps, args ...html.SummaryArg) html.Node {
 	if props.ID != "" {
 		summaryArgs = append(summaryArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		summaryArgs = append(summaryArgs, attr)
 	}
@@ -75,9 +82,12 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
+
 	return html.Div(divArgs...)
 }

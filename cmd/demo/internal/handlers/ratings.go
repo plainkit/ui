@@ -11,6 +11,7 @@ func RenderRatingsContent() html.Node {
 		for i := 1; i <= 5; i++ {
 			items = append(items, html.Child(rating.Item(rating.ItemProps{Value: i, Style: style})))
 		}
+
 		return items
 	}
 

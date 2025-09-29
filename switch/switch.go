@@ -38,20 +38,25 @@ func Switch(props Props, labelArgs ...html.LabelArg) html.Node {
 	if props.Name != "" {
 		inputArgs = append(inputArgs, html.AName(props.Name))
 	}
+
 	if props.Value != "" {
 		inputArgs = append(inputArgs, html.AValue(props.Value))
 	} else {
 		inputArgs = append(inputArgs, html.AValue("on"))
 	}
+
 	if props.Form != "" {
 		inputArgs = append(inputArgs, html.AForm(props.Form))
 	}
+
 	if props.Checked {
 		inputArgs = append(inputArgs, html.AChecked())
 	}
+
 	if props.Disabled {
 		inputArgs = append(inputArgs, html.ADisabled())
 	}
+
 	for _, attr := range props.Attrs {
 		inputArgs = append(inputArgs, attr)
 	}
@@ -92,6 +97,7 @@ func randomID() string {
 	if _, err := rand.Read(bytes); err != nil {
 		return "switch-id"
 	}
+
 	return "switch-" + hex.EncodeToString(bytes)
 }
 
@@ -99,5 +105,6 @@ func conditional(cond bool, class string) string {
 	if cond {
 		return class
 	}
+
 	return ""
 }

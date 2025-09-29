@@ -83,9 +83,11 @@ func Dialog(props Props, args ...html.DivArg) html.Node {
 	if props.DisableClickAway {
 		divArgs = append(divArgs, html.AData("pui-dialog-disable-click-away", "true"))
 	}
+
 	if props.DisableESC {
 		divArgs = append(divArgs, html.AData("pui-dialog-disable-esc", "true"))
 	}
+
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
@@ -93,6 +95,7 @@ func Dialog(props Props, args ...html.DivArg) html.Node {
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...).WithAssets("", dialogJS, "ui-dialog")
@@ -110,6 +113,7 @@ func Trigger(triggerProps TriggerProps, buttonProps button.Props, args ...html.B
 	if attrs == nil {
 		attrs = []html.Global{}
 	}
+
 	attrs = append(attrs,
 		html.AData("pui-dialog-trigger", instanceID),
 		html.AData("dialog-instance", instanceID),
@@ -120,15 +124,17 @@ func Trigger(triggerProps TriggerProps, buttonProps button.Props, args ...html.B
 	if triggerProps.Disabled {
 		buttonProps.Disabled = true
 	}
+
 	if triggerProps.Class != "" {
 		buttonProps.Class = classnames.Merge(buttonProps.Class, triggerProps.Class)
 	}
+
 	buttonProps.Attrs = attrs
 	if triggerProps.ID != "" {
 		buttonProps.ID = triggerProps.ID
 	}
 
-	return button.Button(buttonProps, args...).WithAssets("", dialogJS, "ui-dialog")
+	return button.Button(append([]html.ButtonArg{buttonProps}, args...)...).WithAssets("", dialogJS, "ui-dialog")
 }
 
 // Content creates the dialog content panel
@@ -208,6 +214,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	for _, attr := range props.Attrs {
 		contentArgs = append(contentArgs, attr)
 	}
+
 	contentArgs = append(contentArgs, args...)
 
 	// Add close button if not hidden
@@ -258,6 +265,7 @@ func Close(props CloseProps, args ...html.SpanArg) html.Node {
 	if props.ID != "" {
 		spanArgs = append(spanArgs, html.AId(props.ID))
 	}
+
 	if props.For != "" {
 		spanArgs = append(spanArgs, html.AData("pui-dialog-close", props.For))
 	} else {
@@ -267,6 +275,7 @@ func Close(props CloseProps, args ...html.SpanArg) html.Node {
 	for _, attr := range props.Attrs {
 		spanArgs = append(spanArgs, attr)
 	}
+
 	spanArgs = append(spanArgs, args...)
 
 	return html.Span(spanArgs...)
@@ -281,9 +290,11 @@ func Header(props HeaderProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -298,9 +309,11 @@ func Footer(props FooterProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
 
 	return html.Div(divArgs...)
@@ -315,9 +328,11 @@ func Title(props TitleProps, args ...html.H2Arg) html.Node {
 	if props.ID != "" {
 		h2Args = append(h2Args, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		h2Args = append(h2Args, attr)
 	}
+
 	h2Args = append(h2Args, args...)
 
 	return html.H2(h2Args...)
@@ -332,9 +347,11 @@ func Description(props DescriptionProps, args ...html.PArg) html.Node {
 	if props.ID != "" {
 		pArgs = append(pArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		pArgs = append(pArgs, attr)
 	}
+
 	pArgs = append(pArgs, args...)
 
 	return html.P(pArgs...)
@@ -345,6 +362,7 @@ func randomID(prefix string) string {
 	if _, err := rand.Read(buf); err != nil {
 		return prefix + "-id"
 	}
+
 	return prefix + "-" + hex.EncodeToString(buf)
 }
 

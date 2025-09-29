@@ -46,10 +46,13 @@ func Item(props ItemProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
+
 	return html.Div(divArgs...)
 }
 
@@ -59,10 +62,13 @@ func ItemFlex(props ItemProps, args ...html.DivArg) html.Node {
 	if props.ID != "" {
 		divArgs = append(divArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		divArgs = append(divArgs, attr)
 	}
+
 	divArgs = append(divArgs, args...)
+
 	return html.Div(divArgs...)
 }
 
@@ -74,6 +80,7 @@ func Label(props LabelProps, args ...html.LabelArg) html.Node {
 		Attrs: props.Attrs,
 		For:   props.For,
 	}
+
 	return label.Label(labelProps, args...)
 }
 
@@ -83,10 +90,13 @@ func Description(props DescriptionProps, args ...html.PArg) html.Node {
 	if props.ID != "" {
 		pArgs = append(pArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		pArgs = append(pArgs, attr)
 	}
+
 	pArgs = append(pArgs, args...)
+
 	return html.P(pArgs...)
 }
 
@@ -96,10 +106,13 @@ func Message(props MessageProps, args ...html.PArg) html.Node {
 	if props.ID != "" {
 		pArgs = append(pArgs, html.AId(props.ID))
 	}
+
 	for _, attr := range props.Attrs {
 		pArgs = append(pArgs, attr)
 	}
+
 	pArgs = append(pArgs, args...)
+
 	return html.P(pArgs...)
 }
 

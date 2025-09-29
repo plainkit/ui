@@ -71,7 +71,9 @@ func main() {
 		if err := generateStaticSite(*outputDir); err != nil {
 			log.Fatalf("Failed to generate static site: %v", err)
 		}
+
 		log.Printf("Static site generated successfully in %s", *outputDir)
+
 		return
 	}
 
@@ -83,6 +85,7 @@ func main() {
 		p := pg
 		mux.HandleFunc(p.Path, func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
 			body := p.Content()
 			if _, err := w.Write([]byte(renderPage(p.Path, body, false))); err != nil {
 				log.Printf("write response: %v", err)
@@ -96,6 +99,7 @@ func main() {
 
 	addr := ":8080"
 	log.Printf("UI components demo available at http://localhost%v", addr)
+
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatal(err)
 	}
@@ -104,6 +108,7 @@ func main() {
 func cssHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/css; charset=utf-8")
 	w.Header().Set("Cache-Control", "public, max-age=31536000")
+
 	if _, err := w.Write([]byte(democss.TailwindCSS)); err != nil {
 		log.Printf("write css: %v", err)
 	}
@@ -112,6 +117,7 @@ func cssHandler(w http.ResponseWriter, _ *http.Request) {
 func robotsHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Header().Set("Cache-Control", "public, max-age=86400") // Cache for 24 hours
+
 	robotsContent := `User-agent: *
 Allow: /
 Crawl-delay: 0
@@ -205,6 +211,7 @@ func renderSidebar(activePath string, isStatic bool) html.Node {
 	links := make([]html.UlArg, 0, len(pages))
 	for _, pg := range pages {
 		isActive := pg.Path == activePath
+
 		className := "block rounded-md px-3 py-2 text-sm font-medium transition-colors"
 		if isActive {
 			className += " bg-sidebar-accent text-sidebar-accent-foreground"
@@ -220,6 +227,7 @@ func renderSidebar(activePath string, isStatic bool) html.Node {
 			if pagePath == "" {
 				pagePath = "index"
 			}
+
 			href = "../" + pagePath + "/"
 		}
 
@@ -279,6 +287,7 @@ func generateStaticSite(outputDir string) error {
 	if err := os.WriteFile(cssPath, []byte(democss.TailwindCSS), 0644); err != nil {
 		return fmt.Errorf("failed to write CSS file: %w", err)
 	}
+
 	log.Printf("Generated %s", cssPath)
 
 	// Generate robots.txt
@@ -287,10 +296,12 @@ Allow: /
 Crawl-delay: 0
 Disallow:
 `
+
 	robotsPath := filepath.Join(outputDir, "robots.txt")
 	if err := os.WriteFile(robotsPath, []byte(robotsContent), 0644); err != nil {
 		return fmt.Errorf("failed to write robots.txt: %w", err)
 	}
+
 	log.Printf("Generated %s", robotsPath)
 
 	// Generate HTML files for each component page
@@ -318,15 +329,18 @@ Disallow:
 		if err := os.WriteFile(htmlPath, []byte(htmlContent), 0644); err != nil {
 			return fmt.Errorf("failed to write HTML file %s: %w", htmlPath, err)
 		}
+
 		log.Printf("Generated %s", htmlPath)
 	}
 
 	// Generate index.html that redirects to first page
 	indexContent := generateIndexRedirect(pages[0].Path)
+
 	indexPath := filepath.Join(outputDir, "index.html")
 	if err := os.WriteFile(indexPath, []byte(indexContent), 0644); err != nil {
 		return fmt.Errorf("failed to write index.html: %w", err)
 	}
+
 	log.Printf("Generated %s", indexPath)
 
 	return nil

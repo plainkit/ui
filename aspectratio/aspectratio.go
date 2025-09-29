@@ -2,7 +2,6 @@ package aspectratio
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Ratio string
@@ -27,7 +26,7 @@ func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Di
 		classNames := append([]string{baseClass}, extra...)
 		classNames = append(classNames, ratioClass(p.Ratio), p.Class)
 
-		args := []html.DivArg{html.AClass(classnames.Merge(classNames...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(classNames...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}

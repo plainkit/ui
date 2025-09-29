@@ -7,7 +7,6 @@ import (
 
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Style string
@@ -40,7 +39,7 @@ type ItemProps struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -96,7 +95,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(classnames.Merge("flex flex-row items-center gap-1", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("flex flex-row items-center gap-1", p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}
@@ -117,7 +116,7 @@ func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	}
 
 	args := []html.DivArg{
-		html.AClass(classnames.Merge("relative transition-opacity cursor-pointer", colorClass(style), p.Class)),
+		html.AClass(html.ClassMerge("relative transition-opacity cursor-pointer", colorClass(style), p.Class)),
 		html.AData("pui-rating-item", ""),
 		html.AData("pui-rating-value", strconv.Itoa(p.Value)),
 	}

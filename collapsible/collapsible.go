@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -30,7 +29,7 @@ type ContentProps struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -68,7 +67,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 func (p TriggerProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	args := []html.DivArg{
-		html.AClass(classnames.Merge("", p.Class)),
+		html.AClass(html.ClassMerge("", p.Class)),
 		html.AData("pui-collapsible", "trigger"),
 	}
 	if p.ID != "" {
@@ -86,7 +85,7 @@ func (p TriggerProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component)
 
 func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	args := []html.DivArg{
-		html.AClass(classnames.Merge(
+		html.AClass(html.ClassMerge(
 			"grid grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out [[data-pui-collapsible-state=open]_&]:grid-rows-[1fr]",
 			p.Class,
 		)),

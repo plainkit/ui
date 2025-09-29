@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -47,7 +46,7 @@ func tabsDivArgsFromProps(baseClass string, extra ...string) func(p Props) []htm
 		}
 
 		args := []html.DivArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AData("pui-tabs", ""),
 			html.AData("pui-tabs-id", p.ID),
 			html.AId(p.ID),
@@ -94,7 +93,7 @@ func listDivArgsFromProps(baseClass string, extra ...string) func(p ListProps) [
 		}
 
 		args := []html.DivArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AData("pui-tabs-list", ""),
 			html.AData("pui-tabs-id", tabsID),
 		}
@@ -141,7 +140,7 @@ func triggerButtonArgsFromProps(baseClass string, extra ...string) func(p Trigge
 
 		args := []html.ButtonArg{
 			html.AType("button"),
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AData("pui-tabs-trigger", ""),
 			html.AData("pui-tabs-id", p.TabsID),
 			html.AData("pui-tabs-value", p.Value),
@@ -200,7 +199,7 @@ func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentPr
 		classNames = append(classNames, hiddenClass(!p.IsActive), p.Class)
 
 		args := []html.DivArg{
-			html.AClass(classnames.Merge(classNames...)),
+			html.AClass(html.ClassMerge(classNames...)),
 			html.AData("pui-tabs-content", ""),
 			html.AData("pui-tabs-value", p.Value),
 			html.AData("pui-tabs-state", stateAttr(p.IsActive)),

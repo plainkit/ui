@@ -12,7 +12,6 @@ import (
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
 	"github.com/plainkit/ui/card"
-	"github.com/plainkit/ui/internal/classnames"
 	"github.com/plainkit/ui/popover"
 )
 
@@ -37,7 +36,7 @@ type Props struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -132,7 +131,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		button.Button(button.Props{
 			ID:      id,
 			Variant: button.VariantOutline,
-			Class: classnames.Merge(
+			Class: html.ClassMerge(
 				// Base styles matching input
 				"w-full h-9 px-3 py-1 text-base md:text-sm",
 				"flex items-center justify-between",

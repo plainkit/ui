@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Size string
@@ -44,7 +43,7 @@ func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Di
 			id = randomID()
 		}
 
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra, p.Class)...)...)
 
@@ -117,7 +116,7 @@ func Progress(args ...html.DivArg) html.Node {
 
 	bar := html.Div(
 		html.AData("pui-progress-indicator", ""),
-		html.AClass(classnames.Merge(
+		html.AClass(html.ClassMerge(
 			"h-full rounded-full transition-all",
 			sizeClass(props.Size),
 			variantClass(props.Variant),

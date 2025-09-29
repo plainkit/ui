@@ -8,7 +8,6 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -77,7 +76,7 @@ func dialogDivArgsFromProps(baseClass string, extra ...string) func(p Props) []h
 		args := []html.DivArg{
 			html.AData("pui-dialog", ""),
 			html.AData("dialog-instance", instanceID),
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 		}
 
 		if p.DisableClickAway {
@@ -149,7 +148,7 @@ func Trigger(triggerProps TriggerProps, buttonProps button.Props, args ...html.B
 	}
 
 	if triggerProps.Class != "" {
-		buttonProps.Class = classnames.Merge(buttonProps.Class, triggerProps.Class)
+		buttonProps.Class = html.ClassMerge(buttonProps.Class, triggerProps.Class)
 	}
 
 	buttonProps.Attrs = attrs
@@ -168,7 +167,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	}
 
 	// Overlay/backdrop
-	overlayClasses := classnames.Merge(
+	overlayClasses := html.ClassMerge(
 		"fixed inset-0 z-50 bg-black/50",
 		"transition-opacity duration-300",
 		"data-[pui-dialog-open=false]:opacity-0",
@@ -194,7 +193,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	}
 
 	// Content panel
-	contentClasses := classnames.Merge(
+	contentClasses := html.ClassMerge(
 		// Base positioning
 		"fixed z-50 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]",
 		// Style
@@ -243,7 +242,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	// Add close button if not hidden
 	if !props.HideCloseButton {
 		closeButton := html.Button(
-			html.AClass(classnames.Merge(
+			html.AClass(html.ClassMerge(
 				// Positioning
 				"absolute top-4 right-4",
 				// Style
@@ -282,7 +281,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 func closeSpanArgsFromProps(baseClass string, extra ...string) func(p CloseProps) []html.SpanArg {
 	return func(p CloseProps) []html.SpanArg {
 		args := []html.SpanArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 		}
 
 		if p.ID != "" {
@@ -329,7 +328,7 @@ func Close(args ...html.SpanArg) html.Node {
 
 func headerDivArgsFromProps(baseClass string, extra ...string) func(p HeaderProps) []html.DivArg {
 	return func(p HeaderProps) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -368,7 +367,7 @@ func Header(args ...html.DivArg) html.Node {
 
 func footerDivArgsFromProps(baseClass string, extra ...string) func(p FooterProps) []html.DivArg {
 	return func(p FooterProps) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -407,7 +406,7 @@ func Footer(args ...html.DivArg) html.Node {
 
 func titleH2ArgsFromProps(baseClass string, extra ...string) func(p TitleProps) []html.H2Arg {
 	return func(p TitleProps) []html.H2Arg {
-		args := []html.H2Arg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.H2Arg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -446,7 +445,7 @@ func Title(args ...html.H2Arg) html.Node {
 
 func descriptionPArgsFromProps(baseClass string, extra ...string) func(p DescriptionProps) []html.PArg {
 	return func(p DescriptionProps) []html.PArg {
-		args := []html.PArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.PArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}

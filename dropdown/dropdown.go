@@ -7,7 +7,6 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
-	"github.com/plainkit/ui/internal/classnames"
 	"github.com/plainkit/ui/popover"
 )
 
@@ -104,7 +103,7 @@ type SubContentProps struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -143,7 +142,7 @@ func Dropdown(args ...html.DivArg) html.Node {
 
 func triggerSpanArgsFromProps(baseClass string, extra ...string) func(p TriggerProps) []html.SpanArg {
 	return func(p TriggerProps) []html.SpanArg {
-		args := []html.SpanArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.SpanArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -200,7 +199,7 @@ func Trigger(args ...interface{}) html.Node {
 
 func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentProps) []html.DivArg {
 	return func(p ContentProps) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -249,7 +248,7 @@ func Content(args ...html.DivArg) html.Node {
 		maxHeight = props.MaxHeight
 	}
 
-	contentClass := classnames.Merge(
+	contentClass := html.ClassMerge(
 		"z-50 rounded-md bg-popover p-1 shadow-md focus:outline-none overflow-auto",
 		"border border-border",
 		"min-w-[8rem]",
@@ -272,7 +271,7 @@ func Content(args ...html.DivArg) html.Node {
 func groupDivArgsFromProps(baseClass string, extra ...string) func(p GroupProps) []html.DivArg {
 	return func(p GroupProps) []html.DivArg {
 		args := []html.DivArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AAria("role", "group"),
 		}
 		if p.ID != "" {
@@ -313,7 +312,7 @@ func Group(args ...html.DivArg) html.Node {
 
 func labelDivArgsFromProps(baseClass string, extra ...string) func(p LabelProps) []html.DivArg {
 	return func(p LabelProps) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -357,14 +356,14 @@ func Item(props ItemProps, args ...html.Node) html.Node {
 		id = randomID("dropdown-item")
 	}
 
-	baseClasses := classnames.Merge(
+	baseClasses := html.ClassMerge(
 		"flex text-left items-center justify-between px-2 py-1.5 text-sm rounded-sm",
 		"focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground cursor-default",
 		props.Class,
 	)
 
 	if props.Disabled {
-		baseClasses = classnames.Merge(baseClasses, "opacity-50 pointer-events-none")
+		baseClasses = html.ClassMerge(baseClasses, "opacity-50 pointer-events-none")
 	}
 
 	attrs := []html.Global{
@@ -423,7 +422,7 @@ func Item(props ItemProps, args ...html.Node) html.Node {
 func separatorDivArgsFromProps(baseClass string, extra ...string) func(p SeparatorProps) []html.DivArg {
 	return func(p SeparatorProps) []html.DivArg {
 		args := []html.DivArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AAria("role", "separator"),
 		}
 		if p.ID != "" {
@@ -464,7 +463,7 @@ func Separator(args ...html.DivArg) html.Node {
 
 func shortcutSpanArgsFromProps(baseClass string, extra ...string) func(p ShortcutProps) []html.SpanArg {
 	return func(p ShortcutProps) []html.SpanArg {
-		args := []html.SpanArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.SpanArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -504,7 +503,7 @@ func Shortcut(args ...html.SpanArg) html.Node {
 func subDivArgsFromProps(baseClass string, extra ...string) func(p SubProps) []html.DivArg {
 	return func(p SubProps) []html.DivArg {
 		args := []html.DivArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AData("pui-dropdown-submenu", ""),
 		}
 		if p.ID != "" {
@@ -551,7 +550,7 @@ func SubTrigger(props SubTriggerProps, subContentID string, args ...html.Node) h
 
 	triggerContent := html.Button(
 		html.AType("button"),
-		html.AClass(classnames.Merge(
+		html.AClass(html.ClassMerge(
 			"w-full text-left flex items-center justify-between px-2 py-1.5 text-sm rounded-sm",
 			"focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground cursor-default",
 			props.Class,
@@ -594,7 +593,7 @@ func SubContent(props SubContentProps, args ...html.DivArg) html.Node {
 		Offset:        -4,
 		HoverDelay:    100,
 		HoverOutDelay: 200,
-		Class: classnames.Merge(
+		Class: html.ClassMerge(
 			"z-[9999] min-w-[8rem] rounded-md border bg-popover p-1 shadow-lg",
 			props.Class,
 		),

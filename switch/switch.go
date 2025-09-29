@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -26,7 +25,7 @@ func labelArgsFromProps(baseClass string, extra ...string) func(p Props) []html.
 			id = randomID()
 		}
 
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra, conditional(p.Disabled, "cursor-not-allowed"))...)...)
 
@@ -81,7 +80,7 @@ func (p Props) ApplyLabel(attrs *html.LabelAttrs, children *[]html.Component) {
 	}
 
 	visual := html.Div(
-		html.AClass(classnames.Merge(
+		html.AClass(html.ClassMerge(
 			"relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center",
 			"rounded-full border-2 border-transparent",
 			"transition-colors",

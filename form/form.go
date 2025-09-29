@@ -2,7 +2,6 @@ package form
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 	"github.com/plainkit/ui/label"
 )
 
@@ -42,7 +41,7 @@ type MessageProps struct {
 
 func itemDivArgsFromProps(baseClass string, extra ...string) func(p ItemProps) []html.DivArg {
 	return func(p ItemProps) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -97,7 +96,7 @@ func ItemFlex(args ...html.DivArg) html.Node {
 	// Create a new Props with the flex classes
 	flexProps := ItemProps{
 		ID:    props.ID,
-		Class: classnames.Merge("items-center flex space-x-2", props.Class),
+		Class: html.ClassMerge("items-center flex space-x-2", props.Class),
 		Attrs: props.Attrs,
 	}
 
@@ -109,7 +108,7 @@ func labelArgsFromProps(baseClass string, extra ...string) func(p LabelProps) []
 		classNames := append([]string{baseClass}, extra...)
 		classNames = append(classNames, p.Class, p.DisabledClass)
 
-		args := []html.LabelArg{html.AClass(classnames.Merge(classNames...))}
+		args := []html.LabelArg{html.AClass(html.ClassMerge(classNames...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -149,7 +148,7 @@ func Label(args ...html.LabelArg) html.Node {
 
 	labelProps := label.Props{
 		ID:    props.ID,
-		Class: classnames.Merge(props.Class, props.DisabledClass),
+		Class: html.ClassMerge(props.Class, props.DisabledClass),
 		Attrs: props.Attrs,
 		For:   props.For,
 	}
@@ -159,7 +158,7 @@ func Label(args ...html.LabelArg) html.Node {
 
 func pArgsFromProps(baseClass string, extra ...string) func(p DescriptionProps) []html.PArg {
 	return func(p DescriptionProps) []html.PArg {
-		args := []html.PArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.PArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -201,7 +200,7 @@ func messagePArgsFromProps(baseClass string, extra ...string) func(p MessageProp
 		classNames := append([]string{baseClass}, extra...)
 		classNames = append(classNames, messageVariantClass(p.Variant), p.Class)
 
-		args := []html.PArg{html.AClass(classnames.Merge(classNames...))}
+		args := []html.PArg{html.AClass(html.ClassMerge(classNames...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}

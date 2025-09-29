@@ -7,7 +7,6 @@ import (
 
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Size string
@@ -30,7 +29,7 @@ type Props struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -50,7 +49,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	}
 
 	// Build code element classes
-	codeClasses := classnames.Merge(
+	codeClasses := html.ClassMerge(
 		"language-"+p.Language,
 		"overflow-y-auto rounded-md block text-sm max-h-[501px]",
 		func() string {

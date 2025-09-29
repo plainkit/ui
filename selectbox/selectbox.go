@@ -9,7 +9,6 @@ import (
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
 	"github.com/plainkit/ui/input"
-	"github.com/plainkit/ui/internal/classnames"
 	"github.com/plainkit/ui/popover"
 )
 
@@ -73,7 +72,7 @@ type ItemProps struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -88,7 +87,7 @@ func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Di
 
 func spanArgsFromProps(baseClass string, extra ...string) func(p ValueProps) []html.SpanArg {
 	return func(p ValueProps) []html.SpanArg {
-		args := []html.SpanArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.SpanArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -129,7 +128,7 @@ func (p ValueProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component)
 
 func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	args := []html.DivArg{
-		html.AClass(classnames.Merge("p-1", p.Class)),
+		html.AClass(html.ClassMerge("p-1", p.Class)),
 		html.AAria("role", "group"),
 	}
 
@@ -147,7 +146,7 @@ func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p LabelProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
-	args := []html.SpanArg{html.AClass(classnames.Merge("px-2 py-1.5 text-sm font-medium", p.Class))}
+	args := []html.SpanArg{html.AClass(html.ClassMerge("px-2 py-1.5 text-sm font-medium", p.Class))}
 
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
@@ -235,7 +234,7 @@ func Trigger(props TriggerProps, contentID string, args ...html.Node) html.Node 
 				ID:      props.ID,
 				Type:    button.TypeButton,
 				Variant: button.VariantOutline,
-				Class: classnames.Merge(
+				Class: html.ClassMerge(
 					// Required class for JavaScript
 					"select-trigger",
 					// Base styles matching input
@@ -353,7 +352,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 		Placement:  popover.PlacementBottomStart,
 		Offset:     4,
 		MatchWidth: true,
-		Class: classnames.Merge(
+		Class: html.ClassMerge(
 			"p-1 select-content z-50 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
 			"min-w-[var(--popover-trigger-width)] w-[var(--popover-trigger-width)]",
 			props.Class,
@@ -383,7 +382,7 @@ func Group(args ...html.DivArg) html.Node {
 	}
 
 	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("p-1", props.Class)),
+		html.AClass(html.ClassMerge("p-1", props.Class)),
 		html.AAria("role", "group"),
 	}
 
@@ -421,7 +420,7 @@ func Label(args ...html.SpanArg) html.Node {
 // Item creates a select box option item
 func Item(props ItemProps, args ...html.SpanArg) html.Node {
 	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge(
+		html.AClass(html.ClassMerge(
 			"select-item relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm font-light outline-none",
 			"hover:bg-accent hover:text-accent-foreground",
 			"focus:bg-accent focus:text-accent-foreground",
@@ -463,7 +462,7 @@ func Item(props ItemProps, args ...html.SpanArg) html.Node {
 	divArgs = append(divArgs,
 		html.Span(spanArgs...),
 		html.Span(
-			html.AClass(classnames.Merge(
+			html.AClass(html.ClassMerge(
 				"select-check absolute right-2 flex h-3.5 w-3.5 items-center justify-center",
 				func() string {
 					if props.Selected {

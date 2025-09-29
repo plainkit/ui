@@ -9,7 +9,6 @@ import (
 
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -54,7 +53,7 @@ type IndicatorsProps struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -94,7 +93,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(classnames.Merge("flex h-full w-full transition-transform duration-500 ease-in-out cursor-grab", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("flex h-full w-full transition-transform duration-500 ease-in-out cursor-grab", p.Class))}
 	args = append(args, html.AData("pui-carousel-track", ""))
 
 	if p.ID != "" {
@@ -111,7 +110,7 @@ func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component)
 }
 
 func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(classnames.Merge("flex-shrink-0 w-full h-full relative", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("flex-shrink-0 w-full h-full relative", p.Class))}
 	args = append(args, html.AData("pui-carousel-item", ""))
 
 	if p.ID != "" {
@@ -129,7 +128,7 @@ func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 func (p PreviousProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
 	args := []html.ButtonArg{
-		html.AClass(classnames.Merge("absolute left-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", p.Class)),
+		html.AClass(html.ClassMerge("absolute left-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", p.Class)),
 		html.AData("pui-carousel-prev", ""),
 		html.AAria("label", "Previous slide"),
 		html.AType("button"),
@@ -152,7 +151,7 @@ func (p PreviousProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Com
 
 func (p NextProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
 	args := []html.ButtonArg{
-		html.AClass(classnames.Merge("absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", p.Class)),
+		html.AClass(html.ClassMerge("absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", p.Class)),
 		html.AData("pui-carousel-next", ""),
 		html.AAria("label", "Next slide"),
 		html.AType("button"),
@@ -174,7 +173,7 @@ func (p NextProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Compone
 }
 
 func (p IndicatorsProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(classnames.Merge("absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2", p.Class))}
 
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
@@ -189,7 +188,7 @@ func (p IndicatorsProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Compone
 	for i := 0; i < p.Count; i++ {
 		buttonClass := "w-3 h-3 rounded-full bg-foreground/30 hover:bg-foreground/50 focus:outline-none transition-colors"
 		if i == 0 {
-			buttonClass = classnames.Merge(buttonClass, "bg-primary")
+			buttonClass = html.ClassMerge(buttonClass, "bg-primary")
 		}
 
 		button := html.Button(

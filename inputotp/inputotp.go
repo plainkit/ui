@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -45,7 +44,7 @@ type SeparatorProps struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID+"-container"))
 		}
@@ -104,7 +103,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(classnames.Merge("flex gap-2", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("flex gap-2", p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}
@@ -152,7 +151,7 @@ func (p SlotProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		html.AType(inputType),
 		html.AInputmode("numeric"),
 		html.AMaxlength("1"),
-		html.AClass(classnames.Merge(classes...)),
+		html.AClass(html.ClassMerge(classes...)),
 		html.AData("pui-inputotp-index", strconv.Itoa(p.Index)),
 		html.AData("pui-inputotp-slot", ""),
 	}
@@ -177,7 +176,7 @@ func (p SlotProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p SeparatorProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(classnames.Merge("flex items-center text-muted-foreground text-xl", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("flex items-center text-muted-foreground text-xl", p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}

@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -37,7 +36,7 @@ type ValueProps struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -68,7 +67,7 @@ func (p InputProps) ApplyInput(attrs *html.InputAttrs, children *[]html.Componen
 	args := []html.InputArg{
 		html.AId(id),
 		html.AType("range"),
-		html.AClass(classnames.Merge(
+		html.AClass(html.ClassMerge(
 			"w-full h-2 rounded-full bg-secondary appearance-none cursor-pointer",
 			"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
 			"[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4",
@@ -127,7 +126,7 @@ func (p ValueProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component)
 	}
 
 	args := []html.SpanArg{
-		html.AClass(classnames.Merge("text-sm text-muted-foreground", p.Class)),
+		html.AClass(html.ClassMerge("text-sm text-muted-foreground", p.Class)),
 		html.AData("pui-slider-value", ""),
 		html.AData("pui-slider-value-for", p.For),
 	}

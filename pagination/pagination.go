@@ -4,7 +4,6 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -55,7 +54,7 @@ type NextProps struct {
 func navArgsFromProps(baseClass string, extra ...string) func(p Props) []html.NavArg {
 	return func(p Props) []html.NavArg {
 		args := []html.NavArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AAria("label", "Pagination"),
 		}
 		if p.ID != "" {
@@ -95,7 +94,7 @@ func Pagination(args ...html.NavArg) html.Node {
 
 func ulArgsFromProps(baseClass string, extra ...string) func(p ContentProps) []html.UlArg {
 	return func(p ContentProps) []html.UlArg {
-		args := []html.UlArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.UlArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -138,7 +137,7 @@ func liArgsFromProps(baseClass string, extra ...string) func(p ItemProps) []html
 		classNames := append([]string{baseClass}, extra...)
 		classNames = append(classNames, p.Class)
 
-		className := classnames.Merge(classNames...)
+		className := html.ClassMerge(classNames...)
 		if className != "" {
 			args = append(args, html.AClass(className))
 		}
@@ -180,7 +179,7 @@ func Item(args ...html.LiArg) html.Node {
 
 func buttonArgsFromProps(baseClass string, extra ...string) func(p LinkProps) []html.ButtonArg {
 	return func(p LinkProps) []html.ButtonArg {
-		args := []html.ButtonArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.ButtonArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -237,7 +236,7 @@ func previousButtonArgsFromProps(baseClass string, extra ...string) func(p Previ
 		classNames := append([]string{baseClass}, extra...)
 		classNames = append(classNames, "gap-1", p.Class)
 
-		args := []html.ButtonArg{html.AClass(classnames.Merge(classNames...))}
+		args := []html.ButtonArg{html.AClass(html.ClassMerge(classNames...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -273,7 +272,7 @@ func Previous(args ...html.ButtonArg) html.Node {
 	btnProps := button.Props{
 		ID:       props.ID,
 		Attrs:    props.Attrs,
-		Class:    classnames.Merge("gap-1", props.Class),
+		Class:    html.ClassMerge("gap-1", props.Class),
 		Variant:  button.VariantGhost,
 		Href:     props.Href,
 		Disabled: props.Disabled,
@@ -296,7 +295,7 @@ func nextButtonArgsFromProps(baseClass string, extra ...string) func(p NextProps
 		classNames := append([]string{baseClass}, extra...)
 		classNames = append(classNames, "gap-1", p.Class)
 
-		args := []html.ButtonArg{html.AClass(classnames.Merge(classNames...))}
+		args := []html.ButtonArg{html.AClass(html.ClassMerge(classNames...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -332,7 +331,7 @@ func Next(args ...html.ButtonArg) html.Node {
 	btnProps := button.Props{
 		ID:       props.ID,
 		Attrs:    props.Attrs,
-		Class:    classnames.Merge("gap-1", props.Class),
+		Class:    html.ClassMerge("gap-1", props.Class),
 		Variant:  button.VariantGhost,
 		Href:     props.Href,
 		Disabled: props.Disabled,

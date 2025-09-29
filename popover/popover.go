@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Placement string
@@ -62,7 +61,7 @@ func triggerSpanArgsFromProps(baseClass string, extra ...string) func(p TriggerP
 		}
 
 		args := []html.SpanArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AData("pui-popover-open", "false"),
 			html.AData("pui-popover-type", string(triggerType)),
 		}
@@ -125,7 +124,7 @@ func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentPr
 		}
 
 		args := []html.DivArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AData("pui-popover-id", p.ID),
 			html.AData("pui-popover-open", "false"),
 			html.AData("pui-popover-placement", string(placement)),

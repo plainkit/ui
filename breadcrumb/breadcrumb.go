@@ -3,7 +3,6 @@ package breadcrumb
 import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -43,7 +42,7 @@ type SeparatorProps struct {
 func navArgsFromProps(baseClass string, extra ...string) func(p Props) []html.NavArg {
 	return func(p Props) []html.NavArg {
 		args := []html.NavArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AAria("label", "Breadcrumb"),
 		}
 		if p.ID != "" {
@@ -83,7 +82,7 @@ func Breadcrumb(args ...html.NavArg) html.Node {
 
 func olArgsFromProps(baseClass string, extra ...string) func(p ListProps) []html.OlArg {
 	return func(p ListProps) []html.OlArg {
-		args := []html.OlArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.OlArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -121,7 +120,7 @@ func List(args ...html.OlArg) html.Node {
 
 func liArgsFromProps(baseClass string, extra ...string) func(p ItemProps) []html.LiArg {
 	return func(p ItemProps) []html.LiArg {
-		args := []html.LiArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.LiArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -170,7 +169,7 @@ func aArgsFromProps(baseClass string, extra ...string) func(p LinkProps) []html.
 
 		classNames = append(classNames, p.Class)
 
-		args := []html.AArg{html.AClass(classnames.Merge(classNames...))}
+		args := []html.AArg{html.AClass(html.ClassMerge(classNames...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -216,7 +215,7 @@ func Link(args ...html.AArg) html.Node {
 
 func spanArgsFromProps(baseClass string, extra ...string) func(p SeparatorProps) []html.SpanArg {
 	return func(p SeparatorProps) []html.SpanArg {
-		args := []html.SpanArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.SpanArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -259,7 +258,7 @@ func Separator(args ...html.SpanArg) html.Node {
 func pageSpanArgsFromProps(baseClass string, extra ...string) func(p ItemProps) []html.SpanArg {
 	return func(p ItemProps) []html.SpanArg {
 		args := []html.SpanArg{
-			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...)),
 			html.AAria("current", "page"),
 		}
 		if p.ID != "" {

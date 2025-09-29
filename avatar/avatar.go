@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Size string
@@ -53,7 +52,7 @@ const (
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra, p.Class)...)...)
 
@@ -120,7 +119,7 @@ func Avatar(args ...html.DivArg) html.Node {
 
 func imgArgsFromProps(baseClass string, extra ...string) func(p ImageProps) []html.ImgArg {
 	return func(p ImageProps) []html.ImgArg {
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra, p.Class)...)...)
 
@@ -181,7 +180,7 @@ func Image(args ...html.ImgArg) html.Node {
 
 func spanArgsFromProps(baseClass string, extra ...string) func(p FallbackProps) []html.SpanArg {
 	return func(p FallbackProps) []html.SpanArg {
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra, p.Class)...)...)
 
@@ -234,7 +233,7 @@ func Fallback(args ...html.SpanArg) html.Node {
 
 func groupDivArgsFromProps(baseClass string, extra ...string) func(p GroupProps) []html.DivArg {
 	return func(p GroupProps) []html.DivArg {
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra, p.Class)...)...)
 
@@ -296,7 +295,7 @@ func Group(args ...html.DivArg) html.Node {
 // GroupOverflow renders an overflow indicator for avatar groups that have more avatars than displayed.
 // This function maintains its existing signature for backward compatibility.
 func GroupOverflow(count int, props Props, args ...html.DivArg) html.Node {
-	className := classnames.Merge(
+	className := html.ClassMerge(
 		"inline-flex items-center justify-center",
 		"w-12 h-12 text-base",
 		"data-[pui-avatar-size=sm]:w-8 data-[pui-avatar-size=sm]:h-8 data-[pui-avatar-size=sm]:text-xs",

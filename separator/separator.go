@@ -2,7 +2,6 @@ package separator
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Orientation string
@@ -28,7 +27,7 @@ const (
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -102,7 +101,7 @@ func horizontalSeparator(props Props, divArgs []html.DivArg) html.Node {
 	inner := html.Div(
 		html.AClass("relative flex items-center w-full"),
 		html.Span(
-			html.AClass(classnames.Merge("absolute w-full border-t h-[1px]", decorationClass(props.Decoration))),
+			html.AClass(html.ClassMerge("absolute w-full border-t h-[1px]", decorationClass(props.Decoration))),
 			html.ACustom("aria-hidden", "true"),
 		),
 	)
@@ -118,7 +117,7 @@ func verticalSeparator(props Props, divArgs []html.DivArg) html.Node {
 	inner := html.Div(
 		html.AClass("relative flex flex-col items-center h-full"),
 		html.Span(
-			html.AClass(classnames.Merge("absolute h-full border-l w-[1px]", decorationClass(props.Decoration))),
+			html.AClass(html.ClassMerge("absolute h-full border-l w-[1px]", decorationClass(props.Decoration))),
 			html.ACustom("aria-hidden", "true"),
 		),
 	)

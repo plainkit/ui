@@ -2,7 +2,6 @@ package table
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -56,7 +55,7 @@ type CaptionProps struct {
 
 func tableArgsFromProps(baseClass string, extra ...string) func(p Props) []html.TableArg {
 	return func(p Props) []html.TableArg {
-		args := []html.TableArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.TableArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -97,7 +96,7 @@ func Table(args ...html.TableArg) html.Node {
 
 func theadArgsFromProps(baseClass string, extra ...string) func(p HeaderProps) []html.TheadArg {
 	return func(p HeaderProps) []html.TheadArg {
-		args := []html.TheadArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.TheadArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -135,7 +134,7 @@ func Header(args ...html.TheadArg) html.Node {
 
 func tbodyArgsFromProps(baseClass string, extra ...string) func(p BodyProps) []html.TbodyArg {
 	return func(p BodyProps) []html.TbodyArg {
-		args := []html.TbodyArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.TbodyArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -173,7 +172,7 @@ func Body(args ...html.TbodyArg) html.Node {
 
 func tfootArgsFromProps(baseClass string, extra ...string) func(p FooterProps) []html.TfootArg {
 	return func(p FooterProps) []html.TfootArg {
-		args := []html.TfootArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.TfootArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -218,7 +217,7 @@ func trArgsFromProps(baseClass string, extra ...string) func(p RowProps) []html.
 
 		classNames = append(classNames, p.Class)
 
-		args := []html.TrArg{html.AClass(classnames.Merge(classNames...))}
+		args := []html.TrArg{html.AClass(html.ClassMerge(classNames...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -260,7 +259,7 @@ func Row(args ...html.TrArg) html.Node {
 
 func thArgsFromProps(baseClass string, extra ...string) func(p HeadProps) []html.ThArg {
 	return func(p HeadProps) []html.ThArg {
-		args := []html.ThArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.ThArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -301,7 +300,7 @@ func Head(args ...html.ThArg) html.Node {
 
 func tdArgsFromProps(baseClass string, extra ...string) func(p CellProps) []html.TdArg {
 	return func(p CellProps) []html.TdArg {
-		args := []html.TdArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.TdArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -342,7 +341,7 @@ func Cell(args ...html.TdArg) html.Node {
 
 func captionArgsFromProps(baseClass string, extra ...string) func(p CaptionProps) []html.CaptionArg {
 	return func(p CaptionProps) []html.CaptionArg {
-		args := []html.CaptionArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.CaptionArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}

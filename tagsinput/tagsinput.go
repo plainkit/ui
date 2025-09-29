@@ -9,7 +9,6 @@ import (
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/badge"
 	"github.com/plainkit/ui/input"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -27,7 +26,7 @@ type Props struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID+"-container"))
 		}
@@ -46,7 +45,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		id = randomID("tagsinput")
 	}
 
-	containerClass := classnames.Merge(
+	containerClass := html.ClassMerge(
 		// Base styles
 		"flex items-center flex-wrap gap-2 p-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none",
 		// Dark mode background

@@ -2,7 +2,6 @@ package skeleton
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -12,7 +11,7 @@ type Props struct {
 }
 
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(classnames.Merge("animate-pulse rounded bg-muted", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("animate-pulse rounded bg-muted", p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}

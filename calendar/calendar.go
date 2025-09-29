@@ -9,7 +9,6 @@ import (
 
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type LocaleTag string
@@ -52,7 +51,7 @@ type Props struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID+"-wrapper"))
 		}

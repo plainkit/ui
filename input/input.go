@@ -8,7 +8,6 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Type string
@@ -69,7 +68,7 @@ func inputArgsFromProps(baseClass string, extra ...string) func(p Props) []html.
 			errorClass = "border-destructive ring-destructive/20 dark:ring-destructive/40"
 		}
 
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra,
 					errorClass,

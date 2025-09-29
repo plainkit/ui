@@ -2,7 +2,6 @@ package tooltip
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 	"github.com/plainkit/ui/popover"
 )
 
@@ -56,7 +55,7 @@ type ContentProps struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -95,7 +94,7 @@ func Tooltip(args ...html.DivArg) html.Node {
 
 func spanArgsFromProps(baseClass string, extra ...string) func(p TriggerProps) []html.SpanArg {
 	return func(p TriggerProps) []html.SpanArg {
-		args := []html.SpanArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.SpanArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -142,7 +141,7 @@ func Trigger(args ...html.SpanArg) html.Node {
 
 func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentProps) []html.DivArg {
 	return func(p ContentProps) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -179,7 +178,7 @@ func Content(args ...html.DivArg) html.Node {
 		}
 	}
 
-	tooltipClass := classnames.Merge(
+	tooltipClass := html.ClassMerge(
 		"px-3 py-1.5 text-xs font-medium text-primary-foreground bg-primary border-primary rounded-md",
 		"shadow-md max-w-xs",
 		props.Class,

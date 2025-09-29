@@ -2,7 +2,6 @@ package card
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -23,7 +22,7 @@ type FooterProps Props
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -67,7 +66,7 @@ func Card(args ...html.DivArg) html.Node {
 
 func headerDivArgsFromProps(baseClass string, extra ...string) func(p HeaderProps) []html.DivArg {
 	return func(p HeaderProps) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -111,7 +110,7 @@ func Header(args ...html.DivArg) html.Node {
 
 func h3ArgsFromProps(baseClass string, extra ...string) func(p TitleProps) []html.H3Arg {
 	return func(p TitleProps) []html.H3Arg {
-		args := []html.H3Arg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.H3Arg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -155,7 +154,7 @@ func Title(args ...html.H3Arg) html.Node {
 
 func pArgsFromProps(baseClass string, extra ...string) func(p DescriptionProps) []html.PArg {
 	return func(p DescriptionProps) []html.PArg {
-		args := []html.PArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.PArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -199,7 +198,7 @@ func Description(args ...html.PArg) html.Node {
 
 func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentProps) []html.DivArg {
 	return func(p ContentProps) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -243,7 +242,7 @@ func Content(args ...html.DivArg) html.Node {
 
 func footerDivArgsFromProps(baseClass string, extra ...string) func(p FooterProps) []html.DivArg {
 	return func(p FooterProps) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}

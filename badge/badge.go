@@ -2,7 +2,6 @@ package badge
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Variant string
@@ -23,7 +22,7 @@ type Props struct {
 
 func spanArgsFromProps(baseClass string, extra ...string) func(p Props) []html.SpanArg {
 	return func(p Props) []html.SpanArg {
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra,
 					variantClasses(p.Variant),

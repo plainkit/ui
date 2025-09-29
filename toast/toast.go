@@ -9,7 +9,6 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Variant string
@@ -38,7 +37,7 @@ type TriggerProps struct {
 
 func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
 	return func(p Props) []html.DivArg {
-		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		args := []html.DivArg{html.AClass(html.ClassMerge(append([]string{baseClass}, append(extra, p.Class)...)...))}
 		if p.ID != "" {
 			args = append(args, html.AId(p.ID))
 		}
@@ -96,7 +95,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		progressBar := html.Div(
 			html.AClass("absolute top-0 left-0 right-0 h-1 overflow-hidden"),
 			html.Div(
-				html.AClass(classnames.Merge(
+				html.AClass(html.ClassMerge(
 					"toast-progress h-full origin-left transition-transform ease-linear",
 					"data-[variant=default]:bg-gray-500",
 					"data-[variant=success]:bg-green-500",
@@ -255,7 +254,7 @@ func Trigger(props TriggerProps, buttonProps button.Props, args ...html.ButtonAr
 
 	buttonProps.ID = id
 	if props.Class != "" {
-		buttonProps.Class = classnames.Merge(buttonProps.Class, props.Class)
+		buttonProps.Class = html.ClassMerge(buttonProps.Class, props.Class)
 	}
 
 	return button.Button(append([]html.ButtonArg{buttonProps}, args...)...).WithAssets("", toastJS, "ui-toast")
@@ -278,7 +277,7 @@ func Container(position Position) html.Node {
 
 	return html.Div(
 		html.AId("toast-container-"+string(position)),
-		html.AClass(classnames.Merge(
+		html.AClass(html.ClassMerge(
 			"fixed z-50 pointer-events-none p-4",
 			positionClasses[position],
 		)),

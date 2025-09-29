@@ -2,7 +2,6 @@ package radio
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Props struct {
@@ -19,7 +18,7 @@ type Props struct {
 
 func inputArgsFromProps(baseClass string, extra ...string) func(p Props) []html.InputArg {
 	return func(p Props) []html.InputArg {
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra, p.Class)...)...)
 

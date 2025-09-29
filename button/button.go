@@ -2,7 +2,6 @@ package button
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/ui/internal/classnames"
 )
 
 type Variant string
@@ -47,7 +46,7 @@ const (
 
 func buttonArgsFromProps(baseClass string, extra ...string) func(p Props) []html.ButtonArg {
 	return func(p Props) []html.ButtonArg {
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra,
 					variantClass(p.Variant),
@@ -86,7 +85,7 @@ func buttonArgsFromProps(baseClass string, extra ...string) func(p Props) []html
 
 func aArgsFromProps(baseClass string, extra ...string) func(p Props) []html.AArg {
 	return func(p Props) []html.AArg {
-		className := classnames.Merge(
+		className := html.ClassMerge(
 			append([]string{baseClass},
 				append(extra,
 					variantClass(p.Variant),

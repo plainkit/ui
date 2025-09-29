@@ -20,7 +20,7 @@ func RenderToastsContent() html.Node {
 				html.AClass("space-y-6"),
 				html.Div(
 					html.AClass("flex flex-wrap gap-3"),
-					toast.ToastTrigger(
+					toast.Trigger(
 						toast.TriggerProps{
 							Toast: toast.Props{
 								Title:         "Settings saved",
@@ -35,7 +35,7 @@ func RenderToastsContent() html.Node {
 						button.Props{},
 						html.Text("Show toast"),
 					),
-					toast.ToastTrigger(
+					toast.Trigger(
 						toast.TriggerProps{
 							Toast: toast.Props{
 								Title:         "Success!",
@@ -50,7 +50,7 @@ func RenderToastsContent() html.Node {
 						button.Props{Variant: button.VariantSecondary},
 						html.Text("Success"),
 					),
-					toast.ToastTrigger(
+					toast.Trigger(
 						toast.TriggerProps{
 							Toast: toast.Props{
 								Title:         "Error occurred",
@@ -65,7 +65,7 @@ func RenderToastsContent() html.Node {
 						button.Props{Variant: button.VariantDestructive},
 						html.Text("Error"),
 					),
-					toast.ToastTrigger(
+					toast.Trigger(
 						toast.TriggerProps{
 							Toast: toast.Props{
 								Title:         "Warning",

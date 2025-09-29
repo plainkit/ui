@@ -193,8 +193,8 @@ func randomID(prefix string) string {
 	return prefix + "-" + hex.EncodeToString(buf)
 }
 
-// ToastTrigger creates a button that spawns a toast when clicked
-func ToastTrigger(props TriggerProps, buttonProps button.Props, args ...html.ButtonArg) html.Node {
+// Trigger creates a button that spawns a toast when clicked
+func Trigger(props TriggerProps, buttonProps button.Props, args ...html.ButtonArg) html.Node {
 	id := props.ID
 	if id == "" {
 		id = randomID("toast-trigger")
@@ -230,8 +230,8 @@ func ToastTrigger(props TriggerProps, buttonProps button.Props, args ...html.But
 	return button.Button(append([]html.ButtonArg{buttonProps}, args...)...).WithAssets("", toastJS, "ui-toast")
 }
 
-// ToastContainer creates a container for toasts to be spawned into
-func ToastContainer(position Position) html.Node {
+// Container creates a container for toasts to be spawned into
+func Container(position Position) html.Node {
 	if position == "" {
 		position = PositionBottomRight
 	}

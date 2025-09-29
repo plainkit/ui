@@ -99,13 +99,10 @@ func Code(props Props, args ...html.CodeArg) html.Node {
 		divArgs = append(divArgs, attr)
 	}
 
-	// Include highlight.js CSS
-	styleLink := html.Link(
-		html.ARel("stylesheet"),
-		html.AHref("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/pojoaque.min.css"),
-	)
+	// Include highlight.js CSS link directly in assets
+	highlightCSS := `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/pojoaque.min.css">`
 
-	return html.Div(divArgs...).WithAssets("", codeJS, "ui-code").WithAssets(html.Render(styleLink), "", "highlight-css")
+	return html.Div(divArgs...).WithAssets(highlightCSS, codeJS, "ui-code")
 }
 
 func randomID(prefix string) string {

@@ -47,13 +47,13 @@
               .writeText(codeBlock.textContent)
               .then(function () {
                 // Show check icon
-                clipboardIcon.style.display = "none";
-                checkIcon.style.display = "inline";
+                clipboardIcon.classList.add("hidden");
+                checkIcon.classList.remove("hidden");
 
                 // Reset after 2 seconds
                 setTimeout(function () {
-                  clipboardIcon.style.display = "inline";
-                  checkIcon.style.display = "none";
+                  clipboardIcon.classList.remove("hidden");
+                  checkIcon.classList.add("hidden");
                 }, 2000);
               })
               .catch(function (err) {

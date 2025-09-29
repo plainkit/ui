@@ -95,6 +95,7 @@ var pages = []page{
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/assets/styles.css", cssHandler)
+	mux.HandleFunc("/robots.txt", robotsHandler)
 
 	for _, pg := range pages {
 		p := pg
@@ -126,6 +127,81 @@ func cssHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
+func robotsHandler(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Cache-Control", "public, max-age=86400") // Cache for 24 hours
+	robotsContent := `# Plain UI Robots.txt
+# https://plainui.com
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+Crawl-delay: 0
+
+# Allow search engines to index all pages
+Disallow:
+
+# Sitemap location (update when sitemap is available)
+# Sitemap: https://plainui.com/sitemap.xml
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Allow important bots with no restrictions
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 0
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 1
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1
+
+# Social media bots
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Applebot
+Allow: /`
+	if _, err := w.Write([]byte(robotsContent)); err != nil {
+		log.Printf("write robots.txt: %v", err)
+	}
+}
+
 func renderPage(activePath string, body html.Node) string {
 	assets := html.NewAssets()
 	assets.Collect(body)
@@ -133,7 +209,32 @@ func renderPage(activePath string, body html.Node) string {
 	headChildren := []html.HeadArg{
 		html.Child(html.Meta(html.ACharset("utf-8"))),
 		html.Child(html.Meta(html.AName("viewport"), html.AContent("width=device-width, initial-scale=1"))),
-		html.Child(html.Title(html.Text("Plain UI Components"))),
+		html.Child(html.Title(html.Text("Plain UI - Modern Go Components for Web Development"))),
+
+		// SEO Meta Tags
+		html.Child(html.Meta(html.AName("description"), html.AContent("Plain UI is a comprehensive collection of modern, accessible, and customizable UI components built with Go and HTMX for building beautiful web applications."))),
+		html.Child(html.Meta(html.AName("keywords"), html.AContent("go ui components, htmx components, web components, golang ui library, plainkit ui, tailwind components, accessible components, ui kit"))),
+		html.Child(html.Meta(html.AName("author"), html.AContent("Plain UI Team"))),
+		html.Child(html.Meta(html.AName("robots"), html.AContent("index, follow"))),
+
+		// Open Graph Meta Tags
+		html.Child(html.Meta(html.AName("og:title"), html.AContent("Plain UI - Modern Go Components for Web Development"))),
+		html.Child(html.Meta(html.AName("og:description"), html.AContent("Build beautiful, accessible web applications with Plain UI's comprehensive collection of Go components featuring HTMX integration."))),
+		html.Child(html.Meta(html.AName("og:type"), html.AContent("website"))),
+		html.Child(html.Meta(html.AName("og:site_name"), html.AContent("Plain UI"))),
+		html.Child(html.Meta(html.AName("og:locale"), html.AContent("en_US"))),
+
+		// Twitter Card Meta Tags
+		html.Child(html.Meta(html.AName("twitter:card"), html.AContent("summary_large_image"))),
+		html.Child(html.Meta(html.AName("twitter:title"), html.AContent("Plain UI - Modern Go Components for Web Development"))),
+		html.Child(html.Meta(html.AName("twitter:description"), html.AContent("Build beautiful, accessible web applications with Plain UI's comprehensive collection of Go components."))),
+
+		// Additional SEO
+		html.Child(html.Meta(html.AHttpEquiv("X-UA-Compatible"), html.AContent("IE=edge"))),
+		html.Child(html.Meta(html.AName("theme-color"), html.AContent("#000000"))),
+		html.Child(html.Link(html.ARel("canonical"), html.AHref("https://plainui.com"))),
+
+		// Stylesheet
 		html.Child(html.Link(html.ARel("stylesheet"), html.AHref("/assets/styles.css"))),
 	}
 
@@ -165,6 +266,7 @@ func renderPage(activePath string, body html.Node) string {
 	}
 
 	page := html.Html(
+		html.ALang("en"),
 		html.Head(headChildren...),
 		html.Body(bodyArgs...),
 	)

@@ -16,28 +16,21 @@ func RenderAccordionContent() html.Node {
 				html.P(html.AClass("text-sm text-muted-foreground"), html.Text("Stack collapsible sections to keep dense content organized.")),
 			),
 			accordion.Accordion(
-				accordion.Props{},
 				accordion.Item(
-					accordion.ItemProps{},
-					accordion.Trigger(accordion.TriggerProps{}, html.Text("Is Plain UI accessible?")),
+					accordion.Trigger(html.Text("Is Plain UI accessible?")),
 					accordion.Content(
-						accordion.ContentProps{},
 						html.P(html.AClass("text-sm text-muted-foreground"), html.Text("Yes. We build on semantic HTML, manage focus states, and respect reduced-motion preferences.")),
 					),
 				),
 				accordion.Item(
-					accordion.ItemProps{},
-					accordion.Trigger(accordion.TriggerProps{}, html.Text("Can I use it with templ?")),
+					accordion.Trigger(html.Text("Can I use it with templ?")),
 					accordion.Content(
-						accordion.ContentProps{},
 						html.P(html.AClass("text-sm text-muted-foreground"), html.Text("Absolutely. The APIs are designed to feel templ-friendly and compose with html components.")),
 					),
 				),
 				accordion.Item(
-					accordion.ItemProps{},
-					accordion.Trigger(accordion.TriggerProps{}, html.Text("Does it support nested content?")),
+					accordion.Trigger(html.Text("Does it support nested content?")),
 					accordion.Content(
-						accordion.ContentProps{},
 						html.Div(
 							html.AClass("space-y-2 text-sm text-muted-foreground"),
 							html.P(html.Text("Yes. You can place paragraphs, lists, and interactive elements inside each panel.")),

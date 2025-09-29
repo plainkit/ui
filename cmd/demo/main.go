@@ -1,8 +1,12 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/plainkit/html"
@@ -57,6 +61,20 @@ var pages = []page{
 }
 
 func main() {
+	var (
+		generateStatic = flag.Bool("generate", false, "Generate static site instead of starting server")
+		outputDir      = flag.String("output", "./dist", "Output directory for static site generation")
+	)
+	flag.Parse()
+
+	if *generateStatic {
+		if err := generateStaticSite(*outputDir); err != nil {
+			log.Fatalf("Failed to generate static site: %v", err)
+		}
+		log.Printf("Static site generated successfully in %s", *outputDir)
+		return
+	}
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/assets/styles.css", cssHandler)
 	mux.HandleFunc("/robots.txt", robotsHandler)
@@ -66,7 +84,7 @@ func main() {
 		mux.HandleFunc(p.Path, func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			body := p.Content()
-			if _, err := w.Write([]byte(renderPage(p.Path, body))); err != nil {
+			if _, err := w.Write([]byte(renderPage(p.Path, body, false))); err != nil {
 				log.Printf("write response: %v", err)
 			}
 		})
@@ -105,9 +123,15 @@ Disallow:
 	}
 }
 
-func renderPage(activePath string, body html.Node) string {
+func renderPage(activePath string, body html.Node, isStatic bool) string {
 	assets := html.NewAssets()
 	assets.Collect(body)
+
+	// Determine CSS path based on context
+	cssPath := "/assets/styles.css"
+	if isStatic {
+		cssPath = "../assets/styles.css"
+	}
 
 	headChildren := []html.HeadArg{
 		html.Child(html.Meta(html.ACharset("utf-8"))),
@@ -138,13 +162,13 @@ func renderPage(activePath string, body html.Node) string {
 		html.Child(html.Link(html.ARel("canonical"), html.AHref("https://plainui.com"))),
 
 		// Stylesheet
-		html.Child(html.Link(html.ARel("stylesheet"), html.AHref("/assets/styles.css"))),
+		html.Child(html.Link(html.ARel("stylesheet"), html.AHref(cssPath))),
 	}
 
 	bodyChildren := []html.Component{
 		html.Div(
 			html.AClass("flex min-h-screen"),
-			renderSidebar(activePath),
+			renderSidebar(activePath, isStatic),
 			html.Main(
 				html.AClass("flex-1 overflow-y-auto"),
 				html.Div(
@@ -177,7 +201,7 @@ func renderPage(activePath string, body html.Node) string {
 	return "<!DOCTYPE html>\n" + html.Render(page)
 }
 
-func renderSidebar(activePath string) html.Node {
+func renderSidebar(activePath string, isStatic bool) html.Node {
 	links := make([]html.UlArg, 0, len(pages))
 	for _, pg := range pages {
 		isActive := pg.Path == activePath
@@ -188,10 +212,21 @@ func renderSidebar(activePath string) html.Node {
 			className += " text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
 		}
 
+		// Determine href based on context
+		href := pg.Path
+		if isStatic {
+			// Convert path to relative link for static site
+			pagePath := strings.TrimPrefix(pg.Path, "/")
+			if pagePath == "" {
+				pagePath = "index"
+			}
+			href = "../" + pagePath + "/"
+		}
+
 		links = append(links,
 			html.Li(
 				html.A(
-					html.AHref(pg.Path),
+					html.AHref(href),
 					html.AClass(className),
 					html.Text(pg.Label),
 				),
@@ -218,4 +253,104 @@ func renderSidebar(activePath string) html.Node {
 			),
 		),
 	)
+}
+
+// generateStaticSite creates a static HTML site with all component pages
+func generateStaticSite(outputDir string) error {
+	log.Printf("Generating static site to %s...", outputDir)
+
+	// Create output directory structure
+	if err := os.RemoveAll(outputDir); err != nil {
+		return fmt.Errorf("failed to clean output directory: %w", err)
+	}
+
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		return fmt.Errorf("failed to create output directory: %w", err)
+	}
+
+	// Create assets directory
+	assetsDir := filepath.Join(outputDir, "assets")
+	if err := os.MkdirAll(assetsDir, 0755); err != nil {
+		return fmt.Errorf("failed to create assets directory: %w", err)
+	}
+
+	// Generate CSS file
+	cssPath := filepath.Join(assetsDir, "styles.css")
+	if err := os.WriteFile(cssPath, []byte(democss.TailwindCSS), 0644); err != nil {
+		return fmt.Errorf("failed to write CSS file: %w", err)
+	}
+	log.Printf("Generated %s", cssPath)
+
+	// Generate robots.txt
+	robotsContent := `User-agent: *
+Allow: /
+Crawl-delay: 0
+Disallow:
+`
+	robotsPath := filepath.Join(outputDir, "robots.txt")
+	if err := os.WriteFile(robotsPath, []byte(robotsContent), 0644); err != nil {
+		return fmt.Errorf("failed to write robots.txt: %w", err)
+	}
+	log.Printf("Generated %s", robotsPath)
+
+	// Generate HTML files for each component page
+	for _, pg := range pages {
+		log.Printf("Generating page: %s", pg.Label)
+
+		// Generate page content
+		body := pg.Content()
+		htmlContent := renderPage(pg.Path, body, true)
+
+		// Create subdirectory if needed
+		pagePath := strings.TrimPrefix(pg.Path, "/")
+		if pagePath == "" {
+			pagePath = "index"
+		}
+
+		// Create directory structure for nested paths
+		pageDir := filepath.Join(outputDir, pagePath)
+		if err := os.MkdirAll(pageDir, 0755); err != nil {
+			return fmt.Errorf("failed to create page directory %s: %w", pageDir, err)
+		}
+
+		// Write HTML file
+		htmlPath := filepath.Join(pageDir, "index.html")
+		if err := os.WriteFile(htmlPath, []byte(htmlContent), 0644); err != nil {
+			return fmt.Errorf("failed to write HTML file %s: %w", htmlPath, err)
+		}
+		log.Printf("Generated %s", htmlPath)
+	}
+
+	// Generate index.html that redirects to first page
+	indexContent := generateIndexRedirect(pages[0].Path)
+	indexPath := filepath.Join(outputDir, "index.html")
+	if err := os.WriteFile(indexPath, []byte(indexContent), 0644); err != nil {
+		return fmt.Errorf("failed to write index.html: %w", err)
+	}
+	log.Printf("Generated %s", indexPath)
+
+	return nil
+}
+
+// generateIndexRedirect creates an index.html that redirects to the first page
+func generateIndexRedirect(firstPagePath string) string {
+	redirectPath := strings.TrimPrefix(firstPagePath, "/") + "/"
+
+	page := html.Html(
+		html.ALang("en"),
+		html.Head(
+			html.Child(html.Meta(html.ACharset("utf-8"))),
+			html.Child(html.Meta(html.AHttpEquiv("refresh"), html.AContent("0; url="+redirectPath))),
+			html.Child(html.Title(html.Text("Plain UI - Redirecting..."))),
+		),
+		html.Body(
+			html.P(
+				html.Text("Redirecting to "),
+				html.A(html.AHref(redirectPath), html.Text("Plain UI Components")),
+				html.Text("..."),
+			),
+		),
+	)
+
+	return "<!DOCTYPE html>\n" + html.Render(page)
 }

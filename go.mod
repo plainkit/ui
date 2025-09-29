@@ -7,7 +7,3 @@ require (
 	github.com/plainkit/html v0.19.0
 	github.com/plainkit/icons v0.10.0
 )
-
-replace github.com/plainkit/html => ../html
-
-replace github.com/plainkit/icons => ../icons

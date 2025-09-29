@@ -37,7 +37,7 @@ func RenderButtonsContent() html.Node {
 			),
 			html.Div(
 				html.AClass("flex flex-wrap items-end gap-3"),
-				button.Button(button.Props{}, html.T("Default")),
+				button.Button(html.T("Default")),
 				button.Button(button.Props{Size: button.SizeSm}, html.T("Small")),
 				button.Button(button.Props{Size: button.SizeLg}, html.T("Large")),
 				button.Button(button.Props{Size: button.SizeIcon}, html.T("+")),

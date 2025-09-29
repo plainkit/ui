@@ -46,7 +46,7 @@ func RenderCardsContent() html.Node {
 						html.Div(
 							html.AClass("ml-auto flex gap-3"),
 							button.Button(button.Props{Variant: button.VariantOutline}, html.Text("Manage plan")),
-							button.Button(button.Props{}, html.Text("Upgrade")),
+							button.Button(html.Text("Upgrade")),
 						),
 					),
 				),

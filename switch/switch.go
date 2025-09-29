@@ -19,46 +19,65 @@ type Props struct {
 	Form     string
 }
 
-// Switch renders an accessible checkbox-based toggle control.
-func Switch(props Props, labelArgs ...html.LabelArg) html.Node {
-	if props.ID == "" {
-		props.ID = randomID()
+func labelArgsFromProps(baseClass string, extra ...string) func(p Props) []html.LabelArg {
+	return func(p Props) []html.LabelArg {
+		id := p.ID
+		if id == "" {
+			id = randomID()
+		}
+
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra, conditional(p.Disabled, "cursor-not-allowed"))...)...)
+
+		args := []html.LabelArg{
+			html.AFor(id),
+			html.AClass(className),
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplyLabel implements the html.LabelArg interface for Props
+func (p Props) ApplyLabel(attrs *html.LabelAttrs, children *[]html.Component) {
+	id := p.ID
+	if id == "" {
+		id = randomID()
 	}
 
-	labelClasses := classnames.Merge("inline-flex cursor-pointer items-center gap-2", conditional(props.Disabled, "cursor-not-allowed"))
-
-	labelArgs = append([]html.LabelArg{html.AFor(props.ID), html.AClass(labelClasses)}, labelArgs...)
+	args := labelArgsFromProps("inline-flex cursor-pointer items-center gap-2")(p)
 
 	inputArgs := []html.InputArg{
-		html.AId(props.ID),
+		html.AId(id),
 		html.AType("checkbox"),
 		html.AClass("peer hidden"),
 		html.ACustom("role", "switch"),
 	}
-	if props.Name != "" {
-		inputArgs = append(inputArgs, html.AName(props.Name))
+	if p.Name != "" {
+		inputArgs = append(inputArgs, html.AName(p.Name))
 	}
 
-	if props.Value != "" {
-		inputArgs = append(inputArgs, html.AValue(props.Value))
+	if p.Value != "" {
+		inputArgs = append(inputArgs, html.AValue(p.Value))
 	} else {
 		inputArgs = append(inputArgs, html.AValue("on"))
 	}
 
-	if props.Form != "" {
-		inputArgs = append(inputArgs, html.AForm(props.Form))
+	if p.Form != "" {
+		inputArgs = append(inputArgs, html.AForm(p.Form))
 	}
 
-	if props.Checked {
+	if p.Checked {
 		inputArgs = append(inputArgs, html.AChecked())
 	}
 
-	if props.Disabled {
+	if p.Disabled {
 		inputArgs = append(inputArgs, html.ADisabled())
-	}
-
-	for _, attr := range props.Attrs {
-		inputArgs = append(inputArgs, attr)
 	}
 
 	visual := html.Div(
@@ -79,17 +98,38 @@ func Switch(props Props, labelArgs ...html.LabelArg) html.Node {
 			"after:transition-transform",
 			"after:content-['']",
 			"peer-checked:after:translate-x-4",
-			props.Class,
+			p.Class,
 		)),
 		html.AAria("hidden", "true"),
 	)
 
-	labelArgs = append(labelArgs,
-		html.Input(inputArgs...),
-		visual,
+	// Apply base label args first
+	for _, a := range args {
+		a.ApplyLabel(attrs, children)
+	}
+
+	// Add the input and visual elements as children
+	*children = append(*children, html.Input(inputArgs...), visual)
+}
+
+// Switch renders an accessible checkbox-based toggle control using the composable pattern.
+// Accepts variadic html.LabelArg arguments, with Props as an optional first argument.
+func Switch(args ...html.LabelArg) html.Node {
+	var (
+		props Props
+		rest  []html.LabelArg
 	)
 
-	return html.Label(labelArgs...)
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Label(append([]html.LabelArg{props}, rest...)...)
 }
 
 func randomID() string {

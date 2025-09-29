@@ -25,54 +25,66 @@ type Props struct {
 	Readonly    bool
 }
 
-// TagsInput renders a tags input component for entering multiple tags
-func TagsInput(props Props, args ...html.DivArg) html.Node {
-	id := props.ID
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID+"-container"))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	id := p.ID
 	if id == "" {
 		id = randomID("tagsinput")
 	}
 
-	containerArgs := []html.DivArg{
+	containerClass := classnames.Merge(
+		// Base styles
+		"flex items-center flex-wrap gap-2 p-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none",
+		// Dark mode background
+		"dark:bg-input/30",
+		// Focus styles
+		"focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+		// Disabled styles
+		func() string {
+			if p.Disabled {
+				return "opacity-50 cursor-not-allowed"
+			}
+
+			return ""
+		}(),
+		// Width
+		"w-full",
+		// Error/Invalid styles
+		func() string {
+			if p.HasError {
+				return "border-destructive ring-destructive/20 dark:ring-destructive/40"
+			}
+
+			return ""
+		}(),
+		p.Class,
+	)
+
+	args := divArgsFromProps(containerClass)(p)
+	args = append([]html.DivArg{
 		html.AId(id + "-container"),
-		html.AClass(classnames.Merge(
-			// Base styles
-			"flex items-center flex-wrap gap-2 p-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none",
-			// Dark mode background
-			"dark:bg-input/30",
-			// Focus styles
-			"focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
-			// Disabled styles
-			func() string {
-				if props.Disabled {
-					return "opacity-50 cursor-not-allowed"
-				}
-
-				return ""
-			}(),
-			// Width
-			"w-full",
-			// Error/Invalid styles
-			func() string {
-				if props.HasError {
-					return "border-destructive ring-destructive/20 dark:ring-destructive/40"
-				}
-
-				return ""
-			}(),
-			props.Class,
-		)),
 		html.AData("pui-tagsinput", ""),
-		html.AData("pui-tagsinput-name", props.Name),
-		html.AData("pui-tagsinput-form", props.Form),
-	}
-
-	for _, attr := range props.Attrs {
-		containerArgs = append(containerArgs, attr)
-	}
+		html.AData("pui-tagsinput-name", p.Name),
+		html.AData("pui-tagsinput-form", p.Form),
+	}, args...)
 
 	// Add existing tags as children
-	tagChildren := make([]html.DivArg, 0, len(props.Value))
-	for _, tag := range props.Value {
+	tagChildren := make([]html.DivArg, 0, len(p.Value))
+	for _, tag := range p.Value {
 		tagBadge := badge.Badge(badge.Props{
 			Attrs: []html.Global{
 				html.AData("pui-tagsinput-chip", ""),
@@ -84,7 +96,7 @@ func TagsInput(props Props, args ...html.DivArg) html.Node {
 				html.AClass("ml-1 text-current hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"),
 				html.AData("pui-tagsinput-remove", ""),
 				func() html.ButtonArg {
-					if props.Disabled {
+					if p.Disabled {
 						return html.ADisabled()
 					}
 
@@ -96,7 +108,7 @@ func TagsInput(props Props, args ...html.DivArg) html.Node {
 		tagChildren = append(tagChildren, tagBadge)
 	}
 
-	// Build the full tagsContainer args
+	// Build the tags container
 	tagsContainerArgs := []html.DivArg{
 		html.AClass("flex items-center flex-wrap gap-2"),
 		html.AData("pui-tagsinput-container", ""),
@@ -109,40 +121,59 @@ func TagsInput(props Props, args ...html.DivArg) html.Node {
 		ID:          id,
 		Class:       "border-0 shadow-none focus-visible:ring-0 h-auto py-0 px-0 bg-transparent rounded-none min-h-0 disabled:opacity-100 dark:bg-transparent",
 		Type:        input.TypeText,
-		Placeholder: props.Placeholder,
-		Disabled:    props.Disabled,
-		Readonly:    props.Readonly,
+		Placeholder: p.Placeholder,
+		Disabled:    p.Disabled,
+		Readonly:    p.Readonly,
 		Attrs: []html.Global{
 			html.AData("pui-tagsinput-text-input", ""),
 		},
 	})
 
 	// Add existing hidden inputs
-	hiddenInputChildren := make([]html.DivArg, 0, len(props.Value))
-	for _, tag := range props.Value {
+	hiddenInputChildren := make([]html.DivArg, 0, len(p.Value))
+	for _, tag := range p.Value {
 		hiddenInput := html.Input(
 			html.AType("hidden"),
-			html.AName(props.Name),
+			html.AName(p.Name),
 			html.AValue(tag),
 		)
 		hiddenInputChildren = append(hiddenInputChildren, hiddenInput)
 	}
 
-	// Build the full hiddenInputsContainer args
-	hiddenInputsArgs := []html.DivArg{
+	// Build the hidden inputs container
+	hiddenContainerArgs := []html.DivArg{
 		html.AData("pui-tagsinput-hidden-inputs", ""),
 	}
-	hiddenInputsArgs = append(hiddenInputsArgs, hiddenInputChildren...)
-	hiddenInputsContainer := html.Div(hiddenInputsArgs...)
+	hiddenContainerArgs = append(hiddenContainerArgs, hiddenInputChildren...)
+	hiddenInputsContainer := html.Div(hiddenContainerArgs...)
 
-	containerArgs = append(containerArgs,
+	*children = append(*children,
 		tagsContainer,
 		textInput,
 		hiddenInputsContainer,
 	)
-	containerArgs = append(containerArgs, args...)
 
-	return html.Div(containerArgs...).WithAssets("", tagsinputJS, "ui-tagsinput")
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+// TagsInput renders a tags input component for entering multiple tags
+func TagsInput(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...).WithAssets("", tagsinputJS, "ui-tagsinput")
 }
 
 func randomID(prefix string) string {

@@ -26,32 +26,78 @@ const (
 	DecorationDotted Decoration = "dotted"
 )
 
-// Separator renders a decorative divider. Label args populate the centered span.
-func Separator(props Props, labelArgs ...html.SpanArg) html.Node {
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplyDiv implements the html.DivArg interface for Props
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	orientation := p.Orientation
+	if orientation == "" {
+		orientation = OrientationHorizontal
+	}
+
+	var args []html.DivArg
+	if orientation == OrientationVertical {
+		args = divArgsFromProps("shrink-0 h-full")(p)
+		args = append([]html.DivArg{
+			html.ACustom("role", "separator"),
+			html.AAria("orientation", "vertical"),
+		}, args...)
+	} else {
+		args = divArgsFromProps("shrink-0 w-full")(p)
+		args = append([]html.DivArg{
+			html.ACustom("role", "separator"),
+			html.AAria("orientation", "horizontal"),
+		}, args...)
+	}
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+// Separator renders a decorative divider using the composable pattern.
+// Accepts variadic html.DivArg arguments, with Props as an optional first argument.
+func Separator(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
 	if props.Orientation == "" {
 		props.Orientation = OrientationHorizontal
 	}
 
 	if props.Orientation == OrientationVertical {
-		return verticalSeparator(props, labelArgs)
+		return verticalSeparator(props, rest)
 	}
 
-	return horizontalSeparator(props, labelArgs)
+	return horizontalSeparator(props, rest)
 }
 
-func horizontalSeparator(props Props, labelArgs []html.SpanArg) html.Node {
-	outerArgs := []html.DivArg{
-		html.AClass(classnames.Merge("shrink-0 w-full", props.Class)),
-		html.ACustom("role", "separator"),
-		html.AAria("orientation", "horizontal"),
-	}
-	if props.ID != "" {
-		outerArgs = append(outerArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		outerArgs = append(outerArgs, attr)
-	}
+func horizontalSeparator(props Props, divArgs []html.DivArg) html.Node {
+	outerArgs := append([]html.DivArg{props}, divArgs...)
 
 	inner := html.Div(
 		html.AClass("relative flex items-center w-full"),
@@ -59,7 +105,6 @@ func horizontalSeparator(props Props, labelArgs []html.SpanArg) html.Node {
 			html.AClass(classnames.Merge("absolute w-full border-t h-[1px]", decorationClass(props.Decoration))),
 			html.ACustom("aria-hidden", "true"),
 		),
-		html.Span(append([]html.SpanArg{html.AClass("relative mx-auto bg-background px-2 text-xs text-muted-foreground")}, labelArgs...)...),
 	)
 
 	outerArgs = append(outerArgs, inner)
@@ -67,19 +112,8 @@ func horizontalSeparator(props Props, labelArgs []html.SpanArg) html.Node {
 	return html.Div(outerArgs...)
 }
 
-func verticalSeparator(props Props, labelArgs []html.SpanArg) html.Node {
-	outerArgs := []html.DivArg{
-		html.AClass(classnames.Merge("shrink-0 h-full", props.Class)),
-		html.ACustom("role", "separator"),
-		html.AAria("orientation", "vertical"),
-	}
-	if props.ID != "" {
-		outerArgs = append(outerArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		outerArgs = append(outerArgs, attr)
-	}
+func verticalSeparator(props Props, divArgs []html.DivArg) html.Node {
+	outerArgs := append([]html.DivArg{props}, divArgs...)
 
 	inner := html.Div(
 		html.AClass("relative flex flex-col items-center h-full"),
@@ -87,7 +121,6 @@ func verticalSeparator(props Props, labelArgs []html.SpanArg) html.Node {
 			html.AClass(classnames.Merge("absolute h-full border-l w-[1px]", decorationClass(props.Decoration))),
 			html.ACustom("aria-hidden", "true"),
 		),
-		html.Span(append([]html.SpanArg{html.AClass("relative my-auto bg-background py-2 text-xs text-muted-foreground")}, labelArgs...)...),
 	)
 
 	outerArgs = append(outerArgs, inner)

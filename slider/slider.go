@@ -35,36 +35,38 @@ type ValueProps struct {
 	For   string
 }
 
-// Slider is the root container around slider inputs/values.
-func Slider(props Props, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("w-full", props.Class)),
-		html.AData("pui-slider-wrapper", ""),
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	divArgs = append(divArgs, args...)
-
-	node := html.Div(divArgs...)
-	node = node.WithAssets("", sliderJS, "ui-slider")
-
-	return node
 }
 
-// Input renders the range input element used within the slider wrapper.
-func Input(props InputProps) html.Node {
-	if props.ID == "" {
-		props.ID = randomID("slider")
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := divArgsFromProps("w-full")(p)
+	args = append(args, html.AData("pui-slider-wrapper", ""))
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+func (p InputProps) ApplyInput(attrs *html.InputAttrs, children *[]html.Component) {
+	id := p.ID
+	if id == "" {
+		id = randomID("slider")
 	}
 
-	inputArgs := []html.InputArg{
-		html.AId(props.ID),
+	args := []html.InputArg{
+		html.AId(id),
 		html.AType("range"),
 		html.AClass(classnames.Merge(
 			"w-full h-2 rounded-full bg-secondary appearance-none cursor-pointer",
@@ -76,63 +78,124 @@ func Input(props InputProps) html.Node {
 			"[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary",
 			"[&::-moz-range-thumb]:hover:bg-primary/90",
 			"disabled:opacity-50 disabled:cursor-not-allowed",
-			props.Class,
+			p.Class,
 		)),
 		html.AData("pui-slider-input", ""),
 	}
-	if props.Name != "" {
-		inputArgs = append(inputArgs, html.AName(props.Name))
+	if p.Name != "" {
+		args = append(args, html.AName(p.Name))
 	}
 
-	if props.Value != 0 {
-		inputArgs = append(inputArgs, html.AValue(strconv.Itoa(props.Value)))
+	if p.Value != 0 {
+		args = append(args, html.AValue(strconv.Itoa(p.Value)))
 	}
 
-	if props.Min != 0 {
-		inputArgs = append(inputArgs, html.AMin(strconv.Itoa(props.Min)))
+	if p.Min != 0 {
+		args = append(args, html.AMin(strconv.Itoa(p.Min)))
 	}
 
-	if props.Max != 0 {
-		inputArgs = append(inputArgs, html.AMax(strconv.Itoa(props.Max)))
+	if p.Max != 0 {
+		args = append(args, html.AMax(strconv.Itoa(p.Max)))
 	}
 
-	if props.Step != 0 {
-		inputArgs = append(inputArgs, html.AStep(strconv.Itoa(props.Step)))
+	if p.Step != 0 {
+		args = append(args, html.AStep(strconv.Itoa(p.Step)))
 	}
 
-	if props.Disabled {
-		inputArgs = append(inputArgs, html.ADisabled())
+	if p.Disabled {
+		args = append(args, html.ADisabled())
 	}
 
-	for _, attr := range props.Attrs {
-		inputArgs = append(inputArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	return html.Input(inputArgs...)
+	for _, a := range args {
+		a.ApplyInput(attrs, children)
+	}
+}
+
+func (p ValueProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
+	if p.For == "" {
+		// Apply error styling
+		args := []html.SpanArg{html.AClass("text-xs text-destructive")}
+		for _, a := range args {
+			a.ApplySpan(attrs, children)
+		}
+
+		return
+	}
+
+	args := []html.SpanArg{
+		html.AClass(classnames.Merge("text-sm text-muted-foreground", p.Class)),
+		html.AData("pui-slider-value", ""),
+		html.AData("pui-slider-value-for", p.For),
+	}
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
+	}
+
+	for _, a := range p.Attrs {
+		args = append(args, a)
+	}
+
+	for _, a := range args {
+		a.ApplySpan(attrs, children)
+	}
+}
+
+// Slider is the root container around slider inputs/values.
+func Slider(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...).WithAssets("", sliderJS, "ui-slider")
+}
+
+// Input renders the range input element used within the slider wrapper.
+func Input(args ...html.InputArg) html.Node {
+	var (
+		props InputProps
+		rest  []html.InputArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(InputProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Input(append([]html.InputArg{props}, rest...)...)
 }
 
 // Value renders a span that mirrors the slider value using data attributes.
-func Value(props ValueProps, args ...html.SpanArg) html.Node {
-	if props.For == "" {
-		return html.Span(html.AClass("text-xs text-destructive"), html.Text("Slider value requires 'For'"))
+func Value(args ...html.SpanArg) html.Node {
+	var (
+		props ValueProps
+		rest  []html.SpanArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ValueProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	spanArgs := []html.SpanArg{
-		html.AClass(classnames.Merge("text-sm text-muted-foreground", props.Class)),
-		html.AData("pui-slider-value", ""),
-		html.AData("pui-slider-value-for", props.For),
-	}
-	if props.ID != "" {
-		spanArgs = append(spanArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		spanArgs = append(spanArgs, attr)
-	}
-
-	spanArgs = append(spanArgs, args...)
-
-	return html.Span(spanArgs...)
+	return html.Span(append([]html.SpanArg{props}, rest...)...)
 }
 
 func randomID(prefix string) string {

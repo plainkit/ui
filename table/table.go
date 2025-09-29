@@ -54,144 +54,326 @@ type CaptionProps struct {
 	Attrs []html.Global
 }
 
-func Table(props Props, args ...html.TableArg) html.Node {
-	tableArgs := []html.TableArg{html.AClass(classnames.Merge("w-full caption-bottom text-sm", props.Class))}
-	if props.ID != "" {
-		tableArgs = append(tableArgs, html.AId(props.ID))
-	}
+func tableArgsFromProps(baseClass string, extra ...string) func(p Props) []html.TableArg {
+	return func(p Props) []html.TableArg {
+		args := []html.TableArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
 
-	for _, attr := range props.Attrs {
-		tableArgs = append(tableArgs, attr)
-	}
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
 
-	tableArgs = append(tableArgs, args...)
+		return args
+	}
+}
+
+func (p Props) ApplyTable(attrs *html.TableAttrs, children *[]html.Component) {
+	for _, a := range tableArgsFromProps("w-full caption-bottom text-sm")(p) {
+		a.ApplyTable(attrs, children)
+	}
+}
+
+func Table(args ...html.TableArg) html.Node {
+	var (
+		props Props
+		rest  []html.TableArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
 
 	return html.Div(
 		html.AClass("relative w-full overflow-auto"),
-		html.Table(tableArgs...),
+		html.Table(append([]html.TableArg{props}, rest...)...),
 	)
 }
 
-func Header(props HeaderProps, args ...html.TheadArg) html.Node {
-	theadArgs := []html.TheadArg{html.AClass(classnames.Merge("[&_tr]:border-b", props.Class))}
-	if props.ID != "" {
-		theadArgs = append(theadArgs, html.AId(props.ID))
+func theadArgsFromProps(baseClass string, extra ...string) func(p HeaderProps) []html.TheadArg {
+	return func(p HeaderProps) []html.TheadArg {
+		args := []html.TheadArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
-
-	for _, attr := range props.Attrs {
-		theadArgs = append(theadArgs, attr)
-	}
-
-	theadArgs = append(theadArgs, args...)
-
-	return html.Thead(theadArgs...)
 }
 
-func Body(props BodyProps, args ...html.TbodyArg) html.Node {
-	tbodyArgs := []html.TbodyArg{html.AClass(classnames.Merge("[&_tr:last-child]:border-0", props.Class))}
-	if props.ID != "" {
-		tbodyArgs = append(tbodyArgs, html.AId(props.ID))
+func (p HeaderProps) ApplyThead(attrs *html.TheadAttrs, children *[]html.Component) {
+	for _, a := range theadArgsFromProps("[&_tr]:border-b")(p) {
+		a.ApplyThead(attrs, children)
 	}
-
-	for _, attr := range props.Attrs {
-		tbodyArgs = append(tbodyArgs, attr)
-	}
-
-	tbodyArgs = append(tbodyArgs, args...)
-
-	return html.Tbody(tbodyArgs...)
 }
 
-func Footer(props FooterProps, args ...html.TfootArg) html.Node {
-	tfootArgs := []html.TfootArg{html.AClass(classnames.Merge("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", props.Class))}
-	if props.ID != "" {
-		tfootArgs = append(tfootArgs, html.AId(props.ID))
+func Header(args ...html.TheadArg) html.Node {
+	var (
+		props HeaderProps
+		rest  []html.TheadArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(HeaderProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	for _, attr := range props.Attrs {
-		tfootArgs = append(tfootArgs, attr)
-	}
-
-	tfootArgs = append(tfootArgs, args...)
-
-	return html.Tfoot(tfootArgs...)
+	return html.Thead(append([]html.TheadArg{props}, rest...)...)
 }
 
-func Row(props RowProps, args ...html.TrArg) html.Node {
-	baseClass := "border-b transition-colors hover:bg-muted/50"
-	if props.Selected {
-		baseClass = classnames.Merge(baseClass, "data-[pui-table-state-selected]:bg-muted")
+func tbodyArgsFromProps(baseClass string, extra ...string) func(p BodyProps) []html.TbodyArg {
+	return func(p BodyProps) []html.TbodyArg {
+		args := []html.TbodyArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
-
-	className := classnames.Merge(baseClass, props.Class)
-
-	trArgs := []html.TrArg{html.AClass(className)}
-	if props.ID != "" {
-		trArgs = append(trArgs, html.AId(props.ID))
-	}
-
-	if props.Selected {
-		trArgs = append(trArgs, html.AData("pui-table-state-selected", ""))
-	}
-
-	for _, attr := range props.Attrs {
-		trArgs = append(trArgs, attr)
-	}
-
-	trArgs = append(trArgs, args...)
-
-	return html.Tr(trArgs...)
 }
 
-func Head(props HeadProps, args ...html.ThArg) html.Node {
-	thArgs := []html.ThArg{html.AClass(classnames.Merge(
+func (p BodyProps) ApplyTbody(attrs *html.TbodyAttrs, children *[]html.Component) {
+	for _, a := range tbodyArgsFromProps("[&_tr:last-child]:border-0")(p) {
+		a.ApplyTbody(attrs, children)
+	}
+}
+
+func Body(args ...html.TbodyArg) html.Node {
+	var (
+		props BodyProps
+		rest  []html.TbodyArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(BodyProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Tbody(append([]html.TbodyArg{props}, rest...)...)
+}
+
+func tfootArgsFromProps(baseClass string, extra ...string) func(p FooterProps) []html.TfootArg {
+	return func(p FooterProps) []html.TfootArg {
+		args := []html.TfootArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p FooterProps) ApplyTfoot(attrs *html.TfootAttrs, children *[]html.Component) {
+	for _, a := range tfootArgsFromProps("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0")(p) {
+		a.ApplyTfoot(attrs, children)
+	}
+}
+
+func Footer(args ...html.TfootArg) html.Node {
+	var (
+		props FooterProps
+		rest  []html.TfootArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(FooterProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Tfoot(append([]html.TfootArg{props}, rest...)...)
+}
+
+func trArgsFromProps(baseClass string, extra ...string) func(p RowProps) []html.TrArg {
+	return func(p RowProps) []html.TrArg {
+		classNames := append([]string{baseClass}, extra...)
+		if p.Selected {
+			classNames = append(classNames, "data-[pui-table-state-selected]:bg-muted")
+		}
+
+		classNames = append(classNames, p.Class)
+
+		args := []html.TrArg{html.AClass(classnames.Merge(classNames...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		if p.Selected {
+			args = append(args, html.AData("pui-table-state-selected", ""))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p RowProps) ApplyTr(attrs *html.TrAttrs, children *[]html.Component) {
+	for _, a := range trArgsFromProps("border-b transition-colors hover:bg-muted/50")(p) {
+		a.ApplyTr(attrs, children)
+	}
+}
+
+func Row(args ...html.TrArg) html.Node {
+	var (
+		props RowProps
+		rest  []html.TrArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(RowProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Tr(append([]html.TrArg{props}, rest...)...)
+}
+
+func thArgsFromProps(baseClass string, extra ...string) func(p HeadProps) []html.ThArg {
+	return func(p HeadProps) []html.ThArg {
+		args := []html.ThArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p HeadProps) ApplyTh(attrs *html.ThAttrs, children *[]html.Component) {
+	for _, a := range thArgsFromProps(
 		"h-10 px-2 text-left align-middle font-medium text-muted-foreground",
 		"[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-		props.Class,
-	))}
-	if props.ID != "" {
-		thArgs = append(thArgs, html.AId(props.ID))
+	)(p) {
+		a.ApplyTh(attrs, children)
 	}
-
-	for _, attr := range props.Attrs {
-		thArgs = append(thArgs, attr)
-	}
-
-	thArgs = append(thArgs, args...)
-
-	return html.Th(thArgs...)
 }
 
-func Cell(props CellProps, args ...html.TdArg) html.Node {
-	tdArgs := []html.TdArg{html.AClass(classnames.Merge(
+func Head(args ...html.ThArg) html.Node {
+	var (
+		props HeadProps
+		rest  []html.ThArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(HeadProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Th(append([]html.ThArg{props}, rest...)...)
+}
+
+func tdArgsFromProps(baseClass string, extra ...string) func(p CellProps) []html.TdArg {
+	return func(p CellProps) []html.TdArg {
+		args := []html.TdArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p CellProps) ApplyTd(attrs *html.TdAttrs, children *[]html.Component) {
+	for _, a := range tdArgsFromProps(
 		"p-2 align-middle",
 		"[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-		props.Class,
-	))}
-	if props.ID != "" {
-		tdArgs = append(tdArgs, html.AId(props.ID))
+	)(p) {
+		a.ApplyTd(attrs, children)
 	}
-
-	for _, attr := range props.Attrs {
-		tdArgs = append(tdArgs, attr)
-	}
-
-	tdArgs = append(tdArgs, args...)
-
-	return html.Td(tdArgs...)
 }
 
-func Caption(props CaptionProps, args ...html.CaptionArg) html.Node {
-	captionArgs := []html.CaptionArg{html.AClass(classnames.Merge("mt-4 text-sm text-muted-foreground", props.Class))}
-	if props.ID != "" {
-		captionArgs = append(captionArgs, html.AId(props.ID))
+func Cell(args ...html.TdArg) html.Node {
+	var (
+		props CellProps
+		rest  []html.TdArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(CellProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	for _, attr := range props.Attrs {
-		captionArgs = append(captionArgs, attr)
+	return html.Td(append([]html.TdArg{props}, rest...)...)
+}
+
+func captionArgsFromProps(baseClass string, extra ...string) func(p CaptionProps) []html.CaptionArg {
+	return func(p CaptionProps) []html.CaptionArg {
+		args := []html.CaptionArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p CaptionProps) ApplyCaption(attrs *html.CaptionAttrs, children *[]html.Component) {
+	for _, a := range captionArgsFromProps("mt-4 text-sm text-muted-foreground")(p) {
+		a.ApplyCaption(attrs, children)
+	}
+}
+
+func Caption(args ...html.CaptionArg) html.Node {
+	var (
+		props CaptionProps
+		rest  []html.CaptionArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(CaptionProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	captionArgs = append(captionArgs, args...)
-
-	return html.Caption(captionArgs...)
+	return html.Caption(append([]html.CaptionArg{props}, rest...)...)
 }

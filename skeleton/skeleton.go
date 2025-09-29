@@ -11,17 +11,34 @@ type Props struct {
 	Attrs []html.Global
 }
 
-func Skeleton(props Props, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{html.AClass(classnames.Merge("animate-pulse rounded bg-muted", props.Class))}
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := []html.DivArg{html.AClass(classnames.Merge("animate-pulse rounded bg-muted", p.Class))}
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	divArgs = append(divArgs, args...)
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
 
-	return html.Div(divArgs...)
+func Skeleton(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
 }

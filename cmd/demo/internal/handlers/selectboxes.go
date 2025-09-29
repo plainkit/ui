@@ -21,7 +21,6 @@ func RenderSelectBoxesContent() html.Node {
 					html.AClass("space-y-4"),
 					html.H3(html.AClass("text-lg font-semibold"), html.Text("Single Select")),
 					selectbox.SelectBox(
-						selectbox.Props{},
 						selectbox.Trigger(
 							selectbox.TriggerProps{Name: "framework"},
 							"single-select-content",
@@ -30,15 +29,13 @@ func RenderSelectBoxesContent() html.Node {
 						selectbox.Content(
 							selectbox.ContentProps{ID: "single-select-content"},
 							selectbox.Group(
-								selectbox.GroupProps{},
-								selectbox.Label(selectbox.LabelProps{}, html.Text("Frontend")),
+								selectbox.Label(html.Text("Frontend")),
 								selectbox.Item(selectbox.ItemProps{Value: "react"}, html.Text("React")),
 								selectbox.Item(selectbox.ItemProps{Value: "vue"}, html.Text("Vue.js")),
 								selectbox.Item(selectbox.ItemProps{Value: "angular"}, html.Text("Angular")),
 							),
 							selectbox.Group(
-								selectbox.GroupProps{},
-								selectbox.Label(selectbox.LabelProps{}, html.Text("Backend")),
+								selectbox.Label(html.Text("Backend")),
 								selectbox.Item(selectbox.ItemProps{Value: "go"}, html.Text("Go")),
 								selectbox.Item(selectbox.ItemProps{Value: "node"}, html.Text("Node.js")),
 								selectbox.Item(selectbox.ItemProps{Value: "python"}, html.Text("Python")),
@@ -50,7 +47,6 @@ func RenderSelectBoxesContent() html.Node {
 					html.AClass("space-y-4"),
 					html.H3(html.AClass("text-lg font-semibold"), html.Text("With Search")),
 					selectbox.SelectBox(
-						selectbox.Props{},
 						selectbox.Trigger(
 							selectbox.TriggerProps{Name: "country"},
 							"searchable-select-content",

@@ -102,27 +102,85 @@ type SubContentProps struct {
 	Attrs []html.Global
 }
 
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range divArgsFromProps("")(p) {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
 // Dropdown renders a dropdown container
-func Dropdown(props Props, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("", props.Class)),
+func Dropdown(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+func triggerSpanArgsFromProps(baseClass string, extra ...string) func(p TriggerProps) []html.SpanArg {
+	return func(p TriggerProps) []html.SpanArg {
+		args := []html.SpanArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+func (p TriggerProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
+	for _, a := range triggerSpanArgsFromProps("")(p) {
+		a.ApplySpan(attrs, children)
 	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
 }
 
 // Trigger creates a dropdown trigger using a button
-func Trigger(triggerProps TriggerProps, buttonProps button.Props, args ...html.ButtonArg) html.Node {
+func Trigger(args ...interface{}) html.Node {
+	var (
+		triggerProps TriggerProps
+		buttonProps  button.Props
+		rest         []html.ButtonArg
+	)
+
+	// Parse arguments
+	for _, a := range args {
+		if v, ok := a.(TriggerProps); ok {
+			triggerProps = v
+		} else if v, ok := a.(button.Props); ok {
+			buttonProps = v
+		} else if buttonArg, ok := a.(html.ButtonArg); ok {
+			rest = append(rest, buttonArg)
+		}
+	}
+
 	contentID := triggerProps.For
 	if contentID == "" {
 		contentID = randomID("dropdown")
@@ -136,12 +194,46 @@ func Trigger(triggerProps TriggerProps, buttonProps button.Props, args ...html.B
 			Class:       triggerProps.Class,
 			Attrs:       triggerProps.Attrs,
 		},
-		button.Button(append([]html.ButtonArg{buttonProps}, args...)...),
+		button.Button(append([]html.ButtonArg{buttonProps}, rest...)...),
 	)
 }
 
+func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentProps) []html.DivArg {
+	return func(p ContentProps) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range contentDivArgsFromProps("")(p) {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
 // Content creates the dropdown content panel
-func Content(props ContentProps, args ...html.DivArg) html.Node {
+func Content(args ...html.DivArg) html.Node {
+	var (
+		props ContentProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ContentProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
 	contentID := props.ID
 	if contentID == "" {
 		contentID = randomID("dropdown-content")
@@ -166,55 +258,96 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 		props.Class,
 	)
 
-	return popover.Content(
-		popover.ContentProps{
-			ID:        contentID,
-			Placement: placement,
-			Offset:    4,
-			Class:     contentClass,
-			Attrs:     props.Attrs,
-		},
-		args...,
-	)
+	contentProps := popover.ContentProps{
+		ID:        contentID,
+		Placement: placement,
+		Offset:    4,
+		Class:     contentClass,
+		Attrs:     props.Attrs,
+	}
+
+	return popover.Content(append([]html.DivArg{contentProps}, rest...)...)
+}
+
+func groupDivArgsFromProps(baseClass string, extra ...string) func(p GroupProps) []html.DivArg {
+	return func(p GroupProps) []html.DivArg {
+		args := []html.DivArg{
+			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AAria("role", "group"),
+		}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range groupDivArgsFromProps("py-1")(p) {
+		a.ApplyDiv(attrs, children)
+	}
 }
 
 // Group creates a dropdown group container
-func Group(props GroupProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("py-1", props.Class)),
-		html.AAria("role", "group"),
+func Group(args ...html.DivArg) html.Node {
+	var (
+		props GroupProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(GroupProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+func labelDivArgsFromProps(baseClass string, extra ...string) func(p LabelProps) []html.DivArg {
+	return func(p LabelProps) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+func (p LabelProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range labelDivArgsFromProps("px-2 py-1.5 text-sm font-semibold")(p) {
+		a.ApplyDiv(attrs, children)
 	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
 }
 
 // Label creates a dropdown label
-func Label(props LabelProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("px-2 py-1.5 text-sm font-semibold", props.Class)),
+func Label(args ...html.DivArg) html.Node {
+	var (
+		props LabelProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(LabelProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
+	return html.Div(append([]html.DivArg{props}, rest...)...)
 }
 
 // Item creates a dropdown item (button or link)
@@ -287,63 +420,127 @@ func Item(props ItemProps, args ...html.Node) html.Node {
 	return html.Button(buttonArgs...)
 }
 
+func separatorDivArgsFromProps(baseClass string, extra ...string) func(p SeparatorProps) []html.DivArg {
+	return func(p SeparatorProps) []html.DivArg {
+		args := []html.DivArg{
+			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AAria("role", "separator"),
+		}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p SeparatorProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range separatorDivArgsFromProps("h-px my-1 -mx-1 bg-muted")(p) {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
 // Separator creates a dropdown separator
-func Separator(props SeparatorProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("h-px my-1 -mx-1 bg-muted", props.Class)),
-		html.AAria("role", "separator"),
+func Separator(args ...html.DivArg) html.Node {
+	var (
+		props SeparatorProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(SeparatorProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+func shortcutSpanArgsFromProps(baseClass string, extra ...string) func(p ShortcutProps) []html.SpanArg {
+	return func(p ShortcutProps) []html.SpanArg {
+		args := []html.SpanArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+func (p ShortcutProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
+	for _, a := range shortcutSpanArgsFromProps("ml-auto text-xs tracking-widest opacity-60")(p) {
+		a.ApplySpan(attrs, children)
 	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
 }
 
 // Shortcut creates a dropdown shortcut indicator
-func Shortcut(props ShortcutProps, args ...html.SpanArg) html.Node {
-	spanArgs := []html.SpanArg{
-		html.AClass(classnames.Merge("ml-auto text-xs tracking-widest opacity-60", props.Class)),
+func Shortcut(args ...html.SpanArg) html.Node {
+	var (
+		props ShortcutProps
+		rest  []html.SpanArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ShortcutProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		spanArgs = append(spanArgs, html.AId(props.ID))
+	return html.Span(append([]html.SpanArg{props}, rest...)...)
+}
+
+func subDivArgsFromProps(baseClass string, extra ...string) func(p SubProps) []html.DivArg {
+	return func(p SubProps) []html.DivArg {
+		args := []html.DivArg{
+			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AData("pui-dropdown-submenu", ""),
+		}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	for _, attr := range props.Attrs {
-		spanArgs = append(spanArgs, attr)
+func (p SubProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range subDivArgsFromProps("relative")(p) {
+		a.ApplyDiv(attrs, children)
 	}
-
-	spanArgs = append(spanArgs, args...)
-
-	return html.Span(spanArgs...)
 }
 
 // Sub creates a dropdown submenu container
-func Sub(props SubProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("relative", props.Class)),
-		html.AData("pui-dropdown-submenu", ""),
+func Sub(args ...html.DivArg) html.Node {
+	var (
+		props SubProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(SubProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
+	return html.Div(append([]html.DivArg{props}, rest...)...)
 }
 
 // SubTrigger creates a submenu trigger
@@ -391,21 +588,20 @@ func SubContent(props SubContentProps, args ...html.DivArg) html.Node {
 		subContentID = randomID("submenu-content")
 	}
 
-	return popover.Content(
-		popover.ContentProps{
-			ID:            subContentID,
-			Placement:     PlacementRightStart,
-			Offset:        -4,
-			HoverDelay:    100,
-			HoverOutDelay: 200,
-			Class: classnames.Merge(
-				"z-[9999] min-w-[8rem] rounded-md border bg-popover p-1 shadow-lg",
-				props.Class,
-			),
-			Attrs: props.Attrs,
-		},
-		args...,
-	)
+	contentProps := popover.ContentProps{
+		ID:            subContentID,
+		Placement:     PlacementRightStart,
+		Offset:        -4,
+		HoverDelay:    100,
+		HoverOutDelay: 200,
+		Class: classnames.Merge(
+			"z-[9999] min-w-[8rem] rounded-md border bg-popover p-1 shadow-lg",
+			props.Class,
+		),
+		Attrs: props.Attrs,
+	}
+
+	return popover.Content(append([]html.DivArg{contentProps}, args...)...)
 }
 
 func randomID(prefix string) string {

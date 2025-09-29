@@ -29,7 +29,6 @@ func RenderCollapsibleContent() html.Node {
 						lucide.ChevronDown(html.AClass("size-4 text-muted-foreground")),
 					),
 					collapsible.Content(
-						collapsible.ContentProps{},
 						html.Div(
 							html.AClass(contentClasses),
 							html.P(html.Text("Plain UI is a growing collection of composable components built on the plainkit html helpers.")),
@@ -44,7 +43,6 @@ func RenderCollapsibleContent() html.Node {
 						lucide.ChevronDown(html.AClass("size-4 text-muted-foreground")),
 					),
 					collapsible.Content(
-						collapsible.ContentProps{},
 						html.Div(
 							html.AClass(contentClasses),
 							html.P(html.Text("Yes! Utility classes are merged automatically so you can override tokens per instance.")),

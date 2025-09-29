@@ -17,7 +17,7 @@ func RenderBadgesContent() html.Node {
 			),
 			html.Div(
 				html.AClass("flex flex-wrap gap-3"),
-				badge.Badge(badge.Props{}, html.T("Default")),
+				badge.Badge(html.T("Default")),
 				badge.Badge(badge.Props{Variant: badge.VariantSecondary}, html.T("Secondary")),
 				badge.Badge(badge.Props{Variant: badge.VariantOutline}, html.T("Outline")),
 				badge.Badge(badge.Props{Variant: badge.VariantDestructive}, html.T("Destructive")),

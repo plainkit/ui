@@ -35,34 +35,48 @@ type Props struct {
 	HasError    bool
 }
 
-// TimePicker renders a time picker component with hour/minute selection
-func TimePicker(props Props, args ...html.DivArg) html.Node {
-	id := props.ID
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	id := p.ID
 	if id == "" {
 		id = randomID("timepicker")
 	}
 
-	name := props.Name
+	name := p.Name
 	if name == "" {
 		name = id
 	}
 
-	placeholder := props.Placeholder
+	placeholder := p.Placeholder
 	if placeholder == "" {
 		placeholder = "Select time"
 	}
 
-	amLabel := props.AMLabel
+	amLabel := p.AMLabel
 	if amLabel == "" {
 		amLabel = "AM"
 	}
 
-	pmLabel := props.PMLabel
+	pmLabel := p.PMLabel
 	if pmLabel == "" {
 		pmLabel = "PM"
 	}
 
-	step := props.Step
+	step := p.Step
 	if step <= 0 {
 		step = 1
 	}
@@ -70,23 +84,21 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 	contentID := id + "-content"
 
 	var valueString string
-	if !props.Value.IsZero() {
-		valueString = props.Value.Format("15:04")
+	if !p.Value.IsZero() {
+		valueString = p.Value.Format("15:04")
 	}
 
 	var minTimeString string
-	if !props.MinTime.IsZero() {
-		minTimeString = props.MinTime.Format("15:04")
+	if !p.MinTime.IsZero() {
+		minTimeString = p.MinTime.Format("15:04")
 	}
 
 	var maxTimeString string
-	if !props.MaxTime.IsZero() {
-		maxTimeString = props.MaxTime.Format("15:04")
+	if !p.MaxTime.IsZero() {
+		maxTimeString = p.MaxTime.Format("15:04")
 	}
 
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("relative inline-block w-full", "")),
-	}
+	args := divArgsFromProps("relative inline-block w-full")(p)
 
 	// Hidden input
 	hiddenInput := html.Input(
@@ -96,14 +108,14 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 		html.AId(id+"-hidden"),
 		html.AData("pui-timepicker-hidden-input", "true"),
 		func() html.InputArg {
-			if props.Form != "" {
-				return html.AForm(props.Form)
+			if p.Form != "" {
+				return html.AForm(p.Form)
 			}
 
 			return html.AAria("", "")
 		}(),
 		func() html.InputArg {
-			if props.Required {
+			if p.Required {
 				return html.ARequired()
 			}
 
@@ -134,17 +146,17 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 				// Error/Invalid styles
 				"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
 				func() string {
-					if props.HasError {
+					if p.HasError {
 						return "border-destructive ring-destructive/20 dark:ring-destructive/40"
 					}
 					return ""
 				}(),
-				props.Class,
+				p.Class,
 			),
-			Disabled: props.Disabled,
+			Disabled: p.Disabled,
 			Attrs: []html.Global{
 				html.AData("pui-timepicker", "true"),
-				html.AData("pui-timepicker-use12hours", fmt.Sprintf("%t", props.Use12Hours)),
+				html.AData("pui-timepicker-use12hours", fmt.Sprintf("%t", p.Use12Hours)),
 				html.AData("pui-timepicker-am-label", amLabel),
 				html.AData("pui-timepicker-pm-label", pmLabel),
 				html.AData("pui-timepicker-placeholder", placeholder),
@@ -152,7 +164,7 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 				html.AData("pui-timepicker-min-time", minTimeString),
 				html.AData("pui-timepicker-max-time", maxTimeString),
 				func() html.Global {
-					if props.HasError {
+					if p.HasError {
 						return html.AAria("invalid", "true")
 					}
 					return html.AAria("", "")
@@ -209,7 +221,7 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 							),
 							html.Div(
 								html.AClass("max-h-32 overflow-y-auto border rounded-md bg-background"),
-								createHourList(props.Use12Hours),
+								createHourList(p.Use12Hours),
 							),
 						),
 
@@ -233,7 +245,7 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 
 						// AM/PM selector (conditionally rendered)
 						func() html.Node {
-							if props.Use12Hours {
+							if p.Use12Hours {
 								return html.Div(
 									html.AClass("flex gap-1"),
 									html.Button(
@@ -270,14 +282,33 @@ func TimePicker(props Props, args ...html.DivArg) html.Node {
 		),
 	)
 
-	divArgs = append(divArgs,
+	*children = append(*children,
 		hiddenInput,
 		triggerButton,
 		popupContent,
 	)
-	divArgs = append(divArgs, args...)
 
-	return html.Div(divArgs...).WithAssets("", timepickerJS, "ui-timepicker")
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+// TimePicker renders a time picker component with hour/minute selection
+func TimePicker(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...).WithAssets("", timepickerJS, "ui-timepicker")
 }
 
 func createHourList(use12Hours bool) html.Node {

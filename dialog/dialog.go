@@ -67,38 +67,61 @@ type DescriptionProps struct {
 	Attrs []html.Global
 }
 
+func dialogDivArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		instanceID := p.ID
+		if instanceID == "" {
+			instanceID = randomID("dialog")
+		}
+
+		args := []html.DivArg{
+			html.AData("pui-dialog", ""),
+			html.AData("dialog-instance", instanceID),
+			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+		}
+
+		if p.DisableClickAway {
+			args = append(args, html.AData("pui-dialog-disable-click-away", "true"))
+		}
+
+		if p.DisableESC {
+			args = append(args, html.AData("pui-dialog-disable-esc", "true"))
+		}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range dialogDivArgsFromProps("")(p) {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
 // Dialog renders a dialog container component
-func Dialog(props Props, args ...html.DivArg) html.Node {
-	instanceID := props.ID
-	if instanceID == "" {
-		instanceID = randomID("dialog")
+func Dialog(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	divArgs := []html.DivArg{
-		html.AData("pui-dialog", ""),
-		html.AData("dialog-instance", instanceID),
-		html.AClass(classnames.Merge("", props.Class)),
-	}
-
-	if props.DisableClickAway {
-		divArgs = append(divArgs, html.AData("pui-dialog-disable-click-away", "true"))
-	}
-
-	if props.DisableESC {
-		divArgs = append(divArgs, html.AData("pui-dialog-disable-esc", "true"))
-	}
-
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...).WithAssets("", dialogJS, "ui-dialog")
+	return html.Div(append([]html.DivArg{props}, rest...)...).WithAssets("", dialogJS, "ui-dialog")
 }
 
 // Trigger creates a dialog trigger element
@@ -256,105 +279,208 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	).WithAssets("", dialogJS, "ui-dialog")
 }
 
+func closeSpanArgsFromProps(baseClass string, extra ...string) func(p CloseProps) []html.SpanArg {
+	return func(p CloseProps) []html.SpanArg {
+		args := []html.SpanArg{
+			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+		}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		if p.For != "" {
+			args = append(args, html.AData("pui-dialog-close", p.For))
+		} else {
+			args = append(args, html.AData("pui-dialog-close", ""))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p CloseProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
+	for _, a := range closeSpanArgsFromProps("contents cursor-pointer")(p) {
+		a.ApplySpan(attrs, children)
+	}
+}
+
 // Close creates a dialog close trigger
-func Close(props CloseProps, args ...html.SpanArg) html.Node {
-	spanArgs := []html.SpanArg{
-		html.AClass(classnames.Merge("contents cursor-pointer", props.Class)),
+func Close(args ...html.SpanArg) html.Node {
+	var (
+		props CloseProps
+		rest  []html.SpanArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(CloseProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		spanArgs = append(spanArgs, html.AId(props.ID))
+	return html.Span(append([]html.SpanArg{props}, rest...)...)
+}
+
+func headerDivArgsFromProps(baseClass string, extra ...string) func(p HeaderProps) []html.DivArg {
+	return func(p HeaderProps) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	if props.For != "" {
-		spanArgs = append(spanArgs, html.AData("pui-dialog-close", props.For))
-	} else {
-		spanArgs = append(spanArgs, html.AData("pui-dialog-close", ""))
+func (p HeaderProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range headerDivArgsFromProps("flex flex-col gap-2 text-center sm:text-left")(p) {
+		a.ApplyDiv(attrs, children)
 	}
-
-	for _, attr := range props.Attrs {
-		spanArgs = append(spanArgs, attr)
-	}
-
-	spanArgs = append(spanArgs, args...)
-
-	return html.Span(spanArgs...)
 }
 
 // Header creates a dialog header container
-func Header(props HeaderProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("flex flex-col gap-2 text-center sm:text-left", props.Class)),
+func Header(args ...html.DivArg) html.Node {
+	var (
+		props HeaderProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(HeaderProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+func footerDivArgsFromProps(baseClass string, extra ...string) func(p FooterProps) []html.DivArg {
+	return func(p FooterProps) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+func (p FooterProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range footerDivArgsFromProps("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end")(p) {
+		a.ApplyDiv(attrs, children)
 	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
 }
 
 // Footer creates a dialog footer container
-func Footer(props FooterProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", props.Class)),
+func Footer(args ...html.DivArg) html.Node {
+	var (
+		props FooterProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(FooterProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+func titleH2ArgsFromProps(baseClass string, extra ...string) func(p TitleProps) []html.H2Arg {
+	return func(p TitleProps) []html.H2Arg {
+		args := []html.H2Arg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+func (p TitleProps) ApplyH2(attrs *html.H2Attrs, children *[]html.Component) {
+	for _, a := range titleH2ArgsFromProps("text-lg leading-none font-semibold")(p) {
+		a.ApplyH2(attrs, children)
 	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
 }
 
 // Title creates a dialog title
-func Title(props TitleProps, args ...html.H2Arg) html.Node {
-	h2Args := []html.H2Arg{
-		html.AClass(classnames.Merge("text-lg leading-none font-semibold", props.Class)),
+func Title(args ...html.H2Arg) html.Node {
+	var (
+		props TitleProps
+		rest  []html.H2Arg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(TitleProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		h2Args = append(h2Args, html.AId(props.ID))
+	return html.H2(append([]html.H2Arg{props}, rest...)...)
+}
+
+func descriptionPArgsFromProps(baseClass string, extra ...string) func(p DescriptionProps) []html.PArg {
+	return func(p DescriptionProps) []html.PArg {
+		args := []html.PArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	for _, attr := range props.Attrs {
-		h2Args = append(h2Args, attr)
+func (p DescriptionProps) ApplyP(attrs *html.PAttrs, children *[]html.Component) {
+	for _, a := range descriptionPArgsFromProps("text-muted-foreground text-sm")(p) {
+		a.ApplyP(attrs, children)
 	}
-
-	h2Args = append(h2Args, args...)
-
-	return html.H2(h2Args...)
 }
 
 // Description creates a dialog description
-func Description(props DescriptionProps, args ...html.PArg) html.Node {
-	pArgs := []html.PArg{
-		html.AClass(classnames.Merge("text-muted-foreground text-sm", props.Class)),
+func Description(args ...html.PArg) html.Node {
+	var (
+		props DescriptionProps
+		rest  []html.PArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(DescriptionProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		pArgs = append(pArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		pArgs = append(pArgs, attr)
-	}
-
-	pArgs = append(pArgs, args...)
-
-	return html.P(pArgs...)
+	return html.P(append([]html.PArg{props}, rest...)...)
 }
 
 func randomID(prefix string) string {

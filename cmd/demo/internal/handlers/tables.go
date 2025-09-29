@@ -55,7 +55,7 @@ func RenderTablesContent() html.Node {
 						table.Head(table.HeadProps{}, html.Text("Amount")),
 					),
 				),
-				table.Body(table.BodyProps{}, bodyRows...),
+				table.Body(append([]html.TbodyArg{table.BodyProps{}}, bodyRows...)...),
 				table.Footer(
 					table.FooterProps{},
 					table.Row(

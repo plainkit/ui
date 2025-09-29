@@ -31,7 +31,7 @@ func RenderRatingsContent() html.Node {
 					html.H3(html.AClass("text-lg font-semibold"), html.Text("Half-star precision")),
 					rating.Rating(
 						rating.Props{ID: "rating-stars", Name: "product_rating", Precision: 0.5},
-						rating.Group(rating.GroupProps{}, buildItems(rating.StyleStar)...),
+						rating.Group(buildItems(rating.StyleStar)...),
 					),
 					html.P(html.AClass("text-sm text-muted-foreground"), html.Text("Click or hover to preview partial fills before committing.")),
 				),
@@ -40,7 +40,7 @@ func RenderRatingsContent() html.Node {
 					html.H3(html.AClass("text-lg font-semibold"), html.Text("Heart feedback")),
 					rating.Rating(
 						rating.Props{ID: "rating-hearts", Precision: 1, OnlyInteger: true},
-						rating.Group(rating.GroupProps{}, buildItems(rating.StyleHeart)...),
+						rating.Group(buildItems(rating.StyleHeart)...),
 					),
 					html.P(html.AClass("text-sm text-muted-foreground"), html.Text("Perfect when you just need a simple like-meter.")),
 				),
@@ -49,7 +49,7 @@ func RenderRatingsContent() html.Node {
 					html.H3(html.AClass("text-lg font-semibold"), html.Text("Emoji mood")),
 					rating.Rating(
 						rating.Props{ID: "rating-emoji", Value: 4.2, Precision: 0.5, ReadOnly: true},
-						rating.Group(rating.GroupProps{}, buildItems(rating.StyleEmoji)...),
+						rating.Group(buildItems(rating.StyleEmoji)...),
 					),
 					html.P(html.AClass("text-sm text-muted-foreground"), html.Text("Read-only ratings show aggregate sentiment without interaction.")),
 				),

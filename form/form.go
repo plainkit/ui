@@ -40,40 +40,113 @@ type MessageProps struct {
 	Variant MessageVariant
 }
 
+func itemDivArgsFromProps(baseClass string, extra ...string) func(p ItemProps) []html.DivArg {
+	return func(p ItemProps) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range itemDivArgsFromProps("space-y-2")(p) {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
 // Item wraps form controls with vertical spacing.
-func Item(props ItemProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{html.AClass(classnames.Merge("space-y-2", props.Class))}
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+func Item(args ...html.DivArg) html.Node {
+	var (
+		props ItemProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ItemProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
+	return html.Div(append([]html.DivArg{props}, rest...)...)
 }
 
 // ItemFlex aligns form controls horizontally.
-func ItemFlex(props ItemProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{html.AClass(classnames.Merge("items-center flex space-x-2", props.Class))}
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+func ItemFlex(args ...html.DivArg) html.Node {
+	var (
+		props ItemProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ItemProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+	// Create a new Props with the flex classes
+	flexProps := ItemProps{
+		ID:    props.ID,
+		Class: classnames.Merge("items-center flex space-x-2", props.Class),
+		Attrs: props.Attrs,
 	}
 
-	divArgs = append(divArgs, args...)
+	return html.Div(append([]html.DivArg{flexProps}, rest...)...)
+}
 
-	return html.Div(divArgs...)
+func labelArgsFromProps(baseClass string, extra ...string) func(p LabelProps) []html.LabelArg {
+	return func(p LabelProps) []html.LabelArg {
+		classNames := append([]string{baseClass}, extra...)
+		classNames = append(classNames, p.Class, p.DisabledClass)
+
+		args := []html.LabelArg{html.AClass(classnames.Merge(classNames...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		if p.For != "" {
+			args = append(args, html.AFor(p.For))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p LabelProps) ApplyLabel(attrs *html.LabelAttrs, children *[]html.Component) {
+	for _, a := range labelArgsFromProps("")(p) {
+		a.ApplyLabel(attrs, children)
+	}
 }
 
 // Label proxies to the UI label component so everything stays consistent.
-func Label(props LabelProps, args ...html.LabelArg) html.Node {
+func Label(args ...html.LabelArg) html.Node {
+	var (
+		props LabelProps
+		rest  []html.LabelArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(LabelProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
 	labelProps := label.Props{
 		ID:    props.ID,
 		Class: classnames.Merge(props.Class, props.DisabledClass),
@@ -81,39 +154,88 @@ func Label(props LabelProps, args ...html.LabelArg) html.Node {
 		For:   props.For,
 	}
 
-	return label.Label(labelProps, args...)
+	return label.Label(append([]html.LabelArg{labelProps}, rest...)...)
+}
+
+func pArgsFromProps(baseClass string, extra ...string) func(p DescriptionProps) []html.PArg {
+	return func(p DescriptionProps) []html.PArg {
+		args := []html.PArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p DescriptionProps) ApplyP(attrs *html.PAttrs, children *[]html.Component) {
+	for _, a := range pArgsFromProps("text-sm text-muted-foreground")(p) {
+		a.ApplyP(attrs, children)
+	}
 }
 
 // Description renders helper text below an input.
-func Description(props DescriptionProps, args ...html.PArg) html.Node {
-	pArgs := []html.PArg{html.AClass(classnames.Merge("text-sm text-muted-foreground", props.Class))}
-	if props.ID != "" {
-		pArgs = append(pArgs, html.AId(props.ID))
+func Description(args ...html.PArg) html.Node {
+	var (
+		props DescriptionProps
+		rest  []html.PArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(DescriptionProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	for _, attr := range props.Attrs {
-		pArgs = append(pArgs, attr)
+	return html.P(append([]html.PArg{props}, rest...)...)
+}
+
+func messagePArgsFromProps(baseClass string, extra ...string) func(p MessageProps) []html.PArg {
+	return func(p MessageProps) []html.PArg {
+		classNames := append([]string{baseClass}, extra...)
+		classNames = append(classNames, messageVariantClass(p.Variant), p.Class)
+
+		args := []html.PArg{html.AClass(classnames.Merge(classNames...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	pArgs = append(pArgs, args...)
-
-	return html.P(pArgs...)
+func (p MessageProps) ApplyP(attrs *html.PAttrs, children *[]html.Component) {
+	for _, a := range messagePArgsFromProps("text-[0.8rem] font-medium")(p) {
+		a.ApplyP(attrs, children)
+	}
 }
 
 // Message displays validation feedback.
-func Message(props MessageProps, args ...html.PArg) html.Node {
-	pArgs := []html.PArg{html.AClass(classnames.Merge("text-[0.8rem] font-medium", messageVariantClass(props.Variant), props.Class))}
-	if props.ID != "" {
-		pArgs = append(pArgs, html.AId(props.ID))
+func Message(args ...html.PArg) html.Node {
+	var (
+		props MessageProps
+		rest  []html.PArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(MessageProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	for _, attr := range props.Attrs {
-		pArgs = append(pArgs, attr)
-	}
-
-	pArgs = append(pArgs, args...)
-
-	return html.P(pArgs...)
+	return html.P(append([]html.PArg{props}, rest...)...)
 }
 
 func messageVariantClass(variant MessageVariant) string {

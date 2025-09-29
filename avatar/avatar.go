@@ -51,8 +51,29 @@ const (
 	GroupSpacingLg GroupSpacing = "lg"
 )
 
-func Avatar(props Props, args ...html.DivArg) html.Node {
-	className := classnames.Merge(
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra, p.Class)...)...)
+
+		args := []html.DivArg{html.AClass(className)}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplyDiv implements the html.DivArg interface for Props
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := divArgsFromProps(
 		"relative inline-flex shrink-0 items-center justify-center overflow-hidden",
 		"size-12 text-base",
 		"data-[pui-avatar-size=sm]:size-8 data-[pui-avatar-size=sm]:text-xs",
@@ -60,117 +81,220 @@ func Avatar(props Props, args ...html.DivArg) html.Node {
 		"data-[pui-avatar-size=lg]:size-16 data-[pui-avatar-size=lg]:text-xl",
 		"rounded-full bg-muted",
 		"data-[pui-avatar-in-group=true]:ring-2 data-[pui-avatar-in-group=true]:ring-background",
-		props.Class,
-	)
+	)(p)
 
-	divArgs := []html.DivArg{
-		html.AClass(className),
-		html.AData("pui-avatar", ""),
-	}
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+	args = append([]html.DivArg{html.AData("pui-avatar", "")}, args...)
+
+	if p.Size != "" {
+		args = append(args, html.AData("pui-avatar-size", string(p.Size)))
 	}
 
-	if props.Size != "" {
-		divArgs = append(divArgs, html.AData("pui-avatar-size", string(props.Size)))
+	if p.InGroup {
+		args = append(args, html.AData("pui-avatar-in-group", "true"))
 	}
 
-	if props.InGroup {
-		divArgs = append(divArgs, html.AData("pui-avatar-in-group", "true"))
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
 	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
 }
 
-func Image(props ImageProps, args ...html.ImgArg) html.Node {
-	className := classnames.Merge(
+// Avatar renders an avatar using the composable pattern.
+// Accepts variadic html.DivArg arguments, with Props as an optional first argument.
+func Avatar(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+func imgArgsFromProps(baseClass string, extra ...string) func(p ImageProps) []html.ImgArg {
+	return func(p ImageProps) []html.ImgArg {
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra, p.Class)...)...)
+
+		args := []html.ImgArg{html.AClass(className)}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplyImg implements the html.ImgArg interface for ImageProps
+func (p ImageProps) ApplyImg(attrs *html.ImgAttrs, children *[]html.Component) {
+	args := imgArgsFromProps(
 		"absolute inset-0 w-full h-full",
 		"object-cover",
 		"z-10",
-		props.Class,
-	)
+	)(p)
 
-	imgArgs := []html.ImgArg{
-		html.AClass(className),
-		html.AData("pui-avatar-image", ""),
-	}
-	if props.ID != "" {
-		imgArgs = append(imgArgs, html.AId(props.ID))
+	args = append([]html.ImgArg{html.AData("pui-avatar-image", "")}, args...)
+
+	if p.Src != "" {
+		args = append(args, html.ASrc(p.Src))
 	}
 
-	if props.Src != "" {
-		imgArgs = append(imgArgs, html.ASrc(props.Src))
+	args = append(args, html.AAlt(p.Alt))
+
+	for _, a := range args {
+		a.ApplyImg(attrs, children)
 	}
-
-	imgArgs = append(imgArgs, html.AAlt(props.Alt))
-	for _, attr := range props.Attrs {
-		imgArgs = append(imgArgs, attr)
-	}
-
-	imgArgs = append(imgArgs, args...)
-
-	return html.Img(imgArgs...)
 }
 
-func Fallback(props FallbackProps, args ...html.SpanArg) html.Node {
-	className := classnames.Merge(
+// Image renders an avatar image using the composable pattern.
+// Accepts variadic html.ImgArg arguments, with ImageProps as an optional first argument.
+func Image(args ...html.ImgArg) html.Node {
+	var (
+		props ImageProps
+		rest  []html.ImgArg
+	)
+
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(ImageProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Img(append([]html.ImgArg{props}, rest...)...)
+}
+
+func spanArgsFromProps(baseClass string, extra ...string) func(p FallbackProps) []html.SpanArg {
+	return func(p FallbackProps) []html.SpanArg {
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra, p.Class)...)...)
+
+		args := []html.SpanArg{html.AClass(className)}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplySpan implements the html.SpanArg interface for FallbackProps
+func (p FallbackProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
+	args := spanArgsFromProps(
 		"font-medium text-muted-foreground",
-		props.Class,
-	)
+	)(p)
 
-	spanArgs := []html.SpanArg{
-		html.AClass(className),
-		html.AData("pui-avatar-fallback", ""),
+	args = append([]html.SpanArg{html.AData("pui-avatar-fallback", "")}, args...)
+
+	for _, a := range args {
+		a.ApplySpan(attrs, children)
 	}
-	if props.ID != "" {
-		spanArgs = append(spanArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		spanArgs = append(spanArgs, attr)
-	}
-
-	spanArgs = append(spanArgs, args...)
-
-	return html.Span(spanArgs...)
 }
 
-func Group(props GroupProps, args ...html.DivArg) html.Node {
-	if props.Spacing == "" {
-		props.Spacing = GroupSpacingMd
+// Fallback renders an avatar fallback using the composable pattern.
+// Accepts variadic html.SpanArg arguments, with FallbackProps as an optional first argument.
+func Fallback(args ...html.SpanArg) html.Node {
+	var (
+		props FallbackProps
+		rest  []html.SpanArg
+	)
+
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(FallbackProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	className := classnames.Merge(
+	return html.Span(append([]html.SpanArg{props}, rest...)...)
+}
+
+func groupDivArgsFromProps(baseClass string, extra ...string) func(p GroupProps) []html.DivArg {
+	return func(p GroupProps) []html.DivArg {
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra, p.Class)...)...)
+
+		args := []html.DivArg{html.AClass(className)}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplyDiv implements the html.DivArg interface for GroupProps
+func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	spacing := p.Spacing
+	if spacing == "" {
+		spacing = GroupSpacingMd
+	}
+
+	args := groupDivArgsFromProps(
 		"flex items-center",
 		"data-[pui-avatar-spacing=sm]:-space-x-1",
 		"data-[pui-avatar-spacing=md]:-space-x-2",
 		"data-[pui-avatar-spacing=lg]:-space-x-4",
-		props.Class,
-	)
+	)(p)
 
-	divArgs := []html.DivArg{
-		html.AClass(className),
-		html.AData("pui-avatar-spacing", string(props.Spacing)),
+	args = append([]html.DivArg{html.AData("pui-avatar-spacing", string(spacing))}, args...)
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
 	}
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
 }
 
+// Group renders an avatar group using the composable pattern.
+// Accepts variadic html.DivArg arguments, with GroupProps as an optional first argument.
+func Group(args ...html.DivArg) html.Node {
+	var (
+		props GroupProps
+		rest  []html.DivArg
+	)
+
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(GroupProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+// GroupOverflow renders an overflow indicator for avatar groups that have more avatars than displayed.
+// This function maintains its existing signature for backward compatibility.
 func GroupOverflow(count int, props Props, args ...html.DivArg) html.Node {
 	className := classnames.Merge(
 		"inline-flex items-center justify-center",

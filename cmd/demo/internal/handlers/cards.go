@@ -19,17 +19,14 @@ func RenderCardsContent() html.Node {
 			html.Div(
 				html.AClass("grid gap-6 md:grid-cols-2"),
 				card.Card(
-					card.Props{},
 					card.Header(
-						card.HeaderProps{},
 						html.Div(
 							html.AClass("space-y-1"),
-							card.Title(card.TitleProps{}, html.Text("Change subscription")),
-							card.Description(card.DescriptionProps{}, html.Text("Upgrade or downgrade your current plan.")),
+							card.Title(html.Text("Change subscription")),
+							card.Description(html.Text("Upgrade or downgrade your current plan.")),
 						),
 					),
 					card.Content(
-						card.ContentProps{},
 						html.Div(
 							html.AClass("space-y-3"),
 							html.P(html.AClass("text-sm text-muted-foreground"), html.Text("You're currently on the Team plan. Teams get collaborative features, SSO, and priority support.")),
@@ -42,7 +39,6 @@ func RenderCardsContent() html.Node {
 						),
 					),
 					card.Footer(
-						card.FooterProps{},
 						html.Div(
 							html.AClass("ml-auto flex gap-3"),
 							button.Button(button.Props{Variant: button.VariantOutline}, html.Text("Manage plan")),

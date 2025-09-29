@@ -43,93 +43,94 @@ type SeparatorProps struct {
 	Attrs []html.Global
 }
 
-func InputOTP(props Props, args ...html.DivArg) html.Node {
-	containerID := ""
-	if props.ID != "" {
-		containerID = props.ID + "-container"
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID+"-container"))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := divArgsFromProps("flex flex-row items-center gap-2 w-fit")(p)
+	args = append(args, html.AData("pui-inputotp", ""))
+
+	if p.Value != "" {
+		args = append(args, html.AData("pui-inputotp-value", p.Value))
 	}
 
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("flex flex-row items-center gap-2 w-fit", props.Class)),
-		html.AData("pui-inputotp", ""),
-	}
-	if containerID != "" {
-		divArgs = append(divArgs, html.AId(containerID))
+	if p.Autofocus {
+		args = append(args, html.AAutofocus())
 	}
 
-	if props.Value != "" {
-		divArgs = append(divArgs, html.AData("pui-inputotp-value", props.Value))
-	}
-
-	if props.Autofocus {
-		divArgs = append(divArgs, html.AAutofocus())
-	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
+	// Create hidden input
 	hiddenArgs := []html.InputArg{
 		html.AType("hidden"),
 		html.AData("pui-inputotp-value-target", ""),
 	}
-	if props.ID != "" {
-		hiddenArgs = append(hiddenArgs, html.AId(props.ID))
+	if p.ID != "" {
+		hiddenArgs = append(hiddenArgs, html.AId(p.ID))
 	}
 
-	if props.Name != "" {
-		hiddenArgs = append(hiddenArgs, html.AName(props.Name))
+	if p.Name != "" {
+		hiddenArgs = append(hiddenArgs, html.AName(p.Name))
 	}
 
-	if props.Form != "" {
-		hiddenArgs = append(hiddenArgs, html.AForm(props.Form))
+	if p.Form != "" {
+		hiddenArgs = append(hiddenArgs, html.AForm(p.Form))
 	}
 
-	if props.HasError {
+	if p.HasError {
 		hiddenArgs = append(hiddenArgs, html.AAria("invalid", "true"))
 	}
 
-	if props.Required {
+	if p.Required {
 		hiddenArgs = append(hiddenArgs, html.ARequired())
 	}
 
 	hidden := html.Input(hiddenArgs...)
-	divArgs = append(divArgs, hidden)
-	divArgs = append(divArgs, args...)
+	*children = append(*children, hidden)
 
-	node := html.Div(divArgs...)
-
-	return node.WithAssets("", inputOTPJS, "ui-inputotp")
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
 }
 
-func Group(props GroupProps, args ...html.DivArg) html.Node {
-	groupArgs := []html.DivArg{html.AClass(classnames.Merge("flex gap-2", props.Class))}
-	if props.ID != "" {
-		groupArgs = append(groupArgs, html.AId(props.ID))
+func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := []html.DivArg{html.AClass(classnames.Merge("flex gap-2", p.Class))}
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	for _, attr := range props.Attrs {
-		groupArgs = append(groupArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	groupArgs = append(groupArgs, args...)
-
-	return html.Div(groupArgs...)
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
 }
 
-func Slot(props SlotProps) html.Node {
-	inputType := props.Type
+func (p SlotProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	inputType := p.Type
 	if inputType == "" {
 		inputType = "text"
 	}
 
-	wrapperArgs := []html.DivArg{html.AClass("relative")}
-	if props.ID != "" {
-		wrapperArgs = append(wrapperArgs, html.AId(props.ID))
+	args := []html.DivArg{html.AClass("relative")}
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	for _, attr := range props.Attrs {
-		wrapperArgs = append(wrapperArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
 	classes := []string{
@@ -141,52 +142,131 @@ func Slot(props SlotProps) html.Node {
 		"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
 		"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
 	}
-	if props.HasError {
+	if p.HasError {
 		classes = append(classes, "border-destructive ring-destructive/20 dark:ring-destructive/40")
 	}
 
-	classes = append(classes, props.Class)
+	classes = append(classes, p.Class)
 
 	inputArgs := []html.InputArg{
 		html.AType(inputType),
 		html.AInputmode("numeric"),
 		html.AMaxlength("1"),
 		html.AClass(classnames.Merge(classes...)),
-		html.AData("pui-inputotp-index", strconv.Itoa(props.Index)),
+		html.AData("pui-inputotp-index", strconv.Itoa(p.Index)),
 		html.AData("pui-inputotp-slot", ""),
 	}
-	if props.Placeholder != "" {
-		inputArgs = append(inputArgs, html.APlaceholder(props.Placeholder))
+	if p.Placeholder != "" {
+		inputArgs = append(inputArgs, html.APlaceholder(p.Placeholder))
 	}
 
-	if props.Disabled {
+	if p.Disabled {
 		inputArgs = append(inputArgs, html.ADisabled())
 	}
 
-	if props.HasError {
+	if p.HasError {
 		inputArgs = append(inputArgs, html.AAria("invalid", "true"))
 	}
 
-	return html.Div(append(wrapperArgs, html.Input(inputArgs...))...)
+	input := html.Input(inputArgs...)
+	*children = append(*children, input)
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
 }
 
-func Separator(props SeparatorProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{html.AClass(classnames.Merge("flex items-center text-muted-foreground text-xl", props.Class))}
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+func (p SeparatorProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := []html.DivArg{html.AClass(classnames.Merge("flex items-center text-muted-foreground text-xl", p.Class))}
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	if len(args) == 0 {
-		divArgs = append(divArgs, html.Span(html.Text("-")))
-	} else {
-		divArgs = append(divArgs, args...)
+	// Add default separator if no children
+	if len(*children) == 0 {
+		*children = append(*children, html.Span(html.Text("-")))
 	}
 
-	return html.Div(divArgs...)
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+func InputOTP(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...).WithAssets("", inputOTPJS, "ui-inputotp")
+}
+
+func Group(args ...html.DivArg) html.Node {
+	var (
+		props GroupProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(GroupProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+func Slot(args ...html.DivArg) html.Node {
+	var (
+		props SlotProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(SlotProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+func Separator(args ...html.DivArg) html.Node {
+	var (
+		props SeparatorProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(SeparatorProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	// Add default separator if no other content
+	if len(rest) == 0 {
+		rest = append(rest, html.Span(html.Text("-")))
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
 }
 
 //go:embed inputotp.js

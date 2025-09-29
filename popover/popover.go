@@ -54,81 +54,128 @@ const (
 	TriggerTypeClick TriggerType = "click"
 )
 
+func triggerSpanArgsFromProps(baseClass string, extra ...string) func(p TriggerProps) []html.SpanArg {
+	return func(p TriggerProps) []html.SpanArg {
+		triggerType := p.TriggerType
+		if triggerType == "" {
+			triggerType = TriggerTypeClick
+		}
+
+		args := []html.SpanArg{
+			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AData("pui-popover-open", "false"),
+			html.AData("pui-popover-type", string(triggerType)),
+		}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		if p.For != "" {
+			args = append(args, html.AData("pui-popover-trigger", p.For))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p TriggerProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
+	for _, a := range triggerSpanArgsFromProps("group cursor-pointer")(p) {
+		a.ApplySpan(attrs, children)
+	}
+}
+
 // Trigger renders the interactive element that toggles a popover.
-func Trigger(props TriggerProps, args ...html.SpanArg) html.Node {
-	triggerType := props.TriggerType
-	if triggerType == "" {
-		triggerType = TriggerTypeClick
+func Trigger(args ...html.SpanArg) html.Node {
+	var (
+		props TriggerProps
+		rest  []html.SpanArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(TriggerProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	spanArgs := []html.SpanArg{
-		html.AClass(classnames.Merge("group cursor-pointer", props.Class)),
-		html.AData("pui-popover-open", "false"),
-		html.AData("pui-popover-type", string(triggerType)),
-	}
-	if props.ID != "" {
-		spanArgs = append(spanArgs, html.AId(props.ID))
-	}
-
-	if props.For != "" {
-		spanArgs = append(spanArgs, html.AData("pui-popover-trigger", props.For))
-	}
-
-	for _, attr := range props.Attrs {
-		spanArgs = append(spanArgs, attr)
-	}
-
-	spanArgs = append(spanArgs, args...)
-
-	node := html.Span(spanArgs...)
+	node := html.Span(append([]html.SpanArg{props}, rest...)...)
 
 	return node.WithAssets("", popoverJS, "ui-popover")
 }
 
-// Content defines the floating panel positioning and styling.
-func Content(props ContentProps, args ...html.DivArg) html.Node {
-	placement := props.Placement
-	if placement == "" {
-		placement = PlacementBottom
-	}
+func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentProps) []html.DivArg {
+	return func(p ContentProps) []html.DivArg {
+		placement := p.Placement
+		if placement == "" {
+			placement = PlacementBottom
+		}
 
-	offset := props.Offset
-	if offset == 0 {
-		if props.ShowArrow {
-			offset = 8
+		offset := p.Offset
+		if offset == 0 {
+			if p.ShowArrow {
+				offset = 8
+			} else {
+				offset = 4
+			}
+		}
+
+		args := []html.DivArg{
+			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AData("pui-popover-id", p.ID),
+			html.AData("pui-popover-open", "false"),
+			html.AData("pui-popover-placement", string(placement)),
+			html.AData("pui-popover-offset", strconv.Itoa(offset)),
+			html.AData("pui-popover-disable-clickaway", strconv.FormatBool(p.DisableClickAway)),
+			html.AData("pui-popover-disable-esc", strconv.FormatBool(p.DisableESC)),
+			html.AData("pui-popover-show-arrow", strconv.FormatBool(p.ShowArrow)),
+			html.AData("pui-popover-hover-delay", strconv.Itoa(p.HoverDelay)),
+			html.AData("pui-popover-hover-out-delay", strconv.Itoa(p.HoverOutDelay)),
+		}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		if p.MatchWidth {
+			args = append(args, html.AData("pui-popover-match-width", "true"))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range contentDivArgsFromProps(
+		"bg-popover rounded-lg border text-popover-foreground text-sm shadow-lg pointer-events-auto absolute z-[9999] hidden top-0 left-0",
+	)(p) {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+// Content defines the floating panel positioning and styling.
+func Content(args ...html.DivArg) html.Node {
+	var (
+		props ContentProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ContentProps); ok {
+			props = v
 		} else {
-			offset = 4
+			rest = append(rest, a)
 		}
 	}
 
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge(
-			"bg-popover rounded-lg border text-popover-foreground text-sm shadow-lg pointer-events-auto absolute z-[9999] hidden top-0 left-0",
-			props.Class,
-		)),
-		html.AData("pui-popover-id", props.ID),
-		html.AData("pui-popover-open", "false"),
-		html.AData("pui-popover-placement", string(placement)),
-		html.AData("pui-popover-offset", strconv.Itoa(offset)),
-		html.AData("pui-popover-disable-clickaway", strconv.FormatBool(props.DisableClickAway)),
-		html.AData("pui-popover-disable-esc", strconv.FormatBool(props.DisableESC)),
-		html.AData("pui-popover-show-arrow", strconv.FormatBool(props.ShowArrow)),
-		html.AData("pui-popover-hover-delay", strconv.Itoa(props.HoverDelay)),
-		html.AData("pui-popover-hover-out-delay", strconv.Itoa(props.HoverOutDelay)),
-	}
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
-	}
-
-	if props.MatchWidth {
-		divArgs = append(divArgs, html.AData("pui-popover-match-width", "true"))
-	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	innerArgs := append([]html.DivArg{html.AClass("w-full overflow-hidden")}, args...)
+	innerArgs := append([]html.DivArg{html.AClass("w-full overflow-hidden")}, rest...)
 
 	contentInner := []html.DivArg{html.Div(innerArgs...)}
 	if props.ShowArrow {
@@ -142,7 +189,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 		))
 	}
 
-	node := html.Div(append(divArgs, contentInner...)...)
+	node := html.Div(append([]html.DivArg{props}, contentInner...)...)
 
 	return node.WithAssets("", popoverJS, "ui-popover")
 }

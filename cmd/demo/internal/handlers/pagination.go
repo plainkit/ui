@@ -120,7 +120,7 @@ func RenderPaginationContent() html.Node {
 			),
 			pagination.Pagination(
 				pagination.Props{},
-				pagination.Content(pagination.ContentProps{}, items...),
+				pagination.Content(append([]html.UlArg{pagination.ContentProps{}}, items...)...),
 			),
 		),
 	)

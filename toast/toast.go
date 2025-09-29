@@ -36,6 +36,134 @@ type TriggerProps struct {
 	Toast Props // The toast configuration to spawn
 }
 
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	variant := p.Variant
+	if variant == "" {
+		variant = VariantDefault
+	}
+
+	position := p.Position
+	if position == "" {
+		position = PositionBottomRight
+	}
+
+	duration := p.Duration
+	if duration == 0 {
+		duration = 3000
+	}
+
+	id := p.ID
+	if id == "" {
+		id = randomID("toast")
+	}
+
+	args := divArgsFromProps(
+		"z-50 fixed pointer-events-auto p-4 w-full md:max-w-[420px]",
+		"animate-in fade-in slide-in-from-bottom-4 duration-300",
+		"data-[position=top-right]:top-0 data-[position=top-right]:right-0",
+		"data-[position=top-left]:top-0 data-[position=top-left]:left-0",
+		"data-[position=top-center]:top-0 data-[position=top-center]:left-1/2 data-[position=top-center]:-translate-x-1/2",
+		"data-[position=bottom-right]:bottom-0 data-[position=bottom-right]:right-0",
+		"data-[position=bottom-left]:bottom-0 data-[position=bottom-left]:left-0",
+		"data-[position=bottom-center]:bottom-0 data-[position=bottom-center]:left-1/2 data-[position=bottom-center]:-translate-x-1/2",
+	)(p)
+	args = append([]html.DivArg{
+		html.AId(id),
+		html.AData("pui-toast", ""),
+		html.AData("pui-toast-duration", strconv.Itoa(duration)),
+		html.AData("position", string(position)),
+		html.AData("variant", string(variant)),
+	}, args...)
+
+	innerChildren := make([]html.Component, 0)
+
+	if p.ShowIndicator && duration > 0 {
+		progressBar := html.Div(
+			html.AClass("absolute top-0 left-0 right-0 h-1 overflow-hidden"),
+			html.Div(
+				html.AClass(classnames.Merge(
+					"toast-progress h-full origin-left transition-transform ease-linear",
+					"data-[variant=default]:bg-gray-500",
+					"data-[variant=success]:bg-green-500",
+					"data-[variant=error]:bg-red-500",
+					"data-[variant=warning]:bg-yellow-500",
+					"data-[variant=info]:bg-blue-500",
+				)),
+				html.AData("variant", string(variant)),
+				html.AData("duration", strconv.Itoa(duration)),
+			),
+		)
+		innerChildren = append(innerChildren, progressBar)
+	}
+
+	contentChildren := make([]html.DivArg, 0)
+
+	if p.Icon && variant != VariantDefault {
+		iconNode := variantIcon(variant)
+		contentChildren = append(contentChildren, iconNode)
+	}
+
+	textContainerArgs := []html.SpanArg{html.AClass("flex-1 min-w-0")}
+	if p.Title != "" {
+		textContainerArgs = append(textContainerArgs, html.P(
+			html.AClass("text-sm font-semibold truncate"),
+			html.Text(p.Title),
+		))
+	}
+
+	if p.Description != "" {
+		textContainerArgs = append(textContainerArgs, html.P(
+			html.AClass("text-sm opacity-90 mt-1"),
+			html.Text(p.Description),
+		))
+	}
+
+	textContainer := html.Span(textContainerArgs...)
+	contentChildren = append(contentChildren, textContainer)
+
+	if p.Dismissible {
+		btn := button.Button(button.Props{
+			Variant: button.VariantGhost,
+			Size:    button.SizeIcon,
+			Attrs: []html.Global{
+				html.AAria("label", "Close"),
+				html.AData("pui-toast-dismiss", ""),
+			},
+		}, lucide.X(
+			html.AClass("size-4 opacity-75 hover:opacity-100"),
+		))
+		contentChildren = append(contentChildren, btn)
+	}
+
+	contentDivArgs := []html.DivArg{
+		html.AClass("w-full bg-popover text-popover-foreground rounded-lg shadow-xs border pt-5 pb-4 px-4 flex items-center justify-center relative overflow-hidden group gap-3"),
+	}
+	contentDivArgs = append(contentDivArgs, contentChildren...)
+	contentDiv := html.Div(contentDivArgs...)
+	innerChildren = append(innerChildren, contentDiv)
+
+	*children = append(*children, innerChildren...)
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
 const (
 	VariantDefault Variant = "default"
 	VariantSuccess Variant = "success"
@@ -54,118 +182,21 @@ const (
 )
 
 // Toast renders an interactive toast notification container with optional auto-dismiss logic.
-func Toast(props Props, args ...html.DivArg) html.Node {
-	variant := props.Variant
-	if variant == "" {
-		variant = VariantDefault
+func Toast(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	position := props.Position
-	if position == "" {
-		position = PositionBottomRight
-	}
-
-	duration := props.Duration
-	if duration == 0 {
-		duration = 3000
-	}
-
-	id := props.ID
-	if id == "" {
-		id = randomID("toast")
-	}
-
-	divArgs := []html.DivArg{
-		html.AId(id),
-		html.AClass(classnames.Merge(
-			"z-50 fixed pointer-events-auto p-4 w-full md:max-w-[420px]",
-			"animate-in fade-in slide-in-from-bottom-4 duration-300",
-			"data-[position=top-right]:top-0 data-[position=top-right]:right-0",
-			"data-[position=top-left]:top-0 data-[position=top-left]:left-0",
-			"data-[position=top-center]:top-0 data-[position=top-center]:left-1/2 data-[position=top-center]:-translate-x-1/2",
-			"data-[position=bottom-right]:bottom-0 data-[position=bottom-right]:right-0",
-			"data-[position=bottom-left]:bottom-0 data-[position=bottom-left]:left-0",
-			"data-[position=bottom-center]:bottom-0 data-[position=bottom-center]:left-1/2 data-[position=bottom-center]:-translate-x-1/2",
-			props.Class,
-		)),
-		html.AData("pui-toast", ""),
-		html.AData("pui-toast-duration", strconv.Itoa(duration)),
-		html.AData("position", string(position)),
-		html.AData("variant", string(variant)),
-	}
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	innerDivArgs := []html.DivArg{}
-
-	if props.ShowIndicator && duration > 0 {
-		progressBar := html.Div(
-			html.AClass("absolute top-0 left-0 right-0 h-1 overflow-hidden"),
-			html.Div(
-				html.AClass(classnames.Merge(
-					"toast-progress h-full origin-left transition-transform ease-linear",
-					"data-[variant=default]:bg-gray-500",
-					"data-[variant=success]:bg-green-500",
-					"data-[variant=error]:bg-red-500",
-					"data-[variant=warning]:bg-yellow-500",
-					"data-[variant=info]:bg-blue-500",
-				)),
-				html.AData("variant", string(variant)),
-				html.AData("duration", strconv.Itoa(duration)),
-			),
-		)
-		innerDivArgs = append(innerDivArgs, progressBar)
-	}
-
-	contentDivArgs := []html.DivArg{html.AClass("w-full bg-popover text-popover-foreground rounded-lg shadow-xs border pt-5 pb-4 px-4 flex items-center justify-center relative overflow-hidden group gap-3")}
-
-	if props.Icon && variant != VariantDefault {
-		iconNode := variantIcon(variant)
-		contentDivArgs = append(contentDivArgs, iconNode)
-	}
-
-	textSpanArgs := []html.SpanArg{html.AClass("flex-1 min-w-0")}
-	if props.Title != "" {
-		textSpanArgs = append(textSpanArgs, html.P(
-			html.AClass("text-sm font-semibold truncate"),
-			html.Text(props.Title),
-		))
-	}
-
-	if props.Description != "" {
-		textSpanArgs = append(textSpanArgs, html.P(
-			html.AClass("text-sm opacity-90 mt-1"),
-			html.Text(props.Description),
-		))
-	}
-
-	textContainer := html.Span(textSpanArgs...)
-	contentDivArgs = append(contentDivArgs, textContainer)
-
-	if props.Dismissible {
-		btn := button.Button(button.Props{
-			Variant: button.VariantGhost,
-			Size:    button.SizeIcon,
-			Attrs: []html.Global{
-				html.AAria("label", "Close"),
-				html.AData("pui-toast-dismiss", ""),
-			},
-		}, lucide.X(
-			html.AClass("size-4 opacity-75 hover:opacity-100"),
-		))
-		contentDivArgs = append(contentDivArgs, btn)
-	}
-
-	contentDiv := html.Div(contentDivArgs...)
-	innerDivArgs = append(innerDivArgs, contentDiv)
-
-	divArgs = append(divArgs, innerDivArgs...)
-	divArgs = append(divArgs, args...)
-
-	node := html.Div(divArgs...)
-
-	return node.WithAssets("", toastJS, "ui-toast")
+	return html.Div(append([]html.DivArg{props}, rest...)...).WithAssets("", toastJS, "ui-toast")
 }
 
 func variantIcon(variant Variant) html.Node {

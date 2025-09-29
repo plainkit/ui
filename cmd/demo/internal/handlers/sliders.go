@@ -18,7 +18,6 @@ func RenderSlidersContent() html.Node {
 			html.Div(
 				html.AClass("space-y-6"),
 				slider.Slider(
-					slider.Props{},
 					slider.Input(slider.InputProps{ID: "volume", Name: "volume", Min: 0, Max: 100, Value: 50}),
 					html.Div(
 						html.AClass("flex items-center justify-between text-sm"),
@@ -27,7 +26,6 @@ func RenderSlidersContent() html.Node {
 					),
 				),
 				slider.Slider(
-					slider.Props{},
 					slider.Input(slider.InputProps{ID: "brightness", Name: "brightness", Min: 20, Max: 120, Value: 90, Step: 5}),
 					html.Div(
 						html.AClass("flex items-center justify-between text-sm"),

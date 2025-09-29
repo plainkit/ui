@@ -28,73 +28,139 @@ type ContentProps struct {
 	Attrs []html.Global
 }
 
-func Collapsible(props Props, args ...html.DivArg) html.Node {
-	if props.ID == "" {
-		props.ID = randomID("collapsible")
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	id := p.ID
+	if id == "" {
+		id = randomID("collapsible")
 	}
 
 	state := "closed"
-	if props.Open {
+	if p.Open {
 		state = "open"
 	}
 
-	divArgs := []html.DivArg{
-		html.AId(props.ID),
-		html.AClass(classnames.Merge("", props.Class)),
+	args := divArgsFromProps("")(p)
+	args = append([]html.DivArg{
+		html.AId(id),
 		html.AData("pui-collapsible", "root"),
 		html.AData("pui-collapsible-state", state),
+	}, args...)
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
 	}
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	divArgs = append(divArgs, args...)
-
-	node := html.Div(divArgs...)
-
-	return node.WithAssets("", collapsibleJS, "ui-collapsible")
 }
 
-func Trigger(props TriggerProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("", props.Class)),
+func (p TriggerProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := []html.DivArg{
+		html.AClass(classnames.Merge("", p.Class)),
 		html.AData("pui-collapsible", "trigger"),
 	}
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
 }
 
-func Content(props ContentProps, args ...html.DivArg) html.Node {
-	wrapperArgs := []html.DivArg{
+func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := []html.DivArg{
 		html.AClass(classnames.Merge(
 			"grid grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out [[data-pui-collapsible-state=open]_&]:grid-rows-[1fr]",
-			props.Class,
+			p.Class,
 		)),
 		html.AData("pui-collapsible", "content"),
 	}
-	if props.ID != "" {
-		wrapperArgs = append(wrapperArgs, html.AId(props.ID))
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	for _, attr := range props.Attrs {
-		wrapperArgs = append(wrapperArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	innerArgs := []html.DivArg{html.AClass("overflow-hidden")}
-	innerArgs = append(innerArgs, args...)
+	// Create inner div with overflow hidden
+	innerDiv := html.Div(html.AClass("overflow-hidden"))
+	*children = append(*children, innerDiv)
 
-	wrapperArgs = append(wrapperArgs, html.Div(innerArgs...))
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
 
-	return html.Div(wrapperArgs...)
+func Collapsible(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...).WithAssets("", collapsibleJS, "ui-collapsible")
+}
+
+func Trigger(args ...html.DivArg) html.Node {
+	var (
+		props TriggerProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(TriggerProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+func Content(args ...html.DivArg) html.Node {
+	var (
+		props ContentProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ContentProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	// Create inner div with overflow hidden and rest of content
+	innerDiv := html.Div(append([]html.DivArg{html.AClass("overflow-hidden")}, rest...)...)
+
+	return html.Div(props, innerDiv)
 }
 
 func randomID(prefix string) string {

@@ -50,35 +50,49 @@ type Props struct {
 	RenderHiddenInput bool // Optional: Whether to render the hidden input (Default: true). Set to false when used inside DatePicker.
 }
 
-// Calendar renders a calendar component for date selection
-func Calendar(props Props, args ...html.DivArg) html.Node {
-	id := props.ID
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID+"-wrapper"))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	id := p.ID
 	if id == "" {
 		id = randomID("calendar")
 	}
 
-	name := props.Name
+	name := p.Name
 	if name == "" {
 		name = id + "-value"
 	}
 
-	localeTag := props.LocaleTag
+	localeTag := p.LocaleTag
 	if localeTag == "" {
 		localeTag = LocaleDefaultTag
 	}
 
 	initialStartOfWeek := Monday
-	if props.StartOfWeek != nil {
-		initialStartOfWeek = *props.StartOfWeek
+	if p.StartOfWeek != nil {
+		initialStartOfWeek = *p.StartOfWeek
 	}
 
 	initialView := time.Now()
-	if props.Value != nil {
-		initialView = *props.Value
+	if p.Value != nil {
+		initialView = *p.Value
 	}
 
-	initialMonth := props.InitialMonth
-	initialYear := props.InitialYear
+	initialMonth := p.InitialMonth
+	initialYear := p.InitialYear
 
 	// Use year from initialView if InitialYear prop is invalid/unset (<= 0)
 	if initialYear <= 0 {
@@ -87,30 +101,23 @@ func Calendar(props Props, args ...html.DivArg) html.Node {
 
 	// Use month from initialView if InitialMonth prop is invalid OR
 	// if InitialMonth is default 0 AND InitialYear was also defaulted (meaning neither was likely set explicitly)
-	if (initialMonth < 0 || initialMonth > 11) || (initialMonth == 0 && props.InitialYear <= 0) {
+	if (initialMonth < 0 || initialMonth > 11) || (initialMonth == 0 && p.InitialYear <= 0) {
 		initialMonth = int(initialView.Month()) - 1 // time.Month is 1-12
 	}
 
 	initialSelectedISO := ""
-	if props.Value != nil {
-		initialSelectedISO = props.Value.Format("2006-01-02")
+	if p.Value != nil {
+		initialSelectedISO = p.Value.Format("2006-01-02")
 	}
 
-	wrapperArgs := []html.DivArg{
-		html.AClass(classnames.Merge("", props.Class)),
-		html.AId(id + "-wrapper"),
-		html.AData("pui-calendar-wrapper", "true"),
-	}
-
-	for _, attr := range props.Attrs {
-		wrapperArgs = append(wrapperArgs, attr)
-	}
+	args := divArgsFromProps("", "")(p)
+	args = append(args, html.AData("pui-calendar-wrapper", "true"))
 
 	// Build wrapper content
-	wrapperContent := make([]html.DivArg, 0)
+	wrapperContent := make([]html.Component, 0)
 
 	// Add hidden input if requested (default: true)
-	if props.RenderHiddenInput {
+	if p.RenderHiddenInput {
 		hiddenInput := html.Input(
 			html.AType("hidden"),
 			html.AName(name),
@@ -169,10 +176,29 @@ func Calendar(props Props, args ...html.DivArg) html.Node {
 	)
 
 	wrapperContent = append(wrapperContent, calendarContainer)
-	wrapperContent = append(wrapperContent, args...)
-	wrapperArgs = append(wrapperArgs, wrapperContent...)
+	*children = append(*children, wrapperContent...)
 
-	return html.Div(wrapperArgs...).WithAssets("", calendarJS, "ui-calendar")
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+// Calendar renders a calendar component for date selection
+func Calendar(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...).WithAssets("", calendarJS, "ui-calendar")
 }
 
 func randomID(prefix string) string {

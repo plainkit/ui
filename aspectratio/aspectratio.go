@@ -22,24 +22,48 @@ type Props struct {
 	Ratio Ratio
 }
 
-func AspectRatio(props Props, args ...html.DivArg) html.Node {
-	containerArgs := []html.DivArg{
-		html.AClass(classnames.Merge("relative w-full", ratioClass(props.Ratio), props.Class)),
-	}
-	if props.ID != "" {
-		containerArgs = append(containerArgs, html.AId(props.ID))
-	}
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		classNames := append([]string{baseClass}, extra...)
+		classNames = append(classNames, ratioClass(p.Ratio), p.Class)
 
-	for _, attr := range props.Attrs {
-		containerArgs = append(containerArgs, attr)
+		args := []html.DivArg{html.AClass(classnames.Merge(classNames...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	for _, a := range divArgsFromProps("relative w-full")(p) {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+func AspectRatio(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
 	innerArgs := []html.DivArg{html.AClass("absolute inset-0")}
-	innerArgs = append(innerArgs, args...)
+	innerArgs = append(innerArgs, rest...)
 
-	containerArgs = append(containerArgs, html.Div(innerArgs...))
-
-	return html.Div(containerArgs...)
+	return html.Div(append([]html.DivArg{props}, html.Div(innerArgs...))...)
 }
 
 func ratioClass(r Ratio) string {

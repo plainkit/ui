@@ -52,59 +52,167 @@ type NextProps struct {
 	Label    string
 }
 
-func Pagination(props Props, args ...html.NavArg) html.Node {
-	navArgs := []html.NavArg{
-		html.AClass(classnames.Merge("flex flex-wrap justify-center", props.Class)),
-		html.AAria("label", "Pagination"),
-	}
-	if props.ID != "" {
-		navArgs = append(navArgs, html.AId(props.ID))
-	}
+func navArgsFromProps(baseClass string, extra ...string) func(p Props) []html.NavArg {
+	return func(p Props) []html.NavArg {
+		args := []html.NavArg{
+			html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...)),
+			html.AAria("label", "Pagination"),
+		}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
 
-	for _, attr := range props.Attrs {
-		navArgs = append(navArgs, attr)
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
-
-	navArgs = append(navArgs, args...)
-
-	return html.Nav(navArgs...)
 }
 
-func Content(props ContentProps, args ...html.UlArg) html.Node {
-	ulArgs := []html.UlArg{html.AClass(classnames.Merge("flex flex-row items-center gap-1", props.Class))}
-	if props.ID != "" {
-		ulArgs = append(ulArgs, html.AId(props.ID))
+func (p Props) ApplyNav(attrs *html.NavAttrs, children *[]html.Component) {
+	for _, a := range navArgsFromProps("flex flex-wrap justify-center")(p) {
+		a.ApplyNav(attrs, children)
 	}
-
-	for _, attr := range props.Attrs {
-		ulArgs = append(ulArgs, attr)
-	}
-
-	ulArgs = append(ulArgs, args...)
-
-	return html.Ul(ulArgs...)
 }
 
-func Item(props ItemProps, args ...html.LiArg) html.Node {
-	liArgs := []html.LiArg{}
-	if props.Class != "" {
-		liArgs = append(liArgs, html.AClass(props.Class))
+func Pagination(args ...html.NavArg) html.Node {
+	var (
+		props Props
+		rest  []html.NavArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		liArgs = append(liArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		liArgs = append(liArgs, attr)
-	}
-
-	liArgs = append(liArgs, args...)
-
-	return html.Li(liArgs...)
+	return html.Nav(append([]html.NavArg{props}, rest...)...)
 }
 
-func Link(props LinkProps, args ...html.ButtonArg) html.Node {
+func ulArgsFromProps(baseClass string, extra ...string) func(p ContentProps) []html.UlArg {
+	return func(p ContentProps) []html.UlArg {
+		args := []html.UlArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p ContentProps) ApplyUl(attrs *html.UlAttrs, children *[]html.Component) {
+	for _, a := range ulArgsFromProps("flex flex-row items-center gap-1")(p) {
+		a.ApplyUl(attrs, children)
+	}
+}
+
+func Content(args ...html.UlArg) html.Node {
+	var (
+		props ContentProps
+		rest  []html.UlArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ContentProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Ul(append([]html.UlArg{props}, rest...)...)
+}
+
+func liArgsFromProps(baseClass string, extra ...string) func(p ItemProps) []html.LiArg {
+	return func(p ItemProps) []html.LiArg {
+		var args []html.LiArg
+
+		classNames := append([]string{baseClass}, extra...)
+		classNames = append(classNames, p.Class)
+
+		className := classnames.Merge(classNames...)
+		if className != "" {
+			args = append(args, html.AClass(className))
+		}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p ItemProps) ApplyLi(attrs *html.LiAttrs, children *[]html.Component) {
+	for _, a := range liArgsFromProps("")(p) {
+		a.ApplyLi(attrs, children)
+	}
+}
+
+func Item(args ...html.LiArg) html.Node {
+	var (
+		props ItemProps
+		rest  []html.LiArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ItemProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Li(append([]html.LiArg{props}, rest...)...)
+}
+
+func buttonArgsFromProps(baseClass string, extra ...string) func(p LinkProps) []html.ButtonArg {
+	return func(p LinkProps) []html.ButtonArg {
+		args := []html.ButtonArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p LinkProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
+	for _, a := range buttonArgsFromProps("")(p) {
+		a.ApplyButton(attrs, children)
+	}
+}
+
+func Link(args ...html.ButtonArg) html.Node {
+	var (
+		props LinkProps
+		rest  []html.ButtonArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(LinkProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
 	btnProps := button.Props{
 		ID:      props.ID,
 		Class:   props.Class,
@@ -119,12 +227,49 @@ func Link(props LinkProps, args ...html.ButtonArg) html.Node {
 		btnProps.Href = props.Href
 	}
 
-	buttonArgs := append([]html.ButtonArg{btnProps}, args...)
+	buttonArgs := append([]html.ButtonArg{btnProps}, rest...)
 
 	return button.Button(buttonArgs...)
 }
 
-func Previous(props PreviousProps, args ...html.ButtonArg) html.Node {
+func previousButtonArgsFromProps(baseClass string, extra ...string) func(p PreviousProps) []html.ButtonArg {
+	return func(p PreviousProps) []html.ButtonArg {
+		classNames := append([]string{baseClass}, extra...)
+		classNames = append(classNames, "gap-1", p.Class)
+
+		args := []html.ButtonArg{html.AClass(classnames.Merge(classNames...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p PreviousProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
+	for _, a := range previousButtonArgsFromProps("")(p) {
+		a.ApplyButton(attrs, children)
+	}
+}
+
+func Previous(args ...html.ButtonArg) html.Node {
+	var (
+		props PreviousProps
+		rest  []html.ButtonArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(PreviousProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
 	btnProps := button.Props{
 		ID:       props.ID,
 		Attrs:    props.Attrs,
@@ -136,7 +281,7 @@ func Previous(props PreviousProps, args ...html.ButtonArg) html.Node {
 
 	buttonArgs := []html.ButtonArg{lucide.ChevronLeft(html.AClass("size-4"))}
 
-	buttonArgs = append(buttonArgs, args...)
+	buttonArgs = append(buttonArgs, rest...)
 	if props.Label != "" {
 		buttonArgs = append(buttonArgs, html.Span(html.Text(props.Label)))
 	}
@@ -146,7 +291,44 @@ func Previous(props PreviousProps, args ...html.ButtonArg) html.Node {
 	return button.Button(allArgs...)
 }
 
-func Next(props NextProps, args ...html.ButtonArg) html.Node {
+func nextButtonArgsFromProps(baseClass string, extra ...string) func(p NextProps) []html.ButtonArg {
+	return func(p NextProps) []html.ButtonArg {
+		classNames := append([]string{baseClass}, extra...)
+		classNames = append(classNames, "gap-1", p.Class)
+
+		args := []html.ButtonArg{html.AClass(classnames.Merge(classNames...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p NextProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
+	for _, a := range nextButtonArgsFromProps("")(p) {
+		a.ApplyButton(attrs, children)
+	}
+}
+
+func Next(args ...html.ButtonArg) html.Node {
+	var (
+		props NextProps
+		rest  []html.ButtonArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(NextProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
 	btnProps := button.Props{
 		ID:       props.ID,
 		Attrs:    props.Attrs,
@@ -156,12 +338,12 @@ func Next(props NextProps, args ...html.ButtonArg) html.Node {
 		Disabled: props.Disabled,
 	}
 
-	buttonArgs := make([]html.ButtonArg, 0, len(args)+2)
+	buttonArgs := make([]html.ButtonArg, 0, len(rest)+2)
 	if props.Label != "" {
 		buttonArgs = append(buttonArgs, html.Span(html.Text(props.Label)))
 	}
 
-	buttonArgs = append(buttonArgs, args...)
+	buttonArgs = append(buttonArgs, rest...)
 	buttonArgs = append(buttonArgs, lucide.ChevronRight(html.AClass("size-4")))
 
 	allArgs := append([]html.ButtonArg{btnProps}, buttonArgs...)

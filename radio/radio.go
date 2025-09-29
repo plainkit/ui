@@ -17,55 +17,89 @@ type Props struct {
 	Checked  bool
 }
 
-func Radio(props Props) html.Node {
-	inputArgs := []html.InputArg{
-		html.AType("radio"),
-		html.AClass(classnames.Merge(
-			"relative h-4 w-4",
-			"appearance-none rounded-full",
-			"border-2 border-primary",
-			"before:absolute before:left-1/2 before:top-1/2",
-			"before:h-1.5 before:w-1.5 before:-translate-x-1/2 before:-translate-y-1/2",
-			"before:content[''] before:rounded-full before:bg-background",
-			"checked:border-primary checked:bg-primary checked:before:visible",
-			"focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-			"focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-			"disabled:cursor-not-allowed",
-			props.Class,
-		)),
+func inputArgsFromProps(baseClass string, extra ...string) func(p Props) []html.InputArg {
+	return func(p Props) []html.InputArg {
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra, p.Class)...)...)
+
+		args := []html.InputArg{
+			html.AType("radio"),
+			html.AClass(className),
+		}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplyInput implements the html.InputArg interface for Props
+func (p Props) ApplyInput(attrs *html.InputAttrs, children *[]html.Component) {
+	args := inputArgsFromProps(
+		"relative h-4 w-4",
+		"appearance-none rounded-full",
+		"border-2 border-primary",
+		"before:absolute before:left-1/2 before:top-1/2",
+		"before:h-1.5 before:w-1.5 before:-translate-x-1/2 before:-translate-y-1/2",
+		"before:content[''] before:rounded-full before:bg-background",
+		"checked:border-primary checked:bg-primary checked:before:visible",
+		"focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
+		"focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+		"disabled:cursor-not-allowed",
+	)(p)
+
+	if p.Name != "" {
+		args = append(args, html.AName(p.Name))
 	}
 
-	if props.ID != "" {
-		inputArgs = append(inputArgs, html.AId(props.ID))
+	if p.Value != "" {
+		args = append(args, html.AValue(p.Value))
 	}
 
-	if props.Name != "" {
-		inputArgs = append(inputArgs, html.AName(props.Name))
+	if p.Form != "" {
+		args = append(args, html.AForm(p.Form))
 	}
 
-	if props.Value != "" {
-		inputArgs = append(inputArgs, html.AValue(props.Value))
+	if p.Checked {
+		args = append(args, html.AChecked())
 	}
 
-	if props.Form != "" {
-		inputArgs = append(inputArgs, html.AForm(props.Form))
+	if p.Disabled {
+		args = append(args, html.ADisabled())
 	}
 
-	if props.Checked {
-		inputArgs = append(inputArgs, html.AChecked())
+	if p.Required {
+		args = append(args, html.ARequired())
 	}
 
-	if props.Disabled {
-		inputArgs = append(inputArgs, html.ADisabled())
+	for _, a := range args {
+		a.ApplyInput(attrs, children)
+	}
+}
+
+// Radio renders a styled radio input using the composable pattern.
+// Accepts variadic html.InputArg arguments, with Props as an optional first argument.
+func Radio(args ...html.InputArg) html.Node {
+	var (
+		props Props
+		rest  []html.InputArg
+	)
+
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.Required {
-		inputArgs = append(inputArgs, html.ARequired())
-	}
-
-	for _, attr := range props.Attrs {
-		inputArgs = append(inputArgs, attr)
-	}
-
-	return html.Input(inputArgs...)
+	return html.Input(append([]html.InputArg{props}, rest...)...)
 }

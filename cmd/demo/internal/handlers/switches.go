@@ -17,9 +17,9 @@ func RenderSwitchesContent() html.Node {
 			),
 			html.Div(
 				html.AClass("space-y-3"),
-				switchcomp.Switch(switchcomp.Props{ID: "switch-email", Name: "email"}, html.Child(html.Span(html.Text("Email notifications")))),
-				switchcomp.Switch(switchcomp.Props{ID: "switch-push", Name: "push", Checked: true}, html.Child(html.Span(html.Text("Push notifications")))),
-				switchcomp.Switch(switchcomp.Props{ID: "switch-disabled", Disabled: true}, html.Child(html.Span(html.Text("Public profile")))),
+				switchcomp.Switch(switchcomp.Props{ID: "switch-email", Name: "email"}, html.Span(html.Text("Email notifications"))),
+				switchcomp.Switch(switchcomp.Props{ID: "switch-push", Name: "push", Checked: true}, html.Span(html.Text("Push notifications"))),
+				switchcomp.Switch(switchcomp.Props{ID: "switch-disabled", Disabled: true}, html.Span(html.Text("Public profile"))),
 			),
 		),
 	)

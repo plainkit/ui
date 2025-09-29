@@ -47,9 +47,121 @@ type Props struct {
 	ShowPasswordToggle bool
 }
 
-// Input renders a styled input control with optional password toggle button.
-// Additional input arguments can be provided after props (e.g. html.AAutocomplete("email")).
-func Input(props Props, extra ...html.InputArg) html.Node {
+func inputArgsFromProps(baseClass string, extra ...string) func(p Props) []html.InputArg {
+	return func(p Props) []html.InputArg {
+		inputType := p.Type
+		if inputType == "" {
+			inputType = TypeText
+		}
+
+		id := p.ID
+		if id == "" {
+			id = randomID()
+		}
+
+		extraPadding := ""
+		if p.Type == TypePassword && p.ShowPasswordToggle {
+			extraPadding = "pr-8"
+		}
+
+		errorClass := ""
+		if p.HasError {
+			errorClass = "border-destructive ring-destructive/20 dark:ring-destructive/40"
+		}
+
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra,
+					errorClass,
+					extraPadding,
+					p.Class,
+				)...)...)
+
+		args := []html.InputArg{
+			html.AId(id),
+			html.AType(string(inputType)),
+			html.AClass(className),
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplyInput implements the html.InputArg interface for Props
+func (p Props) ApplyInput(attrs *html.InputAttrs, children *[]html.Component) {
+	args := inputArgsFromProps(
+		"flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
+		"dark:bg-input/30",
+		"selection:bg-primary selection:text-primary-foreground",
+		"placeholder:text-muted-foreground",
+		"file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
+		"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+		"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+		"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
+	)(p)
+
+	if p.Name != "" {
+		args = append(args, html.AName(p.Name))
+	}
+
+	if p.Placeholder != "" {
+		args = append(args, html.APlaceholder(p.Placeholder))
+	}
+
+	if p.Value != "" {
+		args = append(args, html.AValue(p.Value))
+	}
+
+	if p.Type == TypeFile && p.FileAccept != "" {
+		args = append(args, html.AAccept(p.FileAccept))
+	}
+
+	if p.Form != "" {
+		args = append(args, html.AForm(p.Form))
+	}
+
+	if p.Disabled {
+		args = append(args, html.ADisabled())
+	}
+
+	if p.Readonly {
+		args = append(args, html.AReadonly())
+	}
+
+	if p.Required {
+		args = append(args, html.ARequired())
+	}
+
+	if p.HasError {
+		args = append(args, html.AAria("invalid", "true"))
+	}
+
+	for _, a := range args {
+		a.ApplyInput(attrs, children)
+	}
+}
+
+// Input renders a styled input control using the composable pattern.
+// Accepts variadic html.InputArg arguments, with Props as an optional first argument.
+func Input(args ...html.InputArg) html.Node {
+	var (
+		props Props
+		rest  []html.InputArg
+	)
+
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
 	if props.Type == "" {
 		props.Type = TypeText
 	}
@@ -58,54 +170,7 @@ func Input(props Props, extra ...html.InputArg) html.Node {
 		props.ID = randomID()
 	}
 
-	inputArgs := []html.InputArg{
-		html.AId(props.ID),
-		html.AType(string(props.Type)),
-		html.AClass(inputClass(props)),
-	}
-	if props.Name != "" {
-		inputArgs = append(inputArgs, html.AName(props.Name))
-	}
-
-	if props.Placeholder != "" {
-		inputArgs = append(inputArgs, html.APlaceholder(props.Placeholder))
-	}
-
-	if props.Value != "" {
-		inputArgs = append(inputArgs, html.AValue(props.Value))
-	}
-
-	if props.Type == TypeFile && props.FileAccept != "" {
-		inputArgs = append(inputArgs, html.AAccept(props.FileAccept))
-	}
-
-	if props.Form != "" {
-		inputArgs = append(inputArgs, html.AForm(props.Form))
-	}
-
-	if props.Disabled {
-		inputArgs = append(inputArgs, html.ADisabled())
-	}
-
-	if props.Readonly {
-		inputArgs = append(inputArgs, html.AReadonly())
-	}
-
-	if props.Required {
-		inputArgs = append(inputArgs, html.ARequired())
-	}
-
-	if props.HasError {
-		inputArgs = append(inputArgs, html.AAria("invalid", "true"))
-	}
-
-	for _, attr := range props.Attrs {
-		inputArgs = append(inputArgs, attr)
-	}
-
-	inputArgs = append(inputArgs, extra...)
-
-	children := []html.Component{html.Input(inputArgs...)}
+	children := []html.Component{html.Input(append([]html.InputArg{props}, rest...)...)}
 
 	if props.Type == TypePassword && props.ShowPasswordToggle {
 		children = append(children, passwordToggleButton(props.ID))
@@ -122,32 +187,6 @@ func Input(props Props, extra ...html.InputArg) html.Node {
 	}
 
 	return node
-}
-
-func inputClass(props Props) string {
-	extraPadding := ""
-	if props.Type == TypePassword && props.ShowPasswordToggle {
-		extraPadding = "pr-8"
-	}
-
-	errorClass := ""
-	if props.HasError {
-		errorClass = "border-destructive ring-destructive/20 dark:ring-destructive/40"
-	}
-
-	return classnames.Merge(
-		"flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
-		"dark:bg-input/30",
-		"selection:bg-primary selection:text-primary-foreground",
-		"placeholder:text-muted-foreground",
-		"file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
-		"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-		"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-		"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
-		errorClass,
-		extraPadding,
-		props.Class,
-	)
 }
 
 func passwordToggleButton(inputID string) html.Node {

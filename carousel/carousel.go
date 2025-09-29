@@ -52,140 +52,141 @@ type IndicatorsProps struct {
 	Count int
 }
 
-// Carousel renders a carousel container for sliding content
-func Carousel(props Props, args ...html.DivArg) html.Node {
-	id := props.ID
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	id := p.ID
 	if id == "" {
 		id = randomID("carousel")
 	}
 
-	interval := props.Interval
+	interval := p.Interval
 	if interval == 0 {
 		interval = 5000
 	}
 
-	divArgs := []html.DivArg{
+	args := divArgsFromProps("relative overflow-hidden w-full")(p)
+	args = append([]html.DivArg{
 		html.AId(id),
-		html.AClass(classnames.Merge("relative overflow-hidden w-full", props.Class)),
 		html.AData("pui-carousel", ""),
 		html.AData("pui-carousel-current", "0"),
-		html.AData("pui-carousel-autoplay", strconv.FormatBool(props.Autoplay)),
+		html.AData("pui-carousel-autoplay", strconv.FormatBool(p.Autoplay)),
 		html.AData("pui-carousel-interval", fmt.Sprintf("%d", interval)),
-		html.AData("pui-carousel-loop", strconv.FormatBool(props.Loop)),
+		html.AData("pui-carousel-loop", strconv.FormatBool(p.Loop)),
+	}, args...)
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
 	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
-	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...).WithAssets("", carouselJS, "ui-carousel")
 }
 
-// Content creates the carousel track that contains the items
-func Content(props ContentProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("flex h-full w-full transition-transform duration-500 ease-in-out cursor-grab", props.Class)),
-		html.AData("pui-carousel-track", ""),
+func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := []html.DivArg{html.AClass(classnames.Merge("flex h-full w-full transition-transform duration-500 ease-in-out cursor-grab", p.Class))}
+	args = append(args, html.AData("pui-carousel-track", ""))
+
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
 	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
 }
 
-// Item creates a carousel item slide
-func Item(props ItemProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("flex-shrink-0 w-full h-full relative", props.Class)),
-		html.AData("pui-carousel-item", ""),
+func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := []html.DivArg{html.AClass(classnames.Merge("flex-shrink-0 w-full h-full relative", p.Class))}
+	args = append(args, html.AData("pui-carousel-item", ""))
+
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
 	}
-
-	divArgs = append(divArgs, args...)
-
-	return html.Div(divArgs...)
 }
 
-// Previous creates a previous navigation button
-func Previous(props PreviousProps, args ...html.ButtonArg) html.Node {
-	buttonArgs := []html.ButtonArg{
-		html.AClass(classnames.Merge("absolute left-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", props.Class)),
+func (p PreviousProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
+	args := []html.ButtonArg{
+		html.AClass(classnames.Merge("absolute left-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", p.Class)),
 		html.AData("pui-carousel-prev", ""),
 		html.AAria("label", "Previous slide"),
 		html.AType("button"),
-		lucide.ChevronLeft(html.AClass("h-4 w-4")),
 	}
 
-	if props.ID != "" {
-		buttonArgs = append(buttonArgs, html.AId(props.ID))
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	for _, attr := range props.Attrs {
-		buttonArgs = append(buttonArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	buttonArgs = append(buttonArgs, args...)
+	args = append(args, lucide.ChevronLeft(html.AClass("h-4 w-4")))
 
-	return html.Button(buttonArgs...)
+	for _, a := range args {
+		a.ApplyButton(attrs, children)
+	}
 }
 
-// Next creates a next navigation button
-func Next(props NextProps, args ...html.ButtonArg) html.Node {
-	buttonArgs := []html.ButtonArg{
-		html.AClass(classnames.Merge("absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", props.Class)),
+func (p NextProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
+	args := []html.ButtonArg{
+		html.AClass(classnames.Merge("absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", p.Class)),
 		html.AData("pui-carousel-next", ""),
 		html.AAria("label", "Next slide"),
 		html.AType("button"),
-		lucide.ChevronRight(html.AClass("h-4 w-4")),
 	}
 
-	if props.ID != "" {
-		buttonArgs = append(buttonArgs, html.AId(props.ID))
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	for _, attr := range props.Attrs {
-		buttonArgs = append(buttonArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	buttonArgs = append(buttonArgs, args...)
+	args = append(args, lucide.ChevronRight(html.AClass("h-4 w-4")))
 
-	return html.Button(buttonArgs...)
+	for _, a := range args {
+		a.ApplyButton(attrs, children)
+	}
 }
 
-// Indicators creates carousel indicators for navigation
-func Indicators(props IndicatorsProps, args ...html.DivArg) html.Node {
-	divArgs := []html.DivArg{
-		html.AClass(classnames.Merge("absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2", props.Class)),
+func (p IndicatorsProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := []html.DivArg{html.AClass(classnames.Merge("absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2", p.Class))}
+
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	if props.ID != "" {
-		divArgs = append(divArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
 	// Add indicator buttons
-	indicatorButtons := make([]html.DivArg, 0, props.Count)
-	for i := 0; i < props.Count; i++ {
+	indicatorButtons := make([]html.Component, 0, p.Count)
+	for i := 0; i < p.Count; i++ {
 		buttonClass := "w-3 h-3 rounded-full bg-foreground/30 hover:bg-foreground/50 focus:outline-none transition-colors"
 		if i == 0 {
 			buttonClass = classnames.Merge(buttonClass, "bg-primary")
@@ -207,10 +208,119 @@ func Indicators(props IndicatorsProps, args ...html.DivArg) html.Node {
 		indicatorButtons = append(indicatorButtons, button)
 	}
 
-	divArgs = append(divArgs, indicatorButtons...)
-	divArgs = append(divArgs, args...)
+	*children = append(*children, indicatorButtons...)
 
-	return html.Div(divArgs...)
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+// Carousel renders a carousel container for sliding content
+func Carousel(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...).WithAssets("", carouselJS, "ui-carousel")
+}
+
+// Content creates the carousel track that contains the items
+func Content(args ...html.DivArg) html.Node {
+	var (
+		props ContentProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ContentProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+// Item creates a carousel item slide
+func Item(args ...html.DivArg) html.Node {
+	var (
+		props ItemProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ItemProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
+}
+
+// Previous creates a previous navigation button
+func Previous(args ...html.ButtonArg) html.Node {
+	var (
+		props PreviousProps
+		rest  []html.ButtonArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(PreviousProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Button(append([]html.ButtonArg{props}, rest...)...)
+}
+
+// Next creates a next navigation button
+func Next(args ...html.ButtonArg) html.Node {
+	var (
+		props NextProps
+		rest  []html.ButtonArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(NextProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Button(append([]html.ButtonArg{props}, rest...)...)
+}
+
+// Indicators creates carousel indicators for navigation
+func Indicators(args ...html.DivArg) html.Node {
+	var (
+		props IndicatorsProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(IndicatorsProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
 }
 
 func randomID(prefix string) string {

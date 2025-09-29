@@ -21,30 +21,61 @@ type Props struct {
 	Variant Variant
 }
 
-// Badge renders a badge span with optional props and children supplied as span arguments.
-// Pass a Props struct (zero value is fine) followed by `html.T(...)`, `html.Span(...)`, etc.
-func Badge(props Props, args ...html.SpanArg) html.Node {
-	className := classnames.Merge(
+func spanArgsFromProps(baseClass string, extra ...string) func(p Props) []html.SpanArg {
+	return func(p Props) []html.SpanArg {
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra,
+					variantClasses(p.Variant),
+					p.Class,
+				)...)...)
+
+		args := []html.SpanArg{html.AClass(className)}
+
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+// ApplySpan implements the html.SpanArg interface for Props
+func (p Props) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
+	args := spanArgsFromProps(
 		"inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none",
 		"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
 		"aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
 		"transition-[color,box-shadow] overflow-hidden",
-		variantClasses(props.Variant),
-		props.Class,
+	)(p)
+
+	for _, a := range args {
+		a.ApplySpan(attrs, children)
+	}
+}
+
+// Badge renders a badge span using the composable pattern.
+// Accepts variadic html.SpanArg arguments, with Props as an optional first argument.
+func Badge(args ...html.SpanArg) html.Node {
+	var (
+		props Props
+		rest  []html.SpanArg
 	)
 
-	spanArgs := []html.SpanArg{html.AClass(className)}
-	if props.ID != "" {
-		spanArgs = append(spanArgs, html.AId(props.ID))
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	for _, attr := range props.Attrs {
-		spanArgs = append(spanArgs, attr)
-	}
-
-	spanArgs = append(spanArgs, args...)
-
-	return html.Span(spanArgs...)
+	return html.Span(append([]html.SpanArg{props}, rest...)...)
 }
 
 func variantClasses(v Variant) string {

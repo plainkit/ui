@@ -17,7 +17,7 @@ func RenderSeparatorsContent() html.Node {
 			),
 			html.Div(
 				html.AClass("space-y-6"),
-				separator.Separator(separator.Props{}, html.T("Team")),
+				separator.Separator(html.T("Team")),
 				html.Div(
 					html.AClass("flex h-32 items-center justify-center gap-6"),
 					html.Text("Start"),

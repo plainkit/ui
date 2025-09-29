@@ -13,29 +13,46 @@ type Props struct {
 	Error string
 }
 
-func Label(props Props, args ...html.LabelArg) html.Node {
+func (p Props) ApplyLabel(attrs *html.LabelAttrs, children *[]html.Component) {
 	className := classnames.Merge(
 		"text-sm font-medium leading-none inline-block",
-		conditionalClass(props.Error != "", "text-destructive"),
-		props.Class,
+		conditionalClass(p.Error != "", "text-destructive"),
+		p.Class,
 	)
 
-	labelArgs := []html.LabelArg{html.AClass(className), html.AData("pui-label-disabled-style", "opacity-50 cursor-not-allowed")}
-	if props.ID != "" {
-		labelArgs = append(labelArgs, html.AId(props.ID))
+	args := []html.LabelArg{html.AClass(className), html.AData("pui-label-disabled-style", "opacity-50 cursor-not-allowed")}
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
 	}
 
-	if props.For != "" {
-		labelArgs = append(labelArgs, html.AFor(props.For))
+	if p.For != "" {
+		args = append(args, html.AFor(p.For))
 	}
 
-	for _, attr := range props.Attrs {
-		labelArgs = append(labelArgs, attr)
+	for _, a := range p.Attrs {
+		args = append(args, a)
 	}
 
-	labelArgs = append(labelArgs, args...)
+	for _, a := range args {
+		a.ApplyLabel(attrs, children)
+	}
+}
 
-	return html.Label(labelArgs...)
+func Label(args ...html.LabelArg) html.Node {
+	var (
+		props Props
+		rest  []html.LabelArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Label(append([]html.LabelArg{props}, rest...)...)
 }
 
 func conditionalClass(cond bool, class string) string {

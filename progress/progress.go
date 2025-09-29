@@ -37,24 +37,67 @@ const (
 	VariantWarning Variant = "warning"
 )
 
-func Progress(props Props) html.Node {
-	propsMax := maxValue(props.Max)
-	if props.ID == "" {
-		props.ID = randomID()
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		id := p.ID
+		if id == "" {
+			id = randomID()
+		}
+
+		className := classnames.Merge(
+			append([]string{baseClass},
+				append(extra, p.Class)...)...)
+
+		args := []html.DivArg{
+			html.AId(id),
+			html.AClass(className),
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
 	}
+}
 
-	outerClass := classnames.Merge("w-full", props.Class)
+// ApplyDiv implements the html.DivArg interface for Props
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	propsMax := maxValue(p.Max)
 
-	outerArgs := []html.DivArg{
-		html.AId(props.ID),
-		html.AClass(outerClass),
+	args := divArgsFromProps("w-full")(p)
+	args = append([]html.DivArg{
 		html.ACustom("role", "progressbar"),
 		html.AAria("valuemin", "0"),
 		html.AAria("valuemax", strconv.Itoa(propsMax)),
-		html.AAria("valuenow", strconv.Itoa(clamp(props.Value, 0, propsMax))),
+		html.AAria("valuenow", strconv.Itoa(clamp(p.Value, 0, propsMax))),
+	}, args...)
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
 	}
-	for _, attr := range props.Attrs {
-		outerArgs = append(outerArgs, attr)
+}
+
+// Progress renders a progress bar using the composable pattern.
+// Accepts variadic html.DivArg arguments, with Props as an optional first argument.
+func Progress(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	// Separate Props from other arguments
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	propsMax := maxValue(props.Max)
+	if props.ID == "" {
+		props.ID = randomID()
 	}
 
 	children := make([]html.Component, 0, 2)
@@ -88,11 +131,12 @@ func Progress(props Props) html.Node {
 	)
 	children = append(children, barWrapper)
 
+	divArgs := append([]html.DivArg{props}, rest...)
 	for _, child := range children {
-		outerArgs = append(outerArgs, html.Child(child))
+		divArgs = append(divArgs, html.Child(child))
 	}
 
-	return html.Div(outerArgs...)
+	return html.Div(divArgs...)
 }
 
 func sizeClass(size Size) string {

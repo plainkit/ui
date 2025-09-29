@@ -71,25 +71,113 @@ type ItemProps struct {
 	Disabled bool
 }
 
-// SelectBox renders a select box container
-func SelectBox(props Props, args ...html.DivArg) html.Node {
-	wrapperID := props.ID
+func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.DivArg {
+	return func(p Props) []html.DivArg {
+		args := []html.DivArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func spanArgsFromProps(baseClass string, extra ...string) func(p ValueProps) []html.SpanArg {
+	return func(p ValueProps) []html.SpanArg {
+		args := []html.SpanArg{html.AClass(classnames.Merge(append([]string{baseClass}, append(extra, p.Class)...)...))}
+		if p.ID != "" {
+			args = append(args, html.AId(p.ID))
+		}
+
+		for _, a := range p.Attrs {
+			args = append(args, a)
+		}
+
+		return args
+	}
+}
+
+func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	wrapperID := p.ID
 	if wrapperID == "" {
 		wrapperID = randomID("selectbox")
 	}
 
-	divArgs := []html.DivArg{
-		html.AId(wrapperID),
-		html.AClass(classnames.Merge("select-container w-full relative", props.Class)),
+	args := divArgsFromProps("select-container w-full relative")(p)
+	args = append([]html.DivArg{html.AId(wrapperID)}, args...)
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+func (p ValueProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
+	args := spanArgsFromProps("block truncate select-value text-muted-foreground")(p)
+
+	if p.Placeholder != "" {
+		args = append(args, html.AData("pui-selectbox-placeholder", p.Placeholder))
 	}
 
-	for _, attr := range props.Attrs {
-		divArgs = append(divArgs, attr)
+	for _, a := range args {
+		a.ApplySpan(attrs, children)
+	}
+}
+
+func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
+	args := []html.DivArg{
+		html.AClass(classnames.Merge("p-1", p.Class)),
+		html.AAria("role", "group"),
 	}
 
-	divArgs = append(divArgs, args...)
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
+	}
 
-	return html.Div(divArgs...)
+	for _, a := range p.Attrs {
+		args = append(args, a)
+	}
+
+	for _, a := range args {
+		a.ApplyDiv(attrs, children)
+	}
+}
+
+func (p LabelProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
+	args := []html.SpanArg{html.AClass(classnames.Merge("px-2 py-1.5 text-sm font-medium", p.Class))}
+
+	if p.ID != "" {
+		args = append(args, html.AId(p.ID))
+	}
+
+	for _, a := range p.Attrs {
+		args = append(args, a)
+	}
+
+	for _, a := range args {
+		a.ApplySpan(attrs, children)
+	}
+}
+
+// SelectBox renders a select box container
+func SelectBox(args ...html.DivArg) html.Node {
+	var (
+		props Props
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(Props); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
+	return html.Div(append([]html.DivArg{props}, rest...)...)
 }
 
 // Trigger creates a select box trigger button
@@ -196,30 +284,25 @@ func Trigger(props TriggerProps, contentID string, args ...html.Node) html.Node 
 }
 
 // Value creates a select box value display
-func Value(props ValueProps, args ...html.SpanArg) html.Node {
-	spanArgs := []html.SpanArg{
-		html.AClass(classnames.Merge("block truncate select-value text-muted-foreground", props.Class)),
+func Value(args ...html.SpanArg) html.Node {
+	var (
+		props ValueProps
+		rest  []html.SpanArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(ValueProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		spanArgs = append(spanArgs, html.AId(props.ID))
+	if props.Placeholder != "" && len(rest) == 0 {
+		rest = append(rest, html.Text(props.Placeholder))
 	}
 
-	if props.Placeholder != "" {
-		spanArgs = append(spanArgs, html.AData("pui-selectbox-placeholder", props.Placeholder))
-	}
-
-	for _, attr := range props.Attrs {
-		spanArgs = append(spanArgs, attr)
-	}
-
-	spanArgs = append(spanArgs, args...)
-
-	if props.Placeholder != "" && len(args) == 0 {
-		spanArgs = append(spanArgs, html.Text(props.Placeholder))
-	}
-
-	return html.Span(spanArgs...)
+	return html.Span(append([]html.SpanArg{props}, rest...)...)
 }
 
 // Content creates the select box dropdown content
@@ -265,28 +348,40 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 
 	popoverContent = append(popoverContent, html.Div(contentArgs...))
 
-	return popover.Content(
-		popover.ContentProps{
-			ID:         contentID,
-			Placement:  popover.PlacementBottomStart,
-			Offset:     4,
-			MatchWidth: true,
-			Class: classnames.Merge(
-				"p-1 select-content z-50 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
-				"min-w-[var(--popover-trigger-width)] w-[var(--popover-trigger-width)]",
-				props.Class,
-			),
-			Attrs: []html.Global{
-				html.AAria("role", "listbox"),
-				html.ATabindex(-1),
-			},
+	contentProps := popover.ContentProps{
+		ID:         contentID,
+		Placement:  popover.PlacementBottomStart,
+		Offset:     4,
+		MatchWidth: true,
+		Class: classnames.Merge(
+			"p-1 select-content z-50 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
+			"min-w-[var(--popover-trigger-width)] w-[var(--popover-trigger-width)]",
+			props.Class,
+		),
+		Attrs: []html.Global{
+			html.AAria("role", "listbox"),
+			html.ATabindex(-1),
 		},
-		popoverContent...,
-	)
+	}
+
+	return popover.Content(append([]html.DivArg{contentProps}, popoverContent...)...)
 }
 
 // Group creates a select box option group
-func Group(props GroupProps, args ...html.DivArg) html.Node {
+func Group(args ...html.DivArg) html.Node {
+	var (
+		props GroupProps
+		rest  []html.DivArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(GroupProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
+	}
+
 	divArgs := []html.DivArg{
 		html.AClass(classnames.Merge("p-1", props.Class)),
 		html.AAria("role", "group"),
@@ -300,28 +395,27 @@ func Group(props GroupProps, args ...html.DivArg) html.Node {
 		divArgs = append(divArgs, attr)
 	}
 
-	divArgs = append(divArgs, args...)
+	divArgs = append(divArgs, rest...)
 
 	return html.Div(divArgs...)
 }
 
 // Label creates a select box group label
-func Label(props LabelProps, args ...html.SpanArg) html.Node {
-	spanArgs := []html.SpanArg{
-		html.AClass(classnames.Merge("px-2 py-1.5 text-sm font-medium", props.Class)),
+func Label(args ...html.SpanArg) html.Node {
+	var (
+		props LabelProps
+		rest  []html.SpanArg
+	)
+
+	for _, a := range args {
+		if v, ok := a.(LabelProps); ok {
+			props = v
+		} else {
+			rest = append(rest, a)
+		}
 	}
 
-	if props.ID != "" {
-		spanArgs = append(spanArgs, html.AId(props.ID))
-	}
-
-	for _, attr := range props.Attrs {
-		spanArgs = append(spanArgs, attr)
-	}
-
-	spanArgs = append(spanArgs, args...)
-
-	return html.Span(spanArgs...)
+	return html.Span(append([]html.SpanArg{props}, rest...)...)
 }
 
 // Item creates a select box option item

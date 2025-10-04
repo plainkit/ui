@@ -7,6 +7,7 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
+	"github.com/plainkit/ui/internal/styles"
 	"github.com/plainkit/ui/popover"
 )
 
@@ -185,6 +186,19 @@ func Trigger(args ...interface{}) html.Node {
 		contentID = randomID("dropdown")
 	}
 
+	if buttonProps.Variant == "" {
+		buttonProps.Variant = button.VariantOutline
+	}
+
+	buttonProps.Class = html.ClassMerge(
+		styles.Interactive(
+			"dropdown-trigger inline-flex w-full items-center justify-between gap-2 px-4 py-2 text-sm",
+			"text-left font-medium",
+		),
+		"select-none",
+		buttonProps.Class,
+	)
+
 	return popover.Trigger(
 		popover.TriggerProps{
 			ID:          triggerProps.ID,
@@ -249,10 +263,8 @@ func Content(args ...html.DivArg) html.Node {
 	}
 
 	contentClass := html.ClassMerge(
-		"z-50 rounded-md bg-popover p-1 shadow-md focus:outline-none overflow-auto",
-		"border border-border",
+		styles.Panel("dropdown-content z-50 max-h-["+maxHeight+"] overflow-auto p-2 shadow-xl"),
 		"min-w-[8rem]",
-		"max-h-["+maxHeight+"]",
 		props.Width,
 		props.Class,
 	)
@@ -287,7 +299,7 @@ func groupDivArgsFromProps(baseClass string, extra ...string) func(p GroupProps)
 }
 
 func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range groupDivArgsFromProps("py-1")(p) {
+	for _, a := range groupDivArgsFromProps(styles.SurfaceMuted("space-y-1 rounded-xl bg-transparent py-1.5"))(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -326,7 +338,7 @@ func labelDivArgsFromProps(baseClass string, extra ...string) func(p LabelProps)
 }
 
 func (p LabelProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range labelDivArgsFromProps("px-2 py-1.5 text-sm font-semibold")(p) {
+	for _, a := range labelDivArgsFromProps(styles.SubHeading("px-3 py-2 text-xs uppercase tracking-wide text-muted-foreground/60"))(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -356,14 +368,16 @@ func Item(props ItemProps, args ...html.Node) html.Node {
 		id = randomID("dropdown-item")
 	}
 
-	baseClasses := html.ClassMerge(
-		"flex text-left items-center justify-between px-2 py-1.5 text-sm rounded-sm",
-		"focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground cursor-default",
+	itemClass := html.ClassMerge(
+		styles.InteractiveGhost(
+			"dropdown-item w-full items-center justify-between gap-3 px-3 py-2 text-sm",
+			"text-left",
+		),
 		props.Class,
 	)
 
 	if props.Disabled {
-		baseClasses = html.ClassMerge(baseClasses, "opacity-50 pointer-events-none")
+		itemClass = html.ClassMerge(itemClass, "pointer-events-none opacity-50")
 	}
 
 	attrs := []html.Global{
@@ -381,7 +395,7 @@ func Item(props ItemProps, args ...html.Node) html.Node {
 		aArgs := []html.AArg{
 			html.AId(id),
 			html.AHref(props.Href),
-			html.AClass(baseClasses),
+			html.AClass(itemClass),
 		}
 		if props.Target != "" {
 			aArgs = append(aArgs, html.ATarget(props.Target))
@@ -401,7 +415,7 @@ func Item(props ItemProps, args ...html.Node) html.Node {
 	// Create button
 	buttonArgs := []html.ButtonArg{
 		html.AId(id),
-		html.AClass(baseClasses),
+		html.AClass(itemClass),
 		html.AType("button"),
 	}
 	if props.Disabled {
@@ -438,7 +452,7 @@ func separatorDivArgsFromProps(baseClass string, extra ...string) func(p Separat
 }
 
 func (p SeparatorProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range separatorDivArgsFromProps("h-px my-1 -mx-1 bg-muted")(p) {
+	for _, a := range separatorDivArgsFromProps("my-2 h-px -mx-2 bg-gradient-to-r from-transparent via-border/60 to-transparent")(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -477,7 +491,7 @@ func shortcutSpanArgsFromProps(baseClass string, extra ...string) func(p Shortcu
 }
 
 func (p ShortcutProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
-	for _, a := range shortcutSpanArgsFromProps("ml-auto text-xs tracking-widest opacity-60")(p) {
+	for _, a := range shortcutSpanArgsFromProps(styles.SubtleText("ml-auto text-[11px] tracking-[0.25em] uppercase"))(p) {
 		a.ApplySpan(attrs, children)
 	}
 }
@@ -551,8 +565,9 @@ func SubTrigger(props SubTriggerProps, subContentID string, args ...html.Node) h
 	triggerContent := html.Button(
 		html.AType("button"),
 		html.AClass(html.ClassMerge(
-			"w-full text-left flex items-center justify-between px-2 py-1.5 text-sm rounded-sm",
-			"focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground cursor-default",
+			styles.InteractiveGhost(
+				"dropdown-subtrigger flex w-full items-center justify-between gap-2 px-3 py-2 text-sm text-left",
+			),
 			props.Class,
 		)),
 		html.AData("pui-dropdown-submenu-trigger", ""),
@@ -566,7 +581,7 @@ func SubTrigger(props SubTriggerProps, subContentID string, args ...html.Node) h
 				return spanArgs
 			}()...,
 		),
-		lucide.ChevronRight(html.AClass("h-4 w-4 ml-auto")),
+		lucide.ChevronRight(html.AClass("ml-auto size-4 text-muted-foreground")),
 	)
 
 	return popover.Trigger(
@@ -594,7 +609,7 @@ func SubContent(props SubContentProps, args ...html.DivArg) html.Node {
 		HoverDelay:    100,
 		HoverOutDelay: 200,
 		Class: html.ClassMerge(
-			"z-[9999] min-w-[8rem] rounded-md border bg-popover p-1 shadow-lg",
+			styles.Panel("z-[9999] min-w-[8rem] p-2 shadow-xl"),
 			props.Class,
 		),
 		Attrs: props.Attrs,

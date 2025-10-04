@@ -2,6 +2,7 @@ package tooltip
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 	"github.com/plainkit/ui/popover"
 )
 
@@ -156,8 +157,7 @@ func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentPr
 
 func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	for _, a := range contentDivArgsFromProps(
-		"px-3 py-1.5 text-xs font-medium text-primary-foreground bg-primary border-primary rounded-md",
-		"shadow-md max-w-xs",
+		styles.Panel("max-w-xs px-3 py-1.5 text-xs font-medium text-primary-foreground bg-primary/95"),
 	)(p) {
 		a.ApplyDiv(attrs, children)
 	}
@@ -179,8 +179,7 @@ func Content(args ...html.DivArg) html.Node {
 	}
 
 	tooltipClass := html.ClassMerge(
-		"px-3 py-1.5 text-xs font-medium text-primary-foreground bg-primary border-primary rounded-md",
-		"shadow-md max-w-xs",
+		styles.Panel("max-w-xs px-3 py-1.5 text-xs font-medium text-primary-foreground bg-primary/95"),
 		props.Class,
 	)
 

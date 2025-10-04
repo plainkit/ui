@@ -7,6 +7,7 @@ import (
 
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Style string
@@ -69,7 +70,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		dataset = append(dataset, html.AData("pui-rating-name", p.Name))
 	}
 
-	args := divArgsFromProps("flex flex-col items-start gap-1")(p)
+	args := divArgsFromProps(styles.SurfaceMuted("inline-flex flex-col items-start gap-2 rounded-2xl p-4"))(p)
 	for _, data := range dataset {
 		args = append(args, data)
 	}
@@ -95,7 +96,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(html.ClassMerge("flex flex-row items-center gap-1", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge(styles.Surface("inline-flex items-center gap-2 rounded-xl border-none bg-transparent p-1"), p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}
@@ -115,8 +116,14 @@ func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		style = StyleStar
 	}
 
+	itemClass := html.ClassMerge(
+		styles.InteractiveGhost("relative flex size-9 items-center justify-center rounded-xl transition-all"),
+		colorClass(style),
+		p.Class,
+	)
+
 	args := []html.DivArg{
-		html.AClass(html.ClassMerge("relative transition-opacity cursor-pointer", colorClass(style), p.Class)),
+		html.AClass(itemClass),
 		html.AData("pui-rating-item", ""),
 		html.AData("pui-rating-value", strconv.Itoa(p.Value)),
 	}
@@ -129,12 +136,12 @@ func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	}
 
 	background := html.Div(
-		html.AClass("opacity-30"),
+		html.AClass("pointer-events-none opacity-30"),
 		ratingIcon(style, false, float64(p.Value)),
 	)
 
 	foreground := html.Div(
-		html.AClass("absolute inset-0 overflow-hidden w-0"),
+		html.AClass("pointer-events-none absolute inset-0 w-0 overflow-hidden text-primary"),
 		html.AData("pui-rating-item-foreground", ""),
 		ratingIcon(style, true, float64(p.Value)),
 	)

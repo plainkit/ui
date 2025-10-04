@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -61,7 +62,7 @@ func tabsDivArgsFromProps(baseClass string, extra ...string) func(p Props) []htm
 }
 
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range tabsDivArgsFromProps("flex flex-col gap-2")(p) {
+	for _, a := range tabsDivArgsFromProps("flex flex-col gap-4")(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -110,7 +111,7 @@ func listDivArgsFromProps(baseClass string, extra ...string) func(p ListProps) [
 }
 
 func (p ListProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range listDivArgsFromProps("bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]")(p) {
+	for _, a := range listDivArgsFromProps(styles.SurfaceMuted("inline-flex h-11 w-fit items-center gap-1 rounded-full p-1.5 backdrop-blur-sm supports-[backdrop-filter]:bg-muted/70"))(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -160,13 +161,15 @@ func triggerButtonArgsFromProps(baseClass string, extra ...string) func(p Trigge
 
 func (p TriggerProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
 	for _, a := range triggerButtonArgsFromProps(
-		"data-[pui-tabs-state=active]:bg-background dark:data-[pui-tabs-state=active]:text-foreground",
-		"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[pui-tabs-state=active]:border-input",
-		"dark:data-[pui-tabs-state=active]:bg-input/30 text-foreground dark:text-muted-foreground",
-		"inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5",
-		"rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow]",
-		"focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50",
-		"data-[pui-tabs-state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+		styles.InteractiveGhost(
+			"flex-1 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium",
+			"transition-all",
+			"data-[pui-tabs-state=active]:bg-background data-[pui-tabs-state=active]:text-foreground",
+			"data-[pui-tabs-state=active]:shadow-sm",
+		),
+		"focus-visible:ring-2 focus-visible:ring-ring/40",
+		"disabled:pointer-events-none disabled:opacity-60",
+		"[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 	)(p) {
 		a.ApplyButton(attrs, children)
 	}
@@ -221,7 +224,7 @@ func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentPr
 }
 
 func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range contentDivArgsFromProps("flex-1 outline-none")(p) {
+	for _, a := range contentDivArgsFromProps(styles.SurfaceMuted("flex-1 rounded-2xl border-none bg-background/40 p-6 outline-none"))(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -70,7 +71,7 @@ func navArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Na
 }
 
 func (p Props) ApplyNav(attrs *html.NavAttrs, children *[]html.Component) {
-	for _, a := range navArgsFromProps("flex flex-wrap justify-center")(p) {
+	for _, a := range navArgsFromProps(styles.SurfaceMuted("flex flex-wrap items-center justify-center gap-3 rounded-2xl p-3 sm:p-4"))(p) {
 		a.ApplyNav(attrs, children)
 	}
 }
@@ -108,7 +109,7 @@ func ulArgsFromProps(baseClass string, extra ...string) func(p ContentProps) []h
 }
 
 func (p ContentProps) ApplyUl(attrs *html.UlAttrs, children *[]html.Component) {
-	for _, a := range ulArgsFromProps("flex flex-row items-center gap-1")(p) {
+	for _, a := range ulArgsFromProps(styles.Surface("inline-flex items-center gap-2 rounded-full border-none bg-transparent p-1"))(p) {
 		a.ApplyUl(attrs, children)
 	}
 }
@@ -213,12 +214,21 @@ func Link(args ...html.ButtonArg) html.Node {
 	}
 
 	btnProps := button.Props{
-		ID:      props.ID,
-		Class:   props.Class,
-		Attrs:   props.Attrs,
-		Size:    button.SizeIcon,
-		Variant: buttonVariant(props.IsActive),
+		ID:    props.ID,
+		Attrs: props.Attrs,
+		Size:  button.SizeIcon,
 	}
+
+	btnProps.Class = html.ClassMerge(
+		styles.InteractiveGhost("pagination-link inline-flex h-10 w-10 items-center justify-center rounded-xl text-sm font-medium"),
+		props.Class,
+	)
+
+	if props.IsActive {
+		btnProps.Class = html.ClassMerge(btnProps.Class, "bg-primary/15 text-primary-foreground ring-1 ring-primary/40")
+	}
+
+	btnProps.Variant = button.VariantGhost
 	if props.Disabled {
 		btnProps.Disabled = true
 		btnProps.Variant = button.VariantGhost
@@ -272,11 +282,15 @@ func Previous(args ...html.ButtonArg) html.Node {
 	btnProps := button.Props{
 		ID:       props.ID,
 		Attrs:    props.Attrs,
-		Class:    html.ClassMerge("gap-1", props.Class),
 		Variant:  button.VariantGhost,
 		Href:     props.Href,
 		Disabled: props.Disabled,
 	}
+
+	btnProps.Class = html.ClassMerge(
+		styles.InteractiveGhost("gap-2 rounded-full px-4 py-2 text-sm font-medium"),
+		props.Class,
+	)
 
 	buttonArgs := []html.ButtonArg{lucide.ChevronLeft(html.AClass("size-4"))}
 
@@ -331,11 +345,15 @@ func Next(args ...html.ButtonArg) html.Node {
 	btnProps := button.Props{
 		ID:       props.ID,
 		Attrs:    props.Attrs,
-		Class:    html.ClassMerge("gap-1", props.Class),
 		Variant:  button.VariantGhost,
 		Href:     props.Href,
 		Disabled: props.Disabled,
 	}
+
+	btnProps.Class = html.ClassMerge(
+		styles.InteractiveGhost("gap-2 rounded-full px-4 py-2 text-sm font-medium"),
+		props.Class,
+	)
 
 	buttonArgs := make([]html.ButtonArg, 0, len(rest)+2)
 	if props.Label != "" {
@@ -351,7 +369,7 @@ func Next(args ...html.ButtonArg) html.Node {
 }
 
 func Ellipsis(args ...html.SvgArg) html.Node {
-	svgArgs := []html.SvgArg{html.AClass("size-4 text-muted-foreground")}
+	svgArgs := []html.SvgArg{html.AClass("size-4 text-muted-foreground/70")}
 	svgArgs = append(svgArgs, args...)
 
 	return lucide.Ellipsis(svgArgs...)
@@ -426,12 +444,4 @@ func calculateVisibleRange(currentPage, totalPages, maxVisible int) (int, int) {
 	}
 
 	return start, end
-}
-
-func buttonVariant(isActive bool) button.Variant {
-	if isActive {
-		return button.VariantOutline
-	}
-
-	return button.VariantGhost
 }

@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -50,7 +51,7 @@ func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Di
 }
 
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := divArgsFromProps("w-full")(p)
+	args := divArgsFromProps(styles.SurfaceMuted("w-full space-y-3 rounded-2xl p-4"))(p)
 	args = append(args, html.AData("pui-slider-wrapper", ""))
 
 	for _, a := range args {
@@ -68,15 +69,16 @@ func (p InputProps) ApplyInput(attrs *html.InputAttrs, children *[]html.Componen
 		html.AId(id),
 		html.AType("range"),
 		html.AClass(html.ClassMerge(
-			"w-full h-2 rounded-full bg-secondary appearance-none cursor-pointer",
-			"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-			"[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4",
-			"[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary",
+			"w-full appearance-none cursor-pointer",
+			"h-2 rounded-full bg-muted/70",
+			"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+			"[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4",
+			"[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md",
 			"[&::-webkit-slider-thumb]:hover:bg-primary/90",
-			"[&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:border-0",
-			"[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary",
+			"[&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:border-0",
+			"[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:shadow-md",
 			"[&::-moz-range-thumb]:hover:bg-primary/90",
-			"disabled:opacity-50 disabled:cursor-not-allowed",
+			"disabled:cursor-not-allowed disabled:opacity-60",
 			p.Class,
 		)),
 		html.AData("pui-slider-input", ""),
@@ -126,7 +128,7 @@ func (p ValueProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component)
 	}
 
 	args := []html.SpanArg{
-		html.AClass(html.ClassMerge("text-sm text-muted-foreground", p.Class)),
+		html.AClass(html.ClassMerge(styles.SubtleText("text-sm font-semibold"), p.Class)),
 		html.AData("pui-slider-value", ""),
 		html.AData("pui-slider-value-for", p.For),
 	}

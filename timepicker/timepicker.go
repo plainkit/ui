@@ -12,6 +12,7 @@ import (
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
 	"github.com/plainkit/ui/card"
+	"github.com/plainkit/ui/internal/styles"
 	"github.com/plainkit/ui/popover"
 )
 
@@ -97,7 +98,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		maxTimeString = p.MaxTime.Format("15:04")
 	}
 
-	args := divArgsFromProps("relative inline-block w-full")(p)
+	args := divArgsFromProps(styles.SurfaceMuted("relative inline-flex w-full flex-col gap-3 p-4"))(p)
 
 	// Hidden input
 	hiddenInput := html.Input(
@@ -132,21 +133,10 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 			ID:      id,
 			Variant: button.VariantOutline,
 			Class: html.ClassMerge(
-				// Base styles matching input
-				"w-full h-9 px-3 py-1 text-base md:text-sm",
-				"flex items-center justify-between",
-				"rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none",
-				// Dark mode background
-				"dark:bg-input/30",
-				// Selection styles
-				"selection:bg-primary selection:text-primary-foreground",
-				// Focus styles
-				"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-				// Error/Invalid styles
-				"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
+				styles.Input("timepicker-trigger flex h-11 w-full items-center justify-between gap-3 pr-3 text-sm", "aria-invalid:border-destructive aria-invalid:ring-destructive/30"),
 				func() string {
 					if p.HasError {
-						return "border-destructive ring-destructive/20 dark:ring-destructive/40"
+						return "border-destructive ring-destructive/30"
 					}
 
 					return ""
@@ -174,11 +164,11 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		},
 			html.Span(
 				html.AData("pui-timepicker-display", ""),
-				html.AClass("text-left grow text-muted-foreground"),
+				html.AClass(styles.SubtleText("grow text-left text-sm")),
 				html.Text(placeholder),
 			),
 			html.Span(
-				html.AClass("text-muted-foreground flex items-center ml-2"),
+				html.AClass("ml-3 flex items-center text-muted-foreground/70"),
 				lucide.Clock(html.AClass("h-4 w-4")),
 			),
 		),
@@ -189,13 +179,13 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		popover.ContentProps{
 			ID:        contentID,
 			Placement: popover.PlacementBottomStart,
-			Class:     "p-0 w-80",
+			Class:     styles.Panel("w-80 p-0"),
 		},
 		card.Card(card.Props{
-			Class: "border-0 shadow-none",
+			Class: "border-none bg-transparent p-0 shadow-none",
 		},
 			card.Content(card.ContentProps{
-				Class: "p-4",
+				Class: "space-y-4 p-4",
 			},
 				html.Div(
 					html.AData("pui-timepicker-popup", "true"),
@@ -211,30 +201,30 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 					// Time selection grid
 					html.Div(
-						html.AClass("grid grid-cols-2 gap-3 mb-4"),
+						html.AClass("grid grid-cols-2 gap-4"),
 
 						// Hour selection
 						html.Div(
-							html.AClass("space-y-2"),
+							html.AClass("flex flex-col gap-2"),
 							html.Label(
-								html.AClass("text-sm font-medium"),
+								html.AClass(styles.SubHeading("text-xs uppercase tracking-wide text-muted-foreground/70")),
 								html.Text("Hour"),
 							),
 							html.Div(
-								html.AClass("max-h-32 overflow-y-auto border rounded-md bg-background"),
+								html.AClass(styles.SurfaceMuted("max-h-48 overflow-y-auto rounded-xl p-1")),
 								createHourList(p.Use12Hours),
 							),
 						),
 
 						// Minute selection
 						html.Div(
-							html.AClass("space-y-2"),
+							html.AClass("flex flex-col gap-2"),
 							html.Label(
-								html.AClass("text-sm font-medium"),
+								html.AClass(styles.SubHeading("text-xs uppercase tracking-wide text-muted-foreground/70")),
 								html.Text("Minute"),
 							),
 							html.Div(
-								html.AClass("max-h-32 overflow-y-auto border rounded-md bg-background"),
+								html.AClass(styles.SurfaceMuted("max-h-48 overflow-y-auto rounded-xl p-1")),
 								createMinuteList(step),
 							),
 						),
@@ -242,25 +232,25 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 					// AM/PM selector and action buttons
 					html.Div(
-						html.AClass("flex justify-between items-center"),
+						html.AClass("flex items-center justify-between"),
 
 						// AM/PM selector (conditionally rendered)
 						func() html.Node {
 							if p.Use12Hours {
 								return html.Div(
-									html.AClass("flex gap-1"),
+									html.AClass("flex gap-2"),
 									html.Button(
 										html.AType("button"),
 										html.AData("pui-timepicker-period", "AM"),
 										html.AData("pui-timepicker-active", "false"),
-										html.AClass("px-3 py-1 text-sm rounded-md border transition-colors hover:bg-accent hover:text-accent-foreground data-[pui-timepicker-active=true]:bg-primary data-[pui-timepicker-active=true]:text-primary-foreground data-[pui-timepicker-active=true]:hover:bg-primary/90"),
+										html.AClass(styles.InteractiveGhost("px-4 py-1.5 text-sm", "data-[pui-timepicker-active=true]:bg-primary data-[pui-timepicker-active=true]:text-primary-foreground data-[pui-timepicker-active=true]:shadow")),
 										html.Text(amLabel),
 									),
 									html.Button(
 										html.AType("button"),
 										html.AData("pui-timepicker-period", "PM"),
 										html.AData("pui-timepicker-active", "false"),
-										html.AClass("px-3 py-1 text-sm rounded-md border transition-colors hover:bg-accent hover:text-accent-foreground data-[pui-timepicker-active=true]:bg-primary data-[pui-timepicker-active=true]:text-primary-foreground data-[pui-timepicker-active=true]:hover:bg-primary/90"),
+										html.AClass(styles.InteractiveGhost("px-4 py-1.5 text-sm", "data-[pui-timepicker-active=true]:bg-primary data-[pui-timepicker-active=true]:text-primary-foreground data-[pui-timepicker-active=true]:shadow")),
 										html.Text(pmLabel),
 									),
 								)
@@ -315,10 +305,13 @@ func TimePicker(args ...html.DivArg) html.Node {
 func createHourList(use12Hours bool) html.Node {
 	divArgs := []html.DivArg{
 		html.AData("pui-timepicker-hour-list", "true"),
-		html.AClass("p-1 space-y-0.5"),
+		html.AClass("space-y-1"),
 	}
 
-	buttonClass := "w-full px-2 py-1 text-sm rounded transition-colors text-left hover:bg-accent hover:text-accent-foreground data-[pui-timepicker-selected=true]:bg-primary data-[pui-timepicker-selected=true]:text-primary-foreground data-[pui-timepicker-selected=true]:hover:bg-primary/90"
+	buttonClass := styles.InteractiveGhost(
+		"w-full justify-start rounded-lg px-3 py-2 text-sm",
+		"data-[pui-timepicker-selected=true]:bg-primary data-[pui-timepicker-selected=true]:text-primary-foreground data-[pui-timepicker-selected=true]:shadow",
+	)
 
 	if use12Hours {
 		// 12-hour format: 12, 01-11
@@ -358,10 +351,13 @@ func createHourList(use12Hours bool) html.Node {
 func createMinuteList(step int) html.Node {
 	divArgs := []html.DivArg{
 		html.AData("pui-timepicker-minute-list", "true"),
-		html.AClass("p-1 space-y-0.5"),
+		html.AClass("space-y-1"),
 	}
 
-	buttonClass := "w-full px-2 py-1 text-sm rounded transition-colors text-left hover:bg-accent hover:text-accent-foreground data-[pui-timepicker-selected=true]:bg-primary data-[pui-timepicker-selected=true]:text-primary-foreground data-[pui-timepicker-selected=true]:hover:bg-primary/90"
+	buttonClass := styles.InteractiveGhost(
+		"w-full justify-start rounded-lg px-3 py-2 text-sm",
+		"data-[pui-timepicker-selected=true]:bg-primary data-[pui-timepicker-selected=true]:text-primary-foreground data-[pui-timepicker-selected=true]:shadow",
+	)
 
 	for minute := 0; minute < 60; minute += step {
 		divArgs = append(divArgs, html.Button(

@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -53,7 +54,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		state = "open"
 	}
 
-	args := divArgsFromProps("")(p)
+	args := divArgsFromProps(styles.SurfaceMuted("flex w-full flex-col rounded-2xl p-4"))(p)
 	args = append([]html.DivArg{
 		html.AId(id),
 		html.AData("pui-collapsible", "root"),
@@ -67,7 +68,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 func (p TriggerProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	args := []html.DivArg{
-		html.AClass(html.ClassMerge("", p.Class)),
+		html.AClass(html.ClassMerge(styles.Interactive("flex w-full items-center justify-between gap-3 rounded-xl bg-transparent px-4 py-2 text-left text-sm font-medium"), p.Class)),
 		html.AData("pui-collapsible", "trigger"),
 	}
 	if p.ID != "" {
@@ -100,7 +101,7 @@ func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component)
 	}
 
 	// Create inner div with overflow hidden
-	innerDiv := html.Div(html.AClass("overflow-hidden"))
+	innerDiv := html.Div(html.AClass(styles.SurfaceMuted("overflow-hidden rounded-xl bg-background/60 p-4")))
 	*children = append(*children, innerDiv)
 
 	for _, a := range args {

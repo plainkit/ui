@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Placement string
@@ -82,7 +83,7 @@ func triggerSpanArgsFromProps(baseClass string, extra ...string) func(p TriggerP
 }
 
 func (p TriggerProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
-	for _, a := range triggerSpanArgsFromProps("group cursor-pointer")(p) {
+	for _, a := range triggerSpanArgsFromProps(styles.InteractiveGhost("group inline-flex cursor-pointer items-center gap-2"))(p) {
 		a.ApplySpan(attrs, children)
 	}
 }
@@ -153,7 +154,7 @@ func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentPr
 
 func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	for _, a := range contentDivArgsFromProps(
-		"bg-popover rounded-lg border text-popover-foreground text-sm shadow-lg pointer-events-auto absolute z-[9999] hidden top-0 left-0",
+		styles.Panel("pointer-events-auto absolute z-[9999] hidden top-0 left-0 text-sm shadow-xl"),
 	)(p) {
 		a.ApplyDiv(attrs, children)
 	}
@@ -180,7 +181,7 @@ func Content(args ...html.DivArg) html.Node {
 	if props.ShowArrow {
 		contentInner = append(contentInner, html.Div(
 			html.AData("pui-popover-arrow", ""),
-			html.AClass("absolute h-2.5 w-2.5 rotate-45 bg-popover border border-border "+
+			html.AClass("absolute h-2.5 w-2.5 rotate-45 bg-popover border border-border/60 "+
 				"data-[pui-popover-placement^=top]:-bottom-[5px] data-[pui-popover-placement^=top]:border-t-transparent data-[pui-popover-placement^=top]:border-l-transparent "+
 				"data-[pui-popover-placement^=bottom]:-top-[5px] data-[pui-popover-placement^=bottom]:border-b-transparent data-[pui-popover-placement^=bottom]:border-r-transparent "+
 				"data-[pui-popover-placement^=left]:-right-[5px] data-[pui-popover-placement^=left]:border-l-transparent data-[pui-popover-placement^=left]:border-b-transparent "+

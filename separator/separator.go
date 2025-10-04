@@ -2,6 +2,7 @@ package separator
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Orientation string
@@ -49,13 +50,13 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 	var args []html.DivArg
 	if orientation == OrientationVertical {
-		args = divArgsFromProps("shrink-0 h-full")(p)
+		args = divArgsFromProps(styles.SurfaceMuted("shrink-0 h-full border-none bg-transparent p-0 shadow-none"))(p)
 		args = append([]html.DivArg{
 			html.ACustom("role", "separator"),
 			html.AAria("orientation", "vertical"),
 		}, args...)
 	} else {
-		args = divArgsFromProps("shrink-0 w-full")(p)
+		args = divArgsFromProps(styles.SurfaceMuted("shrink-0 w-full border-none bg-transparent p-0 shadow-none"))(p)
 		args = append([]html.DivArg{
 			html.ACustom("role", "separator"),
 			html.AAria("orientation", "horizontal"),

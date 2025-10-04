@@ -9,6 +9,7 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Variant string
@@ -72,14 +73,14 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	}
 
 	args := divArgsFromProps(
-		"z-50 fixed pointer-events-auto p-4 w-full md:max-w-[420px]",
+		styles.Panel("fixed z-50 w-full max-w-[420px] pointer-events-auto overflow-hidden p-0 shadow-xl"),
 		"animate-in fade-in slide-in-from-bottom-4 duration-300",
-		"data-[position=top-right]:top-0 data-[position=top-right]:right-0",
-		"data-[position=top-left]:top-0 data-[position=top-left]:left-0",
-		"data-[position=top-center]:top-0 data-[position=top-center]:left-1/2 data-[position=top-center]:-translate-x-1/2",
-		"data-[position=bottom-right]:bottom-0 data-[position=bottom-right]:right-0",
-		"data-[position=bottom-left]:bottom-0 data-[position=bottom-left]:left-0",
-		"data-[position=bottom-center]:bottom-0 data-[position=bottom-center]:left-1/2 data-[position=bottom-center]:-translate-x-1/2",
+		"data-[position=top-right]:top-6 data-[position=top-right]:right-6",
+		"data-[position=top-left]:top-6 data-[position=top-left]:left-6",
+		"data-[position=top-center]:top-6 data-[position=top-center]:left-1/2 data-[position=top-center]:-translate-x-1/2",
+		"data-[position=bottom-right]:bottom-6 data-[position=bottom-right]:right-6",
+		"data-[position=bottom-left]:bottom-6 data-[position=bottom-left]:left-6",
+		"data-[position=bottom-center]:bottom-6 data-[position=bottom-center]:left-1/2 data-[position=bottom-center]:-translate-x-1/2",
 	)(p)
 	args = append([]html.DivArg{
 		html.AId(id),
@@ -93,15 +94,14 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 	if p.ShowIndicator && duration > 0 {
 		progressBar := html.Div(
-			html.AClass("absolute top-0 left-0 right-0 h-1 overflow-hidden"),
+			html.AClass("absolute inset-x-0 top-0 h-1 overflow-hidden"),
 			html.Div(
 				html.AClass(html.ClassMerge(
-					"toast-progress h-full origin-left transition-transform ease-linear",
-					"data-[variant=default]:bg-gray-500",
-					"data-[variant=success]:bg-green-500",
-					"data-[variant=error]:bg-red-500",
-					"data-[variant=warning]:bg-yellow-500",
-					"data-[variant=info]:bg-blue-500",
+					"toast-progress h-full origin-left bg-primary transition-transform ease-linear",
+					"data-[variant=success]:bg-emerald-500",
+					"data-[variant=error]:bg-destructive",
+					"data-[variant=warning]:bg-amber-400",
+					"data-[variant=info]:bg-sky-500",
 				)),
 				html.AData("variant", string(variant)),
 				html.AData("duration", strconv.Itoa(duration)),
@@ -120,14 +120,14 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	textContainerArgs := []html.SpanArg{html.AClass("flex-1 min-w-0")}
 	if p.Title != "" {
 		textContainerArgs = append(textContainerArgs, html.P(
-			html.AClass("text-sm font-semibold truncate"),
+			html.AClass(styles.DisplayHeading("text-sm")),
 			html.Text(p.Title),
 		))
 	}
 
 	if p.Description != "" {
 		textContainerArgs = append(textContainerArgs, html.P(
-			html.AClass("text-sm opacity-90 mt-1"),
+			html.AClass(styles.SubtleText("mt-1 text-sm")),
 			html.Text(p.Description),
 		))
 	}
@@ -139,18 +139,19 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		btn := button.Button(button.Props{
 			Variant: button.VariantGhost,
 			Size:    button.SizeIcon,
+			Class:   "ml-2 text-muted-foreground/70 hover:text-foreground",
 			Attrs: []html.Global{
 				html.AAria("label", "Close"),
 				html.AData("pui-toast-dismiss", ""),
 			},
 		}, lucide.X(
-			html.AClass("size-4 opacity-75 hover:opacity-100"),
+			html.AClass("size-4"),
 		))
 		contentChildren = append(contentChildren, btn)
 	}
 
 	contentDivArgs := []html.DivArg{
-		html.AClass("w-full bg-popover text-popover-foreground rounded-lg shadow-xs border pt-5 pb-4 px-4 flex items-center justify-center relative overflow-hidden group gap-3"),
+		html.AClass(styles.Panel("relative flex w-full items-center gap-3 overflow-hidden px-5 py-4")),
 	}
 	contentDivArgs = append(contentDivArgs, contentChildren...)
 	contentDiv := html.Div(contentDivArgs...)

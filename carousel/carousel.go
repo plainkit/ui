@@ -9,6 +9,7 @@ import (
 
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -77,7 +78,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		interval = 5000
 	}
 
-	args := divArgsFromProps("relative overflow-hidden w-full")(p)
+	args := divArgsFromProps(styles.Surface("relative w-full overflow-hidden rounded-3xl"))(p)
 	args = append([]html.DivArg{
 		html.AId(id),
 		html.AData("pui-carousel", ""),
@@ -93,7 +94,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(html.ClassMerge("flex h-full w-full transition-transform duration-500 ease-in-out cursor-grab", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("flex h-full w-full gap-6 transition-transform duration-500 ease-in-out", p.Class))}
 	args = append(args, html.AData("pui-carousel-track", ""))
 
 	if p.ID != "" {
@@ -110,7 +111,7 @@ func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component)
 }
 
 func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(html.ClassMerge("flex-shrink-0 w-full h-full relative", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("relative h-full w-full shrink-0", p.Class))}
 	args = append(args, html.AData("pui-carousel-item", ""))
 
 	if p.ID != "" {
@@ -128,7 +129,7 @@ func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 func (p PreviousProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
 	args := []html.ButtonArg{
-		html.AClass(html.ClassMerge("absolute left-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", p.Class)),
+		html.AClass(html.ClassMerge(styles.InteractiveGhost("absolute left-4 top-1/2 -translate-y-1/2 size-10 rounded-full bg-background/80 shadow-lg backdrop-blur", "hover:bg-background"), p.Class)),
 		html.AData("pui-carousel-prev", ""),
 		html.AAria("label", "Previous slide"),
 		html.AType("button"),
@@ -142,7 +143,7 @@ func (p PreviousProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Com
 		args = append(args, a)
 	}
 
-	args = append(args, lucide.ChevronLeft(html.AClass("h-4 w-4")))
+	args = append(args, lucide.ChevronLeft(html.AClass("size-5")))
 
 	for _, a := range args {
 		a.ApplyButton(attrs, children)
@@ -151,7 +152,7 @@ func (p PreviousProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Com
 
 func (p NextProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Component) {
 	args := []html.ButtonArg{
-		html.AClass(html.ClassMerge("absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-black/20 text-white hover:bg-black/40 focus:outline-none", p.Class)),
+		html.AClass(html.ClassMerge(styles.InteractiveGhost("absolute right-4 top-1/2 -translate-y-1/2 size-10 rounded-full bg-background/80 shadow-lg backdrop-blur", "hover:bg-background"), p.Class)),
 		html.AData("pui-carousel-next", ""),
 		html.AAria("label", "Next slide"),
 		html.AType("button"),
@@ -165,7 +166,7 @@ func (p NextProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Compone
 		args = append(args, a)
 	}
 
-	args = append(args, lucide.ChevronRight(html.AClass("h-4 w-4")))
+	args = append(args, lucide.ChevronRight(html.AClass("size-5")))
 
 	for _, a := range args {
 		a.ApplyButton(attrs, children)
@@ -173,7 +174,7 @@ func (p NextProps) ApplyButton(attrs *html.ButtonAttrs, children *[]html.Compone
 }
 
 func (p IndicatorsProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(html.ClassMerge("absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-3", p.Class))}
 
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
@@ -186,10 +187,10 @@ func (p IndicatorsProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Compone
 	// Add indicator buttons
 	indicatorButtons := make([]html.Component, 0, p.Count)
 	for i := 0; i < p.Count; i++ {
-		buttonClass := "w-3 h-3 rounded-full bg-foreground/30 hover:bg-foreground/50 focus:outline-none transition-colors"
-		if i == 0 {
-			buttonClass = html.ClassMerge(buttonClass, "bg-primary")
-		}
+		buttonClass := styles.InteractiveGhost(
+			"size-3 rounded-full bg-foreground/30 p-0",
+			"data-[pui-carousel-active=true]:bg-primary",
+		)
 
 		button := html.Button(
 			html.AClass(buttonClass),

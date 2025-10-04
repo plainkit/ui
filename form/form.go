@@ -2,6 +2,7 @@ package form
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 	"github.com/plainkit/ui/label"
 )
 
@@ -55,7 +56,7 @@ func itemDivArgsFromProps(baseClass string, extra ...string) func(p ItemProps) [
 }
 
 func (p ItemProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range itemDivArgsFromProps("space-y-2")(p) {
+	for _, a := range itemDivArgsFromProps(styles.SurfaceMuted("space-y-2 rounded-2xl p-5"))(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -96,7 +97,7 @@ func ItemFlex(args ...html.DivArg) html.Node {
 	// Create a new Props with the flex classes
 	flexProps := ItemProps{
 		ID:    props.ID,
-		Class: html.ClassMerge("items-center flex space-x-2", props.Class),
+		Class: html.ClassMerge(styles.SurfaceMuted("flex items-center gap-3 rounded-2xl p-4"), props.Class),
 		Attrs: props.Attrs,
 	}
 
@@ -126,7 +127,8 @@ func labelArgsFromProps(baseClass string, extra ...string) func(p LabelProps) []
 }
 
 func (p LabelProps) ApplyLabel(attrs *html.LabelAttrs, children *[]html.Component) {
-	for _, a := range labelArgsFromProps("")(p) {
+	base := styles.Label("inline-block leading-tight")
+	for _, a := range labelArgsFromProps(base)(p) {
 		a.ApplyLabel(attrs, children)
 	}
 }
@@ -148,7 +150,7 @@ func Label(args ...html.LabelArg) html.Node {
 
 	labelProps := label.Props{
 		ID:    props.ID,
-		Class: html.ClassMerge(props.Class, props.DisabledClass),
+		Class: html.ClassMerge(styles.Label(""), props.Class, props.DisabledClass),
 		Attrs: props.Attrs,
 		For:   props.For,
 	}
@@ -172,7 +174,7 @@ func pArgsFromProps(baseClass string, extra ...string) func(p DescriptionProps) 
 }
 
 func (p DescriptionProps) ApplyP(attrs *html.PAttrs, children *[]html.Component) {
-	for _, a := range pArgsFromProps("text-sm text-muted-foreground")(p) {
+	for _, a := range pArgsFromProps(styles.SubtleText("leading-relaxed"))(p) {
 		a.ApplyP(attrs, children)
 	}
 }
@@ -214,7 +216,7 @@ func messagePArgsFromProps(baseClass string, extra ...string) func(p MessageProp
 }
 
 func (p MessageProps) ApplyP(attrs *html.PAttrs, children *[]html.Component) {
-	for _, a := range messagePArgsFromProps("text-[0.8rem] font-medium")(p) {
+	for _, a := range messagePArgsFromProps(styles.SubtleText("text-xs font-semibold"))(p) {
 		a.ApplyP(attrs, children)
 	}
 }
@@ -242,7 +244,7 @@ func messageVariantClass(variant MessageVariant) string {
 	case MessageVariantError:
 		return "text-destructive"
 	case MessageVariantInfo:
-		return "text-blue-500"
+		return "text-sky-500"
 	default:
 		return ""
 	}

@@ -2,6 +2,7 @@ package table
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -69,7 +70,7 @@ func tableArgsFromProps(baseClass string, extra ...string) func(p Props) []html.
 }
 
 func (p Props) ApplyTable(attrs *html.TableAttrs, children *[]html.Component) {
-	for _, a := range tableArgsFromProps("w-full caption-bottom text-sm")(p) {
+	for _, a := range tableArgsFromProps(styles.SurfaceMuted("w-full caption-bottom text-sm"))(p) {
 		a.ApplyTable(attrs, children)
 	}
 }
@@ -89,7 +90,7 @@ func Table(args ...html.TableArg) html.Node {
 	}
 
 	return html.Div(
-		html.AClass("relative w-full overflow-auto"),
+		html.AClass(styles.Surface("relative w-full overflow-hidden rounded-3xl")),
 		html.Table(append([]html.TableArg{props}, rest...)...),
 	)
 }
@@ -110,7 +111,7 @@ func theadArgsFromProps(baseClass string, extra ...string) func(p HeaderProps) [
 }
 
 func (p HeaderProps) ApplyThead(attrs *html.TheadAttrs, children *[]html.Component) {
-	for _, a := range theadArgsFromProps("[&_tr]:border-b")(p) {
+	for _, a := range theadArgsFromProps("[&_tr]:border-b border-border/60 bg-muted/50 backdrop-blur-sm")(p) {
 		a.ApplyThead(attrs, children)
 	}
 }
@@ -235,7 +236,7 @@ func trArgsFromProps(baseClass string, extra ...string) func(p RowProps) []html.
 }
 
 func (p RowProps) ApplyTr(attrs *html.TrAttrs, children *[]html.Component) {
-	for _, a := range trArgsFromProps("border-b transition-colors hover:bg-muted/50")(p) {
+	for _, a := range trArgsFromProps("border-b border-border/60 transition-colors data-[pui-table-state-selected]:bg-muted hover:bg-muted/40")(p) {
 		a.ApplyTr(attrs, children)
 	}
 }
@@ -274,7 +275,7 @@ func thArgsFromProps(baseClass string, extra ...string) func(p HeadProps) []html
 
 func (p HeadProps) ApplyTh(attrs *html.ThAttrs, children *[]html.Component) {
 	for _, a := range thArgsFromProps(
-		"h-10 px-2 text-left align-middle font-medium text-muted-foreground",
+		styles.SubHeading("h-12 px-4 text-left align-middle text-xs uppercase tracking-widest text-muted-foreground/70"),
 		"[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
 	)(p) {
 		a.ApplyTh(attrs, children)
@@ -315,7 +316,7 @@ func tdArgsFromProps(baseClass string, extra ...string) func(p CellProps) []html
 
 func (p CellProps) ApplyTd(attrs *html.TdAttrs, children *[]html.Component) {
 	for _, a := range tdArgsFromProps(
-		"p-2 align-middle",
+		styles.SubtleText("p-4 align-middle text-sm"),
 		"[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
 	)(p) {
 		a.ApplyTd(attrs, children)
@@ -355,7 +356,7 @@ func captionArgsFromProps(baseClass string, extra ...string) func(p CaptionProps
 }
 
 func (p CaptionProps) ApplyCaption(attrs *html.CaptionAttrs, children *[]html.Component) {
-	for _, a := range captionArgsFromProps("mt-4 text-sm text-muted-foreground")(p) {
+	for _, a := range captionArgsFromProps(styles.SubtleText("mt-4 text-sm"))(p) {
 		a.ApplyCaption(attrs, children)
 	}
 }

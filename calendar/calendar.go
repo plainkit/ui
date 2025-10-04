@@ -9,6 +9,7 @@ import (
 
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type LocaleTag string
@@ -109,7 +110,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		initialSelectedISO = p.Value.Format("2006-01-02")
 	}
 
-	args := divArgsFromProps("", "")(p)
+	args := divArgsFromProps(styles.Surface("inline-flex flex-col gap-4 p-6"))(p)
 	args = append(args, html.AData("pui-calendar-wrapper", "true"))
 
 	// Build wrapper content
@@ -139,23 +140,23 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 		// Calendar Header
 		html.Div(
-			html.AClass("flex items-center justify-between mb-4"),
+			html.AClass("mb-4 flex items-center justify-between gap-3 rounded-2xl bg-muted/50 px-4 py-3"),
 			html.Span(
 				html.AData("pui-calendar-month-display", ""),
-				html.AClass("text-sm font-medium"),
+				html.AClass(styles.DisplayHeading("text-lg")),
 			),
 			html.Div(
-				html.AClass("flex gap-1"),
+				html.AClass("flex items-center gap-2"),
 				html.Button(
 					html.AType("button"),
 					html.AData("pui-calendar-prev", ""),
-					html.AClass("inline-flex items-center justify-center rounded-md text-sm font-medium h-7 w-7 hover:bg-accent hover:text-accent-foreground focus:outline-none disabled:opacity-50"),
+					html.AClass(styles.InteractiveGhost("size-8 rounded-full text-muted-foreground hover:text-foreground")),
 					lucide.ChevronLeft(html.AClass("h-4 w-4")),
 				),
 				html.Button(
 					html.AType("button"),
 					html.AData("pui-calendar-next", ""),
-					html.AClass("inline-flex items-center justify-center rounded-md text-sm font-medium h-7 w-7 hover:bg-accent hover:text-accent-foreground focus:outline-none disabled:opacity-50"),
+					html.AClass(styles.InteractiveGhost("size-8 rounded-full text-muted-foreground hover:text-foreground")),
 					lucide.ChevronRight(html.AClass("h-4 w-4")),
 				),
 			),
@@ -164,13 +165,13 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		// Weekday Headers
 		html.Div(
 			html.AData("pui-calendar-weekdays", ""),
-			html.AClass("grid grid-cols-7 gap-1 mb-1 place-items-center"),
+			html.AClass("mb-1 grid grid-cols-7 place-items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-muted-foreground/70"),
 		),
 
 		// Calendar Day Grid
 		html.Div(
 			html.AData("pui-calendar-days", ""),
-			html.AClass("grid grid-cols-7 gap-1 place-items-center"),
+			html.AClass("grid grid-cols-7 gap-2"),
 		),
 	)
 

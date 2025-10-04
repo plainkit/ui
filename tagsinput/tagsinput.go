@@ -9,6 +9,7 @@ import (
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/badge"
 	"github.com/plainkit/ui/input"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -46,34 +47,25 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	}
 
 	containerClass := html.ClassMerge(
-		// Base styles
-		"flex items-center flex-wrap gap-2 p-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none",
-		// Dark mode background
-		"dark:bg-input/30",
-		// Focus styles
-		"focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
-		// Disabled styles
+		styles.Input("flex w-full flex-wrap items-center gap-2 rounded-2xl border border-input/60 bg-background/60 py-2 pl-3 pr-10 text-sm transition-[border,box-shadow]"),
+		"min-h-[2.75rem] cursor-text",
 		func() string {
 			if p.Disabled {
-				return "opacity-50 cursor-not-allowed"
+				return "cursor-not-allowed opacity-60"
 			}
 
 			return ""
 		}(),
-		// Width
-		"w-full",
-		// Error/Invalid styles
 		func() string {
 			if p.HasError {
-				return "border-destructive ring-destructive/20 dark:ring-destructive/40"
+				return "border-destructive ring-destructive/30"
 			}
 
 			return ""
 		}(),
-		p.Class,
 	)
 
-	args := divArgsFromProps(containerClass)(p)
+	args := divArgsFromProps(html.ClassMerge(containerClass, p.Class))(p)
 	args = append([]html.DivArg{
 		html.AId(id + "-container"),
 		html.AData("pui-tagsinput", ""),
@@ -92,7 +84,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 			html.Span(html.Text(tag)),
 			html.Button(
 				html.AType("button"),
-				html.AClass("ml-1 text-current hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"),
+				html.AClass(styles.InteractiveGhost("ml-1 size-6 justify-center rounded-full text-muted-foreground/70", "hover:text-destructive")),
 				html.AData("pui-tagsinput-remove", ""),
 				func() html.ButtonArg {
 					if p.Disabled {
@@ -101,7 +93,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 					return html.AAria("", "")
 				}(),
-				lucide.X(html.AClass("h-3 w-3 pointer-events-none")),
+				lucide.X(html.AClass("pointer-events-none size-3")),
 			),
 		)
 		tagChildren = append(tagChildren, tagBadge)
@@ -109,7 +101,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 	// Build the tags container
 	tagsContainerArgs := []html.DivArg{
-		html.AClass("flex items-center flex-wrap gap-2"),
+		html.AClass("flex flex-wrap items-center gap-2"),
 		html.AData("pui-tagsinput-container", ""),
 	}
 	tagsContainerArgs = append(tagsContainerArgs, tagChildren...)
@@ -118,7 +110,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	// Text input
 	textInput := input.Input(input.Props{
 		ID:          id,
-		Class:       "border-0 shadow-none focus-visible:ring-0 h-auto py-0 px-0 bg-transparent rounded-none min-h-0 disabled:opacity-100 dark:bg-transparent",
+		Class:       "min-h-0 grow border-0 bg-transparent px-0 py-1 text-sm shadow-none focus-visible:ring-0",
 		Type:        input.TypeText,
 		Placeholder: p.Placeholder,
 		Disabled:    p.Disabled,

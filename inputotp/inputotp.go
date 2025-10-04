@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -58,7 +59,7 @@ func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Di
 }
 
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := divArgsFromProps("flex flex-row items-center gap-2 w-fit")(p)
+	args := divArgsFromProps(styles.SurfaceMuted("flex w-fit items-center gap-3 rounded-2xl p-3"))(p)
 	args = append(args, html.AData("pui-inputotp", ""))
 
 	if p.Value != "" {
@@ -103,7 +104,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(html.ClassMerge("flex gap-2", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge("flex gap-3", p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}
@@ -132,26 +133,21 @@ func (p SlotProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		args = append(args, a)
 	}
 
-	classes := []string{
-		"w-10 h-12 text-center rounded-md border border-input bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
-		"dark:bg-input/30",
-		"selection:bg-primary selection:text-primary-foreground",
-		"placeholder:text-muted-foreground",
-		"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-		"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-		"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
-	}
-	if p.HasError {
-		classes = append(classes, "border-destructive ring-destructive/20 dark:ring-destructive/40")
-	}
-
-	classes = append(classes, p.Class)
-
 	inputArgs := []html.InputArg{
 		html.AType(inputType),
 		html.AInputmode("numeric"),
 		html.AMaxlength("1"),
-		html.AClass(html.ClassMerge(classes...)),
+		html.AClass(html.ClassMerge(
+			styles.Input("h-12 w-12 appearance-none text-center text-lg md:text-base", "aria-invalid:border-destructive aria-invalid:ring-destructive/30"),
+			func() string {
+				if p.HasError {
+					return "border-destructive ring-destructive/30"
+				}
+
+				return ""
+			}(),
+			p.Class,
+		)),
 		html.AData("pui-inputotp-index", strconv.Itoa(p.Index)),
 		html.AData("pui-inputotp-slot", ""),
 	}
@@ -176,7 +172,7 @@ func (p SlotProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p SeparatorProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(html.ClassMerge("flex items-center text-muted-foreground text-xl", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge(styles.SubtleText("flex items-center text-lg"), p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}

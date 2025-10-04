@@ -7,6 +7,7 @@ import (
 
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Size string
@@ -51,7 +52,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	// Build code element classes
 	codeClasses := html.ClassMerge(
 		"language-"+p.Language,
-		"overflow-y-auto rounded-md block text-sm max-h-[501px]",
+		styles.SurfaceMuted("block max-h-[501px] overflow-y-auto rounded-2xl p-4 text-sm"),
 		func() string {
 			switch p.Size {
 			case SizeSm:
@@ -89,7 +90,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	if p.ShowCopyButton {
 		copyButton := html.Button(
 			html.AType("button"),
-			html.AClass("absolute top-2 right-2 hover:bg-gray-500 hover:bg-opacity-30 text-white p-2 rounded"),
+			html.AClass(styles.InteractiveGhost("absolute right-3 top-3 size-9 justify-center rounded-full text-muted-foreground/70", "hover:text-foreground")),
 			html.AData("pui-code-copy-button", ""),
 			html.Span(
 				html.AClass("hidden"),
@@ -106,7 +107,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 
 	*children = append(*children, containerContent...)
 
-	args := divArgsFromProps("relative code-component")(p)
+	args := divArgsFromProps(styles.Surface("relative code-component overflow-hidden rounded-3xl"))(p)
 	args = append([]html.DivArg{
 		html.AId(id),
 		html.AData("pui-code-component", ""),

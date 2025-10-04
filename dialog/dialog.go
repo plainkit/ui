@@ -196,7 +196,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	// Content panel
 	contentClasses := html.ClassMerge(
 		"fixed left-1/2 top-1/2 z-50 w-full max-w-[min(90vw,620px)] -translate-x-1/2 -translate-y-1/2",
-		styles.Panel("relative grid gap-6 p-8"),
+		styles.Panel("grid gap-6 p-8"),
 		"transition-all duration-200",
 		"data-[pui-dialog-open=false]:scale-95 data-[pui-dialog-open=false]:opacity-0",
 		"data-[pui-dialog-open=true]:scale-100 data-[pui-dialog-open=true]:opacity-100",

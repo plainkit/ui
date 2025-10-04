@@ -169,7 +169,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 
 	// Overlay/backdrop
 	overlayClasses := html.ClassMerge(
-		"fixed inset-0 z-40 bg-black/50 backdrop-blur-sm",
+		"fixed inset-0 z-40 bg-black/50",
 		"transition-opacity duration-300",
 		"data-[pui-dialog-open=false]:opacity-0",
 		"data-[pui-dialog-open=true]:opacity-100",

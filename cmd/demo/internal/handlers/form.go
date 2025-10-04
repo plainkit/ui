@@ -71,11 +71,11 @@ func RenderFormContent() html.Node {
 					html.P(html.AClass("text-sm text-muted-foreground"), html.Text("Use ItemFlex to align toggles and short helpers on a single row.")),
 					form.ItemFlex(
 						form.ItemProps{},
-						html.Child(switchcomp.Switch(switchcomp.Props{
+						switchcomp.Switch(switchcomp.Props{
 							ID:      "alerts-switch",
 							Name:    "alerts",
 							Checked: true,
-						}, html.Text("Email notifications"))),
+						}, html.Text("Email notifications")),
 						html.Div(
 							html.AClass("text-sm text-muted-foreground"),
 							html.Text("Send me important product and billing updates."),

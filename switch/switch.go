@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -49,7 +50,7 @@ func (p Props) ApplyLabel(attrs *html.LabelAttrs, children *[]html.Component) {
 		id = randomID()
 	}
 
-	args := labelArgsFromProps("inline-flex cursor-pointer items-center gap-2")(p)
+	args := labelArgsFromProps(styles.Label("inline-flex items-center gap-3 cursor-pointer"))(p)
 
 	inputArgs := []html.InputArg{
 		html.AId(id),
@@ -81,22 +82,15 @@ func (p Props) ApplyLabel(attrs *html.LabelAttrs, children *[]html.Component) {
 
 	visual := html.Div(
 		html.AClass(html.ClassMerge(
-			"relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center",
-			"rounded-full border-2 border-transparent",
-			"transition-colors",
-			"bg-input",
-			"peer-checked:bg-primary",
-			"peer-focus-visible:outline-none peer-focus-visible:ring-2",
-			"peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
-			"peer-focus-visible:ring-offset-background",
+			"relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border border-border/50 bg-background/70",
+			"transition-all duration-200",
+			"peer-checked:border-transparent peer-checked:bg-gradient-to-r peer-checked:from-primary peer-checked:via-primary/90 peer-checked:to-primary/70",
+			"peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-ring/50 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background",
 			"peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-			"after:pointer-events-none after:block",
-			"after:h-4 after:w-4",
-			"after:rounded-full after:bg-background",
-			"after:shadow-lg after:ring-0",
-			"after:transition-transform",
-			"after:content-['']",
-			"peer-checked:after:translate-x-4",
+			"after:pointer-events-none after:absolute after:left-1 after:h-4 after:w-4",
+			"after:rounded-full after:bg-white after:shadow-md after:transition-transform after:duration-200",
+			"after:content-[''] peer-checked:after:translate-x-5",
+			"dark:after:bg-slate-200",
 			p.Class,
 		)),
 		html.AAria("hidden", "true"),

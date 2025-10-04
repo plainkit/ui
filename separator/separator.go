@@ -99,9 +99,9 @@ func horizontalSeparator(props Props, divArgs []html.DivArg) html.Node {
 	outerArgs := append([]html.DivArg{props}, divArgs...)
 
 	inner := html.Div(
-		html.AClass("relative flex items-center w-full"),
+		html.AClass("relative flex w-full items-center"),
 		html.Span(
-			html.AClass(html.ClassMerge("absolute w-full border-t h-[1px]", decorationClass(props.Decoration))),
+			html.AClass(html.ClassMerge("absolute h-[2px] w-full rounded-full bg-gradient-to-r from-transparent via-border/60 to-transparent", decorationClass(props.Decoration))),
 			html.ACustom("aria-hidden", "true"),
 		),
 	)
@@ -115,9 +115,9 @@ func verticalSeparator(props Props, divArgs []html.DivArg) html.Node {
 	outerArgs := append([]html.DivArg{props}, divArgs...)
 
 	inner := html.Div(
-		html.AClass("relative flex flex-col items-center h-full"),
+		html.AClass("relative flex h-full flex-col items-center"),
 		html.Span(
-			html.AClass(html.ClassMerge("absolute h-full border-l w-[1px]", decorationClass(props.Decoration))),
+			html.AClass(html.ClassMerge("absolute h-full w-[2px] rounded-full bg-gradient-to-b from-transparent via-border/60 to-transparent", decorationClass(props.Decoration))),
 			html.ACustom("aria-hidden", "true"),
 		),
 	)

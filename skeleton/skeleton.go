@@ -2,6 +2,7 @@ package skeleton
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -11,7 +12,13 @@ type Props struct {
 }
 
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(html.ClassMerge("animate-pulse rounded bg-muted", p.Class))}
+	baseClass := html.ClassMerge(
+		"relative overflow-hidden animate-pulse",
+		styles.SurfaceMuted("min-h-[0.875rem] bg-muted/70 p-0"),
+		"[&>*]:opacity-0",
+	)
+
+	args := []html.DivArg{html.AClass(html.ClassMerge(baseClass, p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}

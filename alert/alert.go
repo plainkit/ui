@@ -2,6 +2,7 @@ package alert
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Variant string
@@ -57,10 +58,9 @@ func h5ArgsFromProps(baseClass string, extra ...string) func(p TitleProps) []htm
 
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	args := divArgsFromProps(
-		"relative w-full p-4",
-		"[&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
-		"[&>svg+div]:translate-y-[-3px] [&:has(svg)]:pl-11",
-		"rounded-lg border",
+		styles.SurfaceMuted("relative w-full p-5"),
+		"[&>svg]:absolute [&>svg]:left-5 [&>svg]:top-5",
+		"[&>svg+div]:translate-y-[-2px] [&:has(svg)]:pl-14",
 		variantClass(p.Variant),
 	)(p)
 
@@ -71,13 +71,13 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p TitleProps) ApplyH5(attrs *html.H5Attrs, children *[]html.Component) {
-	for _, a := range h5ArgsFromProps("mb-1 font-medium leading-none tracking-tight")(p) {
+	for _, a := range h5ArgsFromProps(styles.DisplayHeading("mb-1 text-lg"))(p) {
 		a.ApplyH5(attrs, children)
 	}
 }
 
 func (p DescriptionProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range divArgsFromProps("[&_p]:leading-relaxed text-sm")(Props(p)) {
+	for _, a := range divArgsFromProps(styles.SubtleText("[&_p]:leading-relaxed"))(Props(p)) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -136,16 +136,16 @@ func Description(args ...html.DivArg) html.Node {
 func variantClass(v Variant) string {
 	switch v {
 	case VariantDestructive, VariantError:
-		return "border-destructive text-destructive"
+		return "border-destructive/60 bg-destructive/15 text-destructive"
 	case VariantSuccess:
-		return "border-green-200 text-green-900 dark:border-green-800 dark:text-green-100"
+		return "border-emerald-400/50 bg-emerald-500/15 text-emerald-900 dark:border-emerald-500/60 dark:bg-emerald-500/20 dark:text-emerald-100"
 	case VariantWarning:
-		return "border-yellow-200 text-yellow-900 dark:border-yellow-800 dark:text-yellow-100"
+		return "border-amber-400/60 bg-amber-500/15 text-amber-900 dark:border-amber-500/50 dark:bg-amber-400/20 dark:text-amber-50"
 	case VariantInfo:
-		return "border-blue-200 text-blue-900 dark:border-blue-800 dark:text-blue-100"
+		return "border-sky-400/60 bg-sky-500/15 text-sky-900 dark:border-sky-500/60 dark:bg-sky-500/20 dark:text-sky-100"
 	case VariantDefault:
-		return "border-border text-foreground"
+		return "border-border/60 bg-card/70 text-card-foreground"
 	default:
-		return "border-border text-foreground"
+		return "border-border/60 bg-card/70 text-card-foreground"
 	}
 }

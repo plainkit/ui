@@ -148,6 +148,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 					if p.HasError {
 						return "border-destructive ring-destructive/20 dark:ring-destructive/40"
 					}
+
 					return ""
 				}(),
 				p.Class,
@@ -166,6 +167,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 					if p.HasError {
 						return html.AAria("invalid", "true")
 					}
+
 					return html.AAria("", "")
 				}(),
 			},

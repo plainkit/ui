@@ -10,11 +10,11 @@ func RenderInputOTPContent() html.Node {
 	buildSlots := func(start int, hasError bool) []html.DivArg {
 		items := make([]html.DivArg, 0, 3)
 		for i := 0; i < 3; i++ {
-			items = append(items, html.Child(inputotp.Slot(inputotp.SlotProps{
+			items = append(items, inputotp.Slot(inputotp.SlotProps{
 				Index:       start + i,
 				Placeholder: "0",
 				HasError:    hasError,
-			})))
+			}))
 		}
 
 		return items

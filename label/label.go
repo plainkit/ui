@@ -2,6 +2,7 @@ package label
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -13,8 +14,8 @@ type Props struct {
 }
 
 func (p Props) ApplyLabel(attrs *html.LabelAttrs, children *[]html.Component) {
-	className := html.ClassMerge(
-		"text-sm font-medium leading-none inline-block",
+	className := styles.Label(
+		"inline-block leading-tight",
 		conditionalClass(p.Error != "", "text-destructive"),
 		p.Class,
 	)

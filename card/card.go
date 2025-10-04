@@ -2,6 +2,7 @@ package card
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -37,7 +38,7 @@ func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Di
 
 // ApplyDiv implements the html.DivArg interface for Props
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := divArgsFromProps("w-full rounded-lg border bg-card text-card-foreground shadow-xs")(p)
+	args := divArgsFromProps(styles.Surface("w-full overflow-hidden"))(p)
 
 	for _, a := range args {
 		a.ApplyDiv(attrs, children)
@@ -81,7 +82,7 @@ func headerDivArgsFromProps(baseClass string, extra ...string) func(p HeaderProp
 
 // ApplyDiv implements the html.DivArg interface for HeaderProps
 func (p HeaderProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := headerDivArgsFromProps("flex flex-col space-y-1.5 p-6 pb-0")(p)
+	args := headerDivArgsFromProps("flex flex-col gap-2 px-8 pt-8 pb-2")(p)
 
 	for _, a := range args {
 		a.ApplyDiv(attrs, children)
@@ -125,7 +126,7 @@ func h3ArgsFromProps(baseClass string, extra ...string) func(p TitleProps) []htm
 
 // ApplyH3 implements the html.H3Arg interface for TitleProps
 func (p TitleProps) ApplyH3(attrs *html.H3Attrs, children *[]html.Component) {
-	args := h3ArgsFromProps("text-lg font-semibold leading-none tracking-tight")(p)
+	args := h3ArgsFromProps(styles.DisplayHeading("text-balance"))(p)
 
 	for _, a := range args {
 		a.ApplyH3(attrs, children)
@@ -169,7 +170,7 @@ func pArgsFromProps(baseClass string, extra ...string) func(p DescriptionProps) 
 
 // ApplyP implements the html.PArg interface for DescriptionProps
 func (p DescriptionProps) ApplyP(attrs *html.PAttrs, children *[]html.Component) {
-	args := pArgsFromProps("text-sm text-muted-foreground")(p)
+	args := pArgsFromProps(styles.SubtleText("leading-relaxed"))(p)
 
 	for _, a := range args {
 		a.ApplyP(attrs, children)
@@ -213,7 +214,7 @@ func contentDivArgsFromProps(baseClass string, extra ...string) func(p ContentPr
 
 // ApplyDiv implements the html.DivArg interface for ContentProps
 func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := contentDivArgsFromProps("p-6")(p)
+	args := contentDivArgsFromProps("px-8 pb-8 pt-0 flex flex-col gap-4")(p)
 
 	for _, a := range args {
 		a.ApplyDiv(attrs, children)
@@ -257,7 +258,7 @@ func footerDivArgsFromProps(baseClass string, extra ...string) func(p FooterProp
 
 // ApplyDiv implements the html.DivArg interface for FooterProps
 func (p FooterProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := footerDivArgsFromProps("flex items-center p-6 pt-0")(p)
+	args := footerDivArgsFromProps("flex flex-col gap-3 px-8 pb-8 pt-0 sm:flex-row sm:items-center sm:justify-between")(p)
 
 	for _, a := range args {
 		a.ApplyDiv(attrs, children)

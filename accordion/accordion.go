@@ -3,6 +3,7 @@ package accordion
 import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -18,7 +19,7 @@ type TriggerProps Props
 type ContentProps Props
 
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(html.ClassMerge(p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge(styles.Surface("divide-y divide-border/40 overflow-hidden"), p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}
@@ -51,7 +52,7 @@ func Accordion(args ...html.DivArg) html.Node {
 
 func (p ItemProps) ApplyDetails(attrs *html.DetailsAttrs, children *[]html.Component) {
 	args := []html.DetailsArg{
-		html.AClass(html.ClassMerge("group border-b last:border-b-0 [&[open]>summary>svg]:rotate-180", p.Class)),
+		html.AClass(html.ClassMerge("group border-b border-border/40 last:border-b-0 [&[open]>summary>svg]:rotate-180", p.Class)),
 		html.AName("accordion"),
 	}
 	if p.ID != "" {
@@ -86,11 +87,10 @@ func Item(args ...html.DetailsArg) html.Node {
 
 func (p TriggerProps) ApplySummary(attrs *html.SummaryAttrs, children *[]html.Component) {
 	args := []html.SummaryArg{html.AClass(html.ClassMerge(
-		"flex flex-1 items-start justify-between gap-4 py-4",
-		"text-left text-sm font-medium",
-		"transition-all hover:underline cursor-pointer",
-		"outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring rounded-md",
-		"disabled:pointer-events-none disabled:opacity-50",
+		styles.InteractiveGhost(
+			"w-full justify-between gap-4 text-left",
+			"rounded-none px-0 py-5 text-base font-medium",
+		),
 		"list-none [&::-webkit-details-marker]:hidden",
 		p.Class,
 	))}
@@ -130,7 +130,7 @@ func Trigger(args ...html.SummaryArg) html.Node {
 }
 
 func (p ContentProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	args := []html.DivArg{html.AClass(html.ClassMerge("pt-0 pb-4 text-sm overflow-hidden", p.Class))}
+	args := []html.DivArg{html.AClass(html.ClassMerge(styles.SubtleText("overflow-hidden pb-5 pt-0"), p.Class))}
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
 	}

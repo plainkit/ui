@@ -8,6 +8,7 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -100,7 +101,7 @@ func dialogDivArgsFromProps(baseClass string, extra ...string) func(p Props) []h
 }
 
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range dialogDivArgsFromProps("")(p) {
+	for _, a := range dialogDivArgsFromProps("relative z-50")(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -168,7 +169,7 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 
 	// Overlay/backdrop
 	overlayClasses := html.ClassMerge(
-		"fixed inset-0 z-50 bg-black/50",
+		"fixed inset-0 z-40 bg-black/50 backdrop-blur-sm",
 		"transition-opacity duration-300",
 		"data-[pui-dialog-open=false]:opacity-0",
 		"data-[pui-dialog-open=true]:opacity-100",
@@ -194,26 +195,12 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 
 	// Content panel
 	contentClasses := html.ClassMerge(
-		// Base positioning
-		"fixed z-50 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]",
-		// Style
-		"bg-background rounded-lg border shadow-lg",
-		// Layout
-		"grid gap-4 p-6",
-		// Size
-		"w-full max-w-[calc(100%-2rem)] sm:max-w-lg",
-		// Transitions
+		"fixed left-1/2 top-1/2 z-50 w-full max-w-[min(90vw,620px)] -translate-x-1/2 -translate-y-1/2",
+		styles.Panel("relative grid gap-6 p-8"),
 		"transition-all duration-200",
-		// Scale animation
-		"data-[pui-dialog-open=false]:scale-95",
-		"data-[pui-dialog-open=true]:scale-100",
-		// Opacity
-		"data-[pui-dialog-open=false]:opacity-0",
-		"data-[pui-dialog-open=true]:opacity-100",
-		// Pointer events
-		"data-[pui-dialog-open=false]:pointer-events-none",
-		"data-[pui-dialog-open=true]:pointer-events-auto",
-		// Hidden state
+		"data-[pui-dialog-open=false]:scale-95 data-[pui-dialog-open=false]:opacity-0",
+		"data-[pui-dialog-open=true]:scale-100 data-[pui-dialog-open=true]:opacity-100",
+		"data-[pui-dialog-open=false]:pointer-events-none data-[pui-dialog-open=true]:pointer-events-auto",
 		"data-[pui-dialog-hidden=true]:!hidden",
 		props.Class,
 	)
@@ -243,25 +230,16 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 	if !props.HideCloseButton {
 		closeButton := html.Button(
 			html.AClass(html.ClassMerge(
-				// Positioning
-				"absolute top-4 right-4",
-				// Style
-				"rounded-xs opacity-70",
-				// Interactions
+				"absolute right-4 top-4",
+				styles.InteractiveGhost(
+					"size-8 rounded-full",
+					"bg-muted/40 text-muted-foreground/80",
+					"hover:text-foreground",
+				),
 				"transition-opacity hover:opacity-100",
-				// Focus states
-				"focus:outline-none focus:ring-2",
-				"focus:ring-ring focus:ring-offset-2",
-				"ring-offset-background",
-				// Hover/Data states
-				"data-[pui-dialog-open=true]:bg-accent",
-				"data-[pui-dialog-open=true]:text-muted-foreground",
-				// Disabled state
-				"disabled:pointer-events-none",
-				// Icon styles
-				"[&_svg]:pointer-events-none",
-				"[&_svg]:shrink-0",
-				"[&_svg:not([class*='size-'])]:size-4",
+				"data-[pui-dialog-open=false]:opacity-0",
+				"data-[pui-dialog-open=true]:opacity-80",
+				"[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
 			)),
 			html.AData("pui-dialog-close", instanceID),
 			html.AAria("label", "Close"),
@@ -342,7 +320,7 @@ func headerDivArgsFromProps(baseClass string, extra ...string) func(p HeaderProp
 }
 
 func (p HeaderProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range headerDivArgsFromProps("flex flex-col gap-2 text-center sm:text-left")(p) {
+	for _, a := range headerDivArgsFromProps("flex flex-col gap-3 text-center sm:text-left")(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -381,7 +359,7 @@ func footerDivArgsFromProps(baseClass string, extra ...string) func(p FooterProp
 }
 
 func (p FooterProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range footerDivArgsFromProps("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end")(p) {
+	for _, a := range footerDivArgsFromProps("flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end")(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }
@@ -420,7 +398,7 @@ func titleH2ArgsFromProps(baseClass string, extra ...string) func(p TitleProps) 
 }
 
 func (p TitleProps) ApplyH2(attrs *html.H2Attrs, children *[]html.Component) {
-	for _, a := range titleH2ArgsFromProps("text-lg leading-none font-semibold")(p) {
+	for _, a := range titleH2ArgsFromProps(styles.DisplayHeading("text-pretty text-balance"))(p) {
 		a.ApplyH2(attrs, children)
 	}
 }
@@ -459,7 +437,7 @@ func descriptionPArgsFromProps(baseClass string, extra ...string) func(p Descrip
 }
 
 func (p DescriptionProps) ApplyP(attrs *html.PAttrs, children *[]html.Component) {
-	for _, a := range descriptionPArgsFromProps("text-muted-foreground text-sm")(p) {
+	for _, a := range descriptionPArgsFromProps(styles.SubtleText("leading-relaxed"))(p) {
 		a.ApplyP(attrs, children)
 	}
 }

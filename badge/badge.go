@@ -2,6 +2,7 @@ package badge
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Variant string
@@ -46,10 +47,12 @@ func spanArgsFromProps(baseClass string, extra ...string) func(p Props) []html.S
 // ApplySpan implements the html.SpanArg interface for Props
 func (p Props) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
 	args := spanArgsFromProps(
-		"inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none",
-		"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-		"aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-		"transition-[color,box-shadow] overflow-hidden",
+		styles.Tag(
+			"w-fit whitespace-nowrap shrink-0",
+			"[&>svg]:size-3 [&>svg]:pointer-events-none",
+			"transition-colors",
+		),
+		"aria-invalid:border-destructive aria-invalid:ring-destructive/30 dark:aria-invalid:ring-destructive/40",
 	)(p)
 
 	for _, a := range args {
@@ -80,12 +83,12 @@ func Badge(args ...html.SpanArg) html.Node {
 func variantClasses(v Variant) string {
 	switch v {
 	case VariantDestructive:
-		return "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60"
+		return "border-transparent bg-destructive/85 text-destructive-foreground [a&]:hover:bg-destructive focus-visible:ring-destructive/40"
 	case VariantOutline:
-		return "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground"
+		return "border-border/60 bg-transparent text-foreground/80 [a&]:hover:bg-muted/70 [a&]:hover:text-foreground"
 	case VariantSecondary:
-		return "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90"
+		return "border-border/50 bg-muted/70 text-foreground/80 [a&]:hover:bg-muted"
 	default:
-		return "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90"
+		return "border-transparent bg-primary/90 text-primary-foreground [a&]:hover:bg-primary"
 	}
 }

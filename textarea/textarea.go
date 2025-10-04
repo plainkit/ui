@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -67,14 +68,13 @@ func textareaArgsFromProps(baseClass string, extra ...string) func(p Props) []ht
 // ApplyTextarea implements the html.TextareaArg interface for Props
 func (p Props) ApplyTextarea(attrs *html.TextareaAttrs, children *[]html.Component) {
 	args := textareaArgsFromProps(
-		"flex w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
-		"min-h-[80px]",
-		"dark:bg-input/30",
-		"selection:bg-primary selection:text-primary-foreground",
-		"placeholder:text-muted-foreground",
-		"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-		"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-		"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
+		styles.Input(
+			"min-h-[120px] resize-vertical py-3 text-base leading-relaxed md:text-sm",
+			"align-top",
+			"selection:bg-primary/10 selection:text-foreground",
+		),
+		"placeholder:text-muted-foreground/80",
+		"aria-invalid:border-destructive aria-invalid:ring-destructive/30 dark:aria-invalid:ring-destructive/40",
 	)(p)
 
 	if p.Name != "" {

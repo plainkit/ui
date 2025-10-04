@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Size string
@@ -75,10 +76,11 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	args := divArgsFromProps(
 		"relative inline-flex shrink-0 items-center justify-center overflow-hidden",
 		"size-12 text-base",
-		"data-[pui-avatar-size=sm]:size-8 data-[pui-avatar-size=sm]:text-xs",
+		"rounded-full border border-border/70 bg-gradient-to-br from-muted/80 via-muted/60 to-muted/40",
+		"shadow-md transition-all duration-200",
+		"data-[pui-avatar-size=sm]:size-9 data-[pui-avatar-size=sm]:text-xs",
 		"data-[pui-avatar-size=md]:size-12 data-[pui-avatar-size=md]:text-base",
 		"data-[pui-avatar-size=lg]:size-16 data-[pui-avatar-size=lg]:text-xl",
-		"rounded-full bg-muted",
 		"data-[pui-avatar-in-group=true]:ring-2 data-[pui-avatar-in-group=true]:ring-background",
 	)(p)
 
@@ -140,7 +142,7 @@ func imgArgsFromProps(baseClass string, extra ...string) func(p ImageProps) []ht
 // ApplyImg implements the html.ImgArg interface for ImageProps
 func (p ImageProps) ApplyImg(attrs *html.ImgAttrs, children *[]html.Component) {
 	args := imgArgsFromProps(
-		"absolute inset-0 w-full h-full",
+		"absolute inset-0 h-full w-full",
 		"object-cover",
 		"z-10",
 	)(p)
@@ -200,9 +202,7 @@ func spanArgsFromProps(baseClass string, extra ...string) func(p FallbackProps) 
 
 // ApplySpan implements the html.SpanArg interface for FallbackProps
 func (p FallbackProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
-	args := spanArgsFromProps(
-		"font-medium text-muted-foreground",
-	)(p)
+	args := spanArgsFromProps(styles.SubtleText("font-medium"))(p)
 
 	args = append([]html.SpanArg{html.AData("pui-avatar-fallback", "")}, args...)
 
@@ -297,11 +297,11 @@ func Group(args ...html.DivArg) html.Node {
 func GroupOverflow(count int, props Props, args ...html.DivArg) html.Node {
 	className := html.ClassMerge(
 		"inline-flex items-center justify-center",
-		"w-12 h-12 text-base",
-		"data-[pui-avatar-size=sm]:w-8 data-[pui-avatar-size=sm]:h-8 data-[pui-avatar-size=sm]:text-xs",
-		"data-[pui-avatar-size=md]:w-12 data-[pui-avatar-size=md]:h-12 data-[pui-avatar-size=md]:text-base",
-		"data-[pui-avatar-size=lg]:w-16 data-[pui-avatar-size=lg]:h-16 data-[pui-avatar-size=lg]:text-xl",
-		"rounded-full bg-muted ring-2 ring-background",
+		"h-12 w-12 text-base",
+		"data-[pui-avatar-size=sm]:h-9 data-[pui-avatar-size=sm]:w-9 data-[pui-avatar-size=sm]:text-xs",
+		"data-[pui-avatar-size=md]:h-12 data-[pui-avatar-size=md]:w-12 data-[pui-avatar-size=md]:text-base",
+		"data-[pui-avatar-size=lg]:h-16 data-[pui-avatar-size=lg]:w-16 data-[pui-avatar-size=lg]:text-xl",
+		"rounded-full border border-border/70 bg-muted/70 ring-2 ring-background",
 		props.Class,
 	)
 

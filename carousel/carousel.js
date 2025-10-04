@@ -3,6 +3,9 @@
 
   const autoplays = new Map();
   let dragState = null;
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Click handling for navigation
   document.addEventListener("click", (e) => {
@@ -148,9 +151,17 @@
     }
 
     indicators.forEach((ind, i) => {
-      ind.dataset.tuiCarouselActive = i === index ? "true" : "false";
-      ind.classList.toggle("bg-primary", i === index);
-      ind.classList.toggle("bg-foreground/30", i !== index);
+      const isActive = i === index;
+      ind.dataset.tuiCarouselActive = isActive ? "true" : "false";
+      ind.classList.toggle("bg-primary", isActive);
+      ind.classList.toggle("bg-foreground/30", !isActive);
+      ind.setAttribute("aria-current", isActive ? "true" : "false");
+    });
+
+    items.forEach((item, i) => {
+      const isActive = i === index;
+      item.setAttribute("aria-hidden", isActive ? "false" : "true");
+      item.tabIndex = isActive ? 0 : -1;
     });
 
     const isLoop = carousel.dataset.tuiCarouselLoop === "true";
@@ -168,7 +179,12 @@
 
   // Autoplay functionality
   function startAutoplay(carousel) {
-    if (carousel.dataset.tuiCarouselAutoplay !== "true") return;
+    if (
+      carousel.dataset.tuiCarouselAutoplay !== "true" ||
+      prefersReducedMotion
+    ) {
+      return;
+    }
 
     stopAutoplay(carousel);
 

@@ -9,6 +9,7 @@ import (
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
 	"github.com/plainkit/ui/input"
+	"github.com/plainkit/ui/internal/styles"
 	"github.com/plainkit/ui/popover"
 )
 
@@ -106,7 +107,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 		wrapperID = randomID("selectbox")
 	}
 
-	args := divArgsFromProps("select-container w-full relative")(p)
+	args := divArgsFromProps("select-container relative w-full space-y-2")(p)
 	args = append([]html.DivArg{html.AId(wrapperID)}, args...)
 
 	for _, a := range args {
@@ -115,7 +116,7 @@ func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p ValueProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
-	args := spanArgsFromProps("block truncate select-value text-muted-foreground")(p)
+	args := spanArgsFromProps(styles.SubtleText("block truncate select-value text-left"))(p)
 
 	if p.Placeholder != "" {
 		args = append(args, html.AData("pui-selectbox-placeholder", p.Placeholder))
@@ -146,7 +147,7 @@ func (p GroupProps) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 }
 
 func (p LabelProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
-	args := []html.SpanArg{html.AClass(html.ClassMerge("px-2 py-1.5 text-sm font-medium", p.Class))}
+	args := []html.SpanArg{html.AClass(html.ClassMerge(styles.SubHeading("px-3 py-2 text-xs uppercase tracking-wide text-muted-foreground/70"), p.Class))}
 
 	if p.ID != "" {
 		args = append(args, html.AId(p.ID))
@@ -219,8 +220,8 @@ func Trigger(props TriggerProps, contentID string, args ...html.Node) html.Node 
 
 	buttonContent = append(buttonContent,
 		html.Span(
-			html.AClass("pointer-events-none ml-1"),
-			lucide.ChevronDown(html.AClass("size-4 text-muted-foreground")),
+			html.AClass("pointer-events-none ml-auto pl-2 text-muted-foreground/70"),
+			lucide.ChevronDown(html.AClass("size-4")),
 		),
 	)
 
@@ -235,24 +236,18 @@ func Trigger(props TriggerProps, contentID string, args ...html.Node) html.Node 
 				Type:    button.TypeButton,
 				Variant: button.VariantOutline,
 				Class: html.ClassMerge(
-					// Required class for JavaScript
-					"select-trigger",
-					// Base styles matching input
-					"w-full h-9 px-3 py-1 text-base md:text-sm",
-					"flex items-center justify-between",
-					"rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none",
-					// Dark mode background
-					"dark:bg-input/30",
-					// Selection styles
-					"selection:bg-primary selection:text-primary-foreground",
-					// Focus styles
-					"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-					// Error/Invalid styles
-					"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
+					styles.Input(
+						"select-trigger flex h-11 w-full items-center justify-between gap-3",
+						"cursor-pointer text-left text-sm md:text-base",
+						"pr-10",
+						"transition-transform hover:-translate-y-0.5",
+					),
+					"aria-invalid:border-destructive aria-invalid:ring-destructive/30",
 					func() string {
 						if props.HasError {
-							return "border-destructive ring-destructive/20 dark:ring-destructive/40"
+							return "border-destructive ring-destructive/30"
 						}
+
 						return ""
 					}(),
 					props.Class,
@@ -268,12 +263,14 @@ func Trigger(props TriggerProps, contentID string, args ...html.Node) html.Node 
 						if props.Required {
 							return html.AAria("required", "true")
 						}
+
 						return html.AAria("", "")
 					}(),
 					func() html.Global {
 						if props.HasError {
 							return html.AAria("invalid", "true")
 						}
+
 						return html.AAria("", "")
 					}(),
 				},
@@ -325,16 +322,16 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 		}
 
 		searchDiv := html.Div(
-			html.AClass("sticky top-0 bg-popover p-1"),
+			html.AClass("sticky top-0 z-10 -mx-2 -mt-2 bg-popover/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-popover/80"),
 			html.Div(
 				html.AClass("relative"),
 				html.Span(
-					html.AClass("absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none"),
+					html.AClass("pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-muted-foreground/70"),
 					lucide.Search(html.AClass("size-4")),
 				),
 				input.Input(input.Props{
 					Type:        input.TypeSearch,
-					Class:       "pl-8",
+					Class:       "pl-10",
 					Placeholder: searchPlaceholder,
 					Attrs: []html.Global{
 						html.AData("pui-selectbox-search", ""),
@@ -353,8 +350,10 @@ func Content(props ContentProps, args ...html.DivArg) html.Node {
 		Offset:     4,
 		MatchWidth: true,
 		Class: html.ClassMerge(
-			"p-1 select-content z-50 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md",
-			"min-w-[var(--popover-trigger-width)] w-[var(--popover-trigger-width)]",
+			styles.Panel(
+				"select-content z-50 overflow-hidden p-2",
+				"min-w-[var(--popover-trigger-width)] w-[var(--popover-trigger-width)]",
+			),
 			props.Class,
 		),
 		Attrs: []html.Global{
@@ -421,12 +420,15 @@ func Label(args ...html.SpanArg) html.Node {
 func Item(props ItemProps, args ...html.SpanArg) html.Node {
 	divArgs := []html.DivArg{
 		html.AClass(html.ClassMerge(
-			"select-item relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm font-light outline-none",
-			"hover:bg-accent hover:text-accent-foreground",
-			"focus:bg-accent focus:text-accent-foreground",
+			styles.InteractiveGhost(
+				"select-item relative flex w-full cursor-pointer select-none items-center gap-3",
+				"rounded-lg px-3 py-2 text-sm",
+				"justify-between",
+			),
+			"focus-visible:ring-0",
 			func() string {
 				if props.Selected {
-					return "bg-accent text-accent-foreground"
+					return "bg-accent/90 text-accent-foreground"
 				}
 
 				return ""
@@ -456,14 +458,15 @@ func Item(props ItemProps, args ...html.SpanArg) html.Node {
 	}
 
 	// Add text content and check icon
-	spanArgs := []html.SpanArg{html.AClass("truncate select-item-text")}
+	spanArgs := []html.SpanArg{html.AClass(styles.SubtleText("truncate select-item-text text-sm"))}
 	spanArgs = append(spanArgs, args...)
 
 	divArgs = append(divArgs,
 		html.Span(spanArgs...),
 		html.Span(
 			html.AClass(html.ClassMerge(
-				"select-check absolute right-2 flex h-3.5 w-3.5 items-center justify-center",
+				"select-check absolute right-3 flex h-4 w-4 items-center justify-center text-primary",
+				"transition-opacity duration-150",
 				func() string {
 					if props.Selected {
 						return "opacity-100"

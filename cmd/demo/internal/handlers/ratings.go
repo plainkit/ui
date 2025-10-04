@@ -9,7 +9,7 @@ func RenderRatingsContent() html.Node {
 	buildItems := func(style rating.Style) []html.DivArg {
 		items := make([]html.DivArg, 0, 5)
 		for i := 1; i <= 5; i++ {
-			items = append(items, html.Child(rating.Item(rating.ItemProps{Value: i, Style: style})))
+			items = append(items, rating.Item(rating.ItemProps{Value: i, Style: style}))
 		}
 
 		return items

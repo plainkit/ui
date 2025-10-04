@@ -2,6 +2,7 @@ package radio
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -42,16 +43,14 @@ func inputArgsFromProps(baseClass string, extra ...string) func(p Props) []html.
 // ApplyInput implements the html.InputArg interface for Props
 func (p Props) ApplyInput(attrs *html.InputAttrs, children *[]html.Component) {
 	args := inputArgsFromProps(
-		"relative h-4 w-4",
-		"appearance-none rounded-full",
-		"border-2 border-primary",
-		"before:absolute before:left-1/2 before:top-1/2",
-		"before:h-1.5 before:w-1.5 before:-translate-x-1/2 before:-translate-y-1/2",
-		"before:content[''] before:rounded-full before:bg-background",
-		"checked:border-primary checked:bg-primary checked:before:visible",
-		"focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-		"focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-		"disabled:cursor-not-allowed",
+		styles.Control(
+			"size-4 rounded-full border-2",
+			"before:absolute before:left-1/2 before:top-1/2",
+			"before:h-2 before:w-2 before:-translate-x-1/2 before:-translate-y-1/2",
+			"before:rounded-full before:bg-primary/80 before:opacity-0",
+			"checked:border-primary checked:bg-primary/10 checked:before:opacity-100",
+			"transition-all duration-200 before:transition-opacity",
+		),
 	)(p)
 
 	if p.Name != "" {

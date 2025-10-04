@@ -2,7 +2,7 @@ package checkbox
 
 import (
 	"github.com/plainkit/html"
-	"github.com/plainkit/icons/lucide"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -43,12 +43,14 @@ func inputArgsFromProps(baseClass string, extra ...string) func(p Props) []html.
 // ApplyInput implements the html.InputArg interface for Props
 func (p Props) ApplyInput(attrs *html.InputAttrs, children *[]html.Component) {
 	args := inputArgsFromProps(
-		"peer size-4 shrink-0 rounded-[4px] border border-input shadow-xs",
-		"focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring",
-		"disabled:cursor-not-allowed disabled:opacity-50",
-		"checked:bg-primary checked:text-primary-foreground checked:border-primary",
-		"appearance-none cursor-pointer transition-shadow",
-		"relative",
+		styles.Control(
+			"rounded-lg shadow-sm",
+			"checked:bg-gradient-to-br checked:from-primary checked:via-primary/90 checked:to-primary/80",
+			"checked:border-transparent",
+			"appearance-none",
+		),
+		"checked:text-primary-foreground",
+		"transition-shadow duration-200",
 	)(p)
 
 	if p.Name != "" {
@@ -88,7 +90,6 @@ func Checkbox(args ...html.InputArg) html.Node {
 	var (
 		props Props
 		rest  []html.InputArg
-		icon  html.Component
 	)
 
 	// Separate Props from other arguments
@@ -106,14 +107,8 @@ func Checkbox(args ...html.InputArg) html.Node {
 	// Add the input with all arguments applied
 	divArgs = append(divArgs, html.Input(append([]html.InputArg{props}, rest...)...))
 
-	// Add the icon overlay
-	if icon == nil {
-		icon = lucide.Check(html.AClass("size-3.5"))
-	}
-
 	divArgs = append(divArgs, html.Div(
-		html.AClass("absolute left-0 top-0 h-4 w-4 pointer-events-none flex items-center justify-center text-primary-foreground opacity-0 peer-checked:opacity-100"),
-		html.Child(icon),
+		html.AClass("absolute left-0 top-0 flex h-4 w-4 items-center justify-center text-primary-foreground opacity-0 transition-opacity duration-150 peer-checked:opacity-100"),
 	))
 
 	return html.Div(divArgs...)

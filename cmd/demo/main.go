@@ -140,35 +140,35 @@ func renderPage(activePath string, body html.Node, isStatic bool) string {
 	}
 
 	headChildren := []html.HeadArg{
-		html.Child(html.Meta(html.ACharset("utf-8"))),
-		html.Child(html.Meta(html.AName("viewport"), html.AContent("width=device-width, initial-scale=1"))),
-		html.Child(html.Title(html.Text("Plain UI - Modern Go Components for Web Development"))),
+		html.Meta(html.ACharset("utf-8")),
+		html.Meta(html.AName("viewport"), html.AContent("width=device-width, initial-scale=1")),
+		html.Title(html.Text("Plain UI - Modern Go Components for Web Development")),
 
 		// SEO Meta Tags
-		html.Child(html.Meta(html.AName("description"), html.AContent("Plain UI is a comprehensive collection of modern, accessible, and customizable UI components built with Go and HTMX for building beautiful web applications."))),
-		html.Child(html.Meta(html.AName("keywords"), html.AContent("go ui components, htmx components, web components, golang ui library, plainkit ui, tailwind components, accessible components, ui kit"))),
-		html.Child(html.Meta(html.AName("author"), html.AContent("Plain UI Team"))),
-		html.Child(html.Meta(html.AName("robots"), html.AContent("index, follow"))),
+		html.Meta(html.AName("description"), html.AContent("Plain UI is a comprehensive collection of modern, accessible, and customizable UI components built with Go and HTMX for building beautiful web applications.")),
+		html.Meta(html.AName("keywords"), html.AContent("go ui components, htmx components, web components, golang ui library, plainkit ui, tailwind components, accessible components, ui kit")),
+		html.Meta(html.AName("author"), html.AContent("Plain UI Team")),
+		html.Meta(html.AName("robots"), html.AContent("index, follow")),
 
 		// Open Graph Meta Tags
-		html.Child(html.Meta(html.AName("og:title"), html.AContent("Plain UI - Modern Go Components for Web Development"))),
-		html.Child(html.Meta(html.AName("og:description"), html.AContent("Build beautiful, accessible web applications with Plain UI's comprehensive collection of Go components featuring HTMX integration."))),
-		html.Child(html.Meta(html.AName("og:type"), html.AContent("website"))),
-		html.Child(html.Meta(html.AName("og:site_name"), html.AContent("Plain UI"))),
-		html.Child(html.Meta(html.AName("og:locale"), html.AContent("en_US"))),
+		html.Meta(html.AName("og:title"), html.AContent("Plain UI - Modern Go Components for Web Development")),
+		html.Meta(html.AName("og:description"), html.AContent("Build beautiful, accessible web applications with Plain UI's comprehensive collection of Go components featuring HTMX integration.")),
+		html.Meta(html.AName("og:type"), html.AContent("website")),
+		html.Meta(html.AName("og:site_name"), html.AContent("Plain UI")),
+		html.Meta(html.AName("og:locale"), html.AContent("en_US")),
 
 		// Twitter Card Meta Tags
-		html.Child(html.Meta(html.AName("twitter:card"), html.AContent("summary_large_image"))),
-		html.Child(html.Meta(html.AName("twitter:title"), html.AContent("Plain UI - Modern Go Components for Web Development"))),
-		html.Child(html.Meta(html.AName("twitter:description"), html.AContent("Build beautiful, accessible web applications with Plain UI's comprehensive collection of Go components."))),
+		html.Meta(html.AName("twitter:card"), html.AContent("summary_large_image")),
+		html.Meta(html.AName("twitter:title"), html.AContent("Plain UI - Modern Go Components for Web Development")),
+		html.Meta(html.AName("twitter:description"), html.AContent("Build beautiful, accessible web applications with Plain UI's comprehensive collection of Go components.")),
 
 		// Additional SEO
-		html.Child(html.Meta(html.AHttpEquiv("X-UA-Compatible"), html.AContent("IE=edge"))),
-		html.Child(html.Meta(html.AName("theme-color"), html.AContent("#000000"))),
-		html.Child(html.Link(html.ARel("canonical"), html.AHref("https://plainui.com"))),
+		html.Meta(html.AHttpEquiv("X-UA-Compatible"), html.AContent("IE=edge")),
+		html.Meta(html.AName("theme-color"), html.AContent("#000000")),
+		html.Link(html.ARel("canonical"), html.AHref("https://plainui.com")),
 
 		// Stylesheet
-		html.Child(html.Link(html.ARel("stylesheet"), html.AHref(cssPath))),
+		html.Link(html.ARel("stylesheet"), html.AHref(cssPath)),
 	}
 
 	bodyChildren := []html.Component{
@@ -186,7 +186,7 @@ func renderPage(activePath string, body html.Node, isStatic bool) string {
 	}
 
 	if cssSnippets := assets.CSS(); len(cssSnippets) > 0 {
-		headChildren = append(headChildren, html.Child(html.Style(html.UnsafeText(strings.Join(cssSnippets, "\n")))))
+		headChildren = append(headChildren, html.Style(html.UnsafeText(strings.Join(cssSnippets, "\n"))))
 	}
 
 	if jsSnippets := assets.JS(); len(jsSnippets) > 0 {
@@ -353,9 +353,9 @@ func generateIndexRedirect(firstPagePath string) string {
 	page := html.Html(
 		html.ALang("en"),
 		html.Head(
-			html.Child(html.Meta(html.ACharset("utf-8"))),
-			html.Child(html.Meta(html.AHttpEquiv("refresh"), html.AContent("0; url="+redirectPath))),
-			html.Child(html.Title(html.Text("Plain UI - Redirecting..."))),
+			html.Meta(html.ACharset("utf-8")),
+			html.Meta(html.AHttpEquiv("refresh"), html.AContent("0; url="+redirectPath)),
+			html.Title(html.Text("Plain UI - Redirecting...")),
 		),
 		html.Body(
 			html.P(

@@ -2,6 +2,7 @@ package aspectratio
 
 import (
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Ratio string
@@ -40,7 +41,7 @@ func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Di
 }
 
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
-	for _, a := range divArgsFromProps("relative w-full")(p) {
+	for _, a := range divArgsFromProps(styles.Surface("relative w-full overflow-hidden p-0"))(p) {
 		a.ApplyDiv(attrs, children)
 	}
 }

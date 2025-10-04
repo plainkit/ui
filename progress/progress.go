@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/plainkit/html"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Size string
@@ -64,7 +65,7 @@ func divArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Di
 func (p Props) ApplyDiv(attrs *html.DivAttrs, children *[]html.Component) {
 	propsMax := maxValue(p.Max)
 
-	args := divArgsFromProps("w-full")(p)
+	args := divArgsFromProps(styles.SurfaceMuted("w-full space-y-3 p-5"))(p)
 	args = append([]html.DivArg{
 		html.ACustom("role", "progressbar"),
 		html.AAria("valuemin", "0"),
@@ -101,14 +102,14 @@ func Progress(args ...html.DivArg) html.Node {
 
 	children := make([]html.Component, 0, 2)
 	if props.Label != "" || props.ShowValue {
-		labelArgs := []html.DivArg{html.AClass("flex justify-between items-center mb-1")}
+		labelArgs := []html.DivArg{html.AClass("flex items-center justify-between")}
 		if props.Label != "" {
-			labelArgs = append(labelArgs, html.Span(html.AClass("text-sm font-medium"), html.Text(props.Label)))
+			labelArgs = append(labelArgs, html.Span(html.AClass(styles.SubHeading("text-xs uppercase tracking-wide text-muted-foreground/70")), html.Text(props.Label)))
 		}
 
 		if props.ShowValue {
 			pct := percentage(props.Value, propsMax)
-			labelArgs = append(labelArgs, html.Span(html.AClass("text-sm font-medium"), html.Text(strconv.Itoa(pct)+"%")))
+			labelArgs = append(labelArgs, html.Span(html.AClass(styles.SubtleText("text-sm font-semibold text-foreground")), html.Text(strconv.Itoa(pct)+"%")))
 		}
 
 		children = append(children, html.Div(labelArgs...))
@@ -125,7 +126,7 @@ func Progress(args ...html.DivArg) html.Node {
 		html.AStyle("width: "+strconv.Itoa(percentage(props.Value, propsMax))+"%;"),
 	)
 	barWrapper := html.Div(
-		html.AClass("w-full overflow-hidden rounded-full bg-secondary"),
+		html.AClass("w-full overflow-hidden rounded-full bg-muted/60"),
 		bar,
 	)
 	children = append(children, barWrapper)
@@ -152,13 +153,13 @@ func sizeClass(size Size) string {
 func variantClass(variant Variant) string {
 	switch variant {
 	case VariantSuccess:
-		return "bg-green-500"
+		return "bg-gradient-to-r from-emerald-500 to-emerald-400"
 	case VariantDanger:
-		return "bg-destructive"
+		return "bg-gradient-to-r from-destructive to-destructive/80"
 	case VariantWarning:
-		return "bg-yellow-500"
+		return "bg-gradient-to-r from-amber-400 to-amber-300"
 	default:
-		return "bg-primary"
+		return "bg-gradient-to-r from-primary via-primary/90 to-primary/70"
 	}
 }
 

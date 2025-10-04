@@ -8,6 +8,7 @@ import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
 	"github.com/plainkit/ui/button"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Type string
@@ -93,14 +94,13 @@ func inputArgsFromProps(baseClass string, extra ...string) func(p Props) []html.
 // ApplyInput implements the html.InputArg interface for Props
 func (p Props) ApplyInput(attrs *html.InputAttrs, children *[]html.Component) {
 	args := inputArgsFromProps(
-		"flex h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
-		"dark:bg-input/30",
-		"selection:bg-primary selection:text-primary-foreground",
-		"placeholder:text-muted-foreground",
-		"file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
-		"focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-		"disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-		"aria-invalid:ring-destructive/20 aria-invalid:border-destructive dark:aria-invalid:ring-destructive/40",
+		styles.Input(
+			"md:h-11",
+			"file:inline-flex file:h-8 file:rounded-md file:border-0 file:bg-transparent file:px-3 file:text-sm file:font-medium file:text-foreground",
+			"backdrop-blur-sm supports-[backdrop-filter]:bg-background/70",
+		),
+		"placeholder:text-muted-foreground/80",
+		"aria-invalid:border-destructive aria-invalid:ring-destructive/30 dark:aria-invalid:ring-destructive/40",
 	)(p)
 
 	if p.Name != "" {
@@ -202,7 +202,7 @@ func passwordToggleButton(inputID string) html.Node {
 		button.Props{
 			Size:    button.SizeIcon,
 			Variant: button.VariantGhost,
-			Class:   "absolute right-0 top-1/2 -translate-y-1/2 opacity-50 cursor-pointer",
+			Class:   "absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground/80 hover:text-foreground",
 			Attrs: []html.Global{
 				html.AData("pui-input-toggle-password", inputID),
 			},

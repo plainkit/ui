@@ -3,6 +3,7 @@ package breadcrumb
 import (
 	"github.com/plainkit/html"
 	"github.com/plainkit/icons/lucide"
+	"github.com/plainkit/ui/internal/styles"
 )
 
 type Props struct {
@@ -58,7 +59,7 @@ func navArgsFromProps(baseClass string, extra ...string) func(p Props) []html.Na
 }
 
 func (p Props) ApplyNav(attrs *html.NavAttrs, children *[]html.Component) {
-	for _, a := range navArgsFromProps("flex")(p) {
+	for _, a := range navArgsFromProps("flex items-center text-sm text-muted-foreground/80")(p) {
 		a.ApplyNav(attrs, children)
 	}
 }
@@ -96,7 +97,7 @@ func olArgsFromProps(baseClass string, extra ...string) func(p ListProps) []html
 }
 
 func (p ListProps) ApplyOl(attrs *html.OlAttrs, children *[]html.Component) {
-	for _, a := range olArgsFromProps("flex items-center flex-wrap gap-1 text-sm")(p) {
+	for _, a := range olArgsFromProps("flex flex-wrap items-center gap-2 text-sm")(p) {
 		a.ApplyOl(attrs, children)
 	}
 }
@@ -134,7 +135,7 @@ func liArgsFromProps(baseClass string, extra ...string) func(p ItemProps) []html
 }
 
 func (p ItemProps) ApplyLi(attrs *html.LiAttrs, children *[]html.Component) {
-	for _, a := range liArgsFromProps("flex items-center")(p) {
+	for _, a := range liArgsFromProps("flex items-center gap-2")(p) {
 		a.ApplyLi(attrs, children)
 	}
 }
@@ -191,7 +192,7 @@ func aArgsFromProps(baseClass string, extra ...string) func(p LinkProps) []html.
 }
 
 func (p LinkProps) ApplyA(attrs *html.AAttrs, children *[]html.Component) {
-	for _, a := range aArgsFromProps("text-muted-foreground hover:text-foreground hover:underline flex items-center gap-1.5 transition-colors")(p) {
+	for _, a := range aArgsFromProps(styles.InteractiveGhost("flex items-center gap-1.5 rounded-full px-3 py-1 text-sm", "bg-transparent", "hover:underline"))(p) {
 		a.ApplyA(attrs, children)
 	}
 }
@@ -229,7 +230,7 @@ func spanArgsFromProps(baseClass string, extra ...string) func(p SeparatorProps)
 }
 
 func (p SeparatorProps) ApplySpan(attrs *html.SpanAttrs, children *[]html.Component) {
-	for _, a := range spanArgsFromProps("mx-2 text-muted-foreground")(p) {
+	for _, a := range spanArgsFromProps(styles.SubtleText("mx-2 text-xs"))(p) {
 		a.ApplySpan(attrs, children)
 	}
 }
